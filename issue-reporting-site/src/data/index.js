@@ -1,9 +1,9 @@
 const users = require('./users');
-const departments = require('./dept');
-const post = require('./posts');
+const dept = require('./dept');
+const posts = require('./posts');
 
 module.exports = {
     users: users,
-    departments: dept,
+    dept: dept,
     posts: posts
 };
