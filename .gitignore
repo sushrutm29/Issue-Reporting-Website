@@ -2,6 +2,8 @@
 
 # files to ignore
 node_modules
+/client/package-lock.json
+/server/package-lock.json
 package-lock.json
 .vscode/
 
