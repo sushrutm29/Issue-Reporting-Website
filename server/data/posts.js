@@ -1,7 +1,7 @@
 const mongoCollections = require("../config/mongoCollections");
 const posts = mongoCollections.posts;
+const comments = mongoCollections.comments;
 const ObjectId = require("mongodb").ObjectID;
-
 
 /**
  * @author Lun-Wei Chang
@@ -196,76 +196,116 @@ let exportedMethods = {
         const postsCollection = await posts();
         const allPosts = await postsCollection.find({}).toArray();
         return allPosts;
-    }
+    },
 
-    async addComment(postID, userID)
+   // async addComment(postID, commentID)
+   async addComment(cBody, uID, pID, time)
     {
         //userID has commented on postID
+        //add comment to DB + update post DB
 
-        if (arguments.length != 2) {
+        if (arguments.length != 4) {
             throw new Error("Wrong number of arguments");
         }
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
-            throw new Error("Invalid Post ID was provided");
+        if (!cBody || typeof(cBody) != "string" || cBody.length == 0) {
+            throw new Error("Invalid comment content was provided");
         }
-        if (!userID || typeof(userID) != "string" || userID.length == 0) {
-            throw new Error("Invalid User ID was provided");
+        if (!uID || typeof(uID) != "string" || uID.length == 0) {
+            throw new Error("Invalid user ID was provided");
+        }
+        if (!pID || typeof(pID) != "string" || pID.length == 0) {
+            throw new Error("Invalid post ID was provided");
+        }
+        if (!time || typeof(time) != "string" || time.length == 0) {
+            throw new Error("Invalid timestamp was provided");
         }
 
-        const postsCollection = await posts();
+        const commentsCollection = await comments();
 
-        const singlePost = await postsCollection.findOne({_id: ObjectId(postID)});
-        if (!singlePost) {
-            throw new Error(`Post with ${postID} ID not found!`);
+        let newComment = {
+            body : cBody,
+            userID: uID,
+            postID: pID,
+            timeStamp: time,
+        };
+
+        const insertComment = await commentsCollection.insertOne(newComment);
+        //checks if comment was inserted correctly
+        if (!insertComment || insertComment.insertedCount === 0) {
+            throw new Error("Unable to add new comment!");
         }
-        else
-            singlePost.comments.push(userID);
-    }
+        //gets the inserted comment and returns it
+        const newId = insertComment.insertedId;
+        const commentResult = await this.getComment(newId.toString()); 
 
-    async editComment(postID, commentID, userID)
+        const reqPost = await this.getPost(pID);
+        reqPost.comments.push(newId);
+        
+        return commentResult; 
+    },
+
+    async editComment(commentID, uID, newBody, newTime)
     {
-        if (arguments.length != 3) {
+        //uID is the ID of the user trying to make the edit
+        if (arguments.length != 4) {
             throw new Error("Wrong number of arguments");
         }
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
-            throw new Error("Invalid Post ID was provided");
-        }
-        if (!userID || typeof(userID) != "string" || userID.length == 0) {
-            throw new Error("Invalid User ID was provided");
-        }
-
         if (!commentID || typeof(commentID) != "string" || commentID.length == 0) {
             throw new Error("Invalid comment ID was provided");
         }
-        //should have old commentID and new commentID
-        //or updated body
-        //or keep one comment per post per user => compare comment arrays of userID and postID for a common commentID, then replace this new commentID
+        if (!uID || typeof(uID) != "string" || uID.length == 0) {
+            throw new Error("Invalid User ID was provided");
+        }
+        if (!newBody || typeof(newBody) != "string" || newBody.length == 0) {
+            throw new Error("Invalid comment content was provided");
+        }
+        if (!newTime || typeof(newTime) != "string" || newTime.length == 0) {
+            throw new Error("Invalid updated time stamp was provided");
+        }
 
+        const reqComment = await this.getComment(commentID);
         
-    }
+        if(uID != reqComment.userID){
+            throw new Error("Not authorized to edit comment");
+        }
 
-    async deleteComment(postID, commentID, userID)
+        const commentsCollection = await comments();
+        commentsCollection.update({_id:commentID}, {$set: {body : newBody, timeStamp : newTime}});
+        //updated the comment DB, there is no need to update post DB as it only stores commentID 
+    },
+
+    async deleteComment(commentID)
     {
-        //same as third point of editComment, except remove both entries from the arrays
-    }
+        if (arguments.length != 1) {
+            throw new Error("Wrong number of arguments");
+        }
+        if (!commentID || typeof(commentID) != "string" || commentID.length == 0) {
+            throw new Error("Invalid comment ID was provided");
+        }
+        const commentsCollection = await comments();
+        const postsCollection = await posts();
+
+        let reqComment = await this.getComment(commentID);
+
+        postsCollection.update({'_id': reqComment.postID}, { $pull: { comments : commentID} },false,true); //deleted comment from the post
+        //next delete comment from commentsCollection
+        const deletionInfo = await commentsCollection.removeOne({ _id: ObjectId(commentID) });
+        if (deletionInfo.deletedCount === 0) { throw `Could not delete comment with id of ${commentID}`;}
+    },
 
     async getComment(commentID)
     {
-        if (arguments.length != 3) {
+        if (arguments.length != 1) {
             throw new Error("Wrong number of arguments");
         }
         if (!commentID || typeof(commentID) != "string" || commentID.length == 0) {
             throw new Error("Invalid comment ID was provided");
         }
 
-        const postsCollection = await posts();
-        let retComment;
-        for(var i = 0; i < postsCollection.length; i++)
-        {
-            if(postsCollection[i].comments.find(commentID))
-            { retComment = postsCollection[i].comments.find(commentID); }
-        }
-       return retComment
+        const commentsCollection = await comments();
+        const retComment = await commentsCollection.findOne({_id : ObjectId(commentID)});
+        if (retComment === null) throw "No comment with that id";
+        return retComment;
     }
 };
 
