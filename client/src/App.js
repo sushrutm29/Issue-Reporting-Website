@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './img/tvm-header-logo.png';
+import logo from './logo.svg';
 import './App.css';
 // import ShowList from './components/ShowList';
 // import Show from './components/Show';
