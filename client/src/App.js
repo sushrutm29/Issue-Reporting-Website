@@ -1,17 +1,16 @@
 import React from 'react';
-import logo from './img/tvm-header-logo.png';
 import './App.css';
 // import ShowList from './components/ShowList';
 // import Show from './components/Show';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import Department from "./components/department";
 
 const App = () => {
 	return (
 		<Router>
 			<div className='App'>
 				<header className='App-header'>
-					<img src={logo} className='App-logo' alt='logo' />
-					<h1 className='App-title'>Welcome to issue reporting website</h1>
+					<h3 className='App-title'>Issue reporting website</h3>
 					{/* <Link className='showlink' to='/shows'>
 						Shows
 					</Link> */}
@@ -19,7 +18,7 @@ const App = () => {
 				<br />
 				<br />
 				<div className='App-body'>
-					<p>Welcome to the TV Maze API example</p>
+					<Route path="/department" component={ Department } />
 					{/* <Route path='/shows' exact component={ShowList} />
 					<Route path='/shows/:id' exact component={Show} /> */}
 				</div>
