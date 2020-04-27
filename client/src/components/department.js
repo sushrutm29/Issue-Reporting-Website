@@ -11,11 +11,12 @@ class department extends Component {
         super(props);
         this.state = {
             pageNotFound: false,    //boolean indicates whether page exists or not
-            deptData: undefined,    //stores department data
+            hasDept: undefined,    //stores department data
             numOfDept: 0,
             postData: undefined,
             hasCacheData: false     //indicates whether the department data has been stored in Redis
         };
+        this.allDeptsInfo = undefined;
     }
 
     /**
@@ -55,41 +56,14 @@ class department extends Component {
             // });
             console.log(`%%%%%%%%%%%allDepts = ${JSON.stringify(allDepts.data.length)}`);
             let numOfDept = allDepts.data.length;
-            let deptArray = new Array();
-            // for (let i = 0; i < numOfDept; i++) {
-            //     deptArray.push(allDepts.data[i].deptName);
-            //     let currentDept = allDepts.data[i];
-            //     this.setState({
-            //         deptData: [ ...this.state.deptData, {
-            //             'id': currentDept._id,
-            //             'name': currentDept.deptName,
-            //             'posts': currentDept.posts
-            //         }],
-            //       });
-            // }
-            //stores all the department name into an array
-            let allDeptNames = allDepts.data.map(function (dept) {
-                return dept.deptName;
-            });
-            let allDeptIDs = allDepts.data.map(function (dept) {
-                return dept._id;
-            });
-            let allDeptPosts = allDepts.data.map(function (dept) {
-                return dept.posts;
-            });
-            // this.setState({
-            //     deptData: [...this.state.deptData, ...allDepts.data]
+            // //stores all the department name into an array
+            // let allDeptNames = allDepts.data.map(function (dept) {
+            //     return dept.deptName;
             // });
-            // this.setState({ [this.state.deptData]: allDepts.data} )
-            console.log(`allDeptNames = ${allDeptNames}`);
-            console.log(`allDeptIDs = ${allDeptIDs}`);
-            console.log(`allDeptPosts = ${allDeptPosts}`);
-            console.log(`allDepts.data = ${JSON.stringify(allDepts.data)}`);
-            console.log(`allDepts.data type = ${typeof (allDepts.data)}`);
-            console.log(`is allDept an array = ${Array.isArray(allDepts.data)}`);
-            this.setState({ deptData: allDepts.data} );
-            console.log(`this.state.deptData type = ${typeof(this.state.deptData)}`);
-            console.log(`############this.state.deptData = ${this.state.deptData}`);
+            if (numOfDept != 0) { //exists at least one department
+                
+            }
+            this.allDeptsInfo = allDepts.data;
         } catch (err) {
             console.log(err);
             this.setState({ pageNotFound: true });
