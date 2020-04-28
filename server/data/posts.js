@@ -1,5 +1,6 @@
 const mongoCollections = require("../config/mongoCollections");
 const posts = mongoCollections.posts;
+const dept = mongoCollections.dept;
 const ObjectId = require("mongodb").ObjectID;
 
 /**
@@ -39,6 +40,7 @@ let exportedMethods = {
         let creationTime = currentdate.getFullYear() + '-' +(currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
         const postsCollection = await posts();
+        const deptCollection = await dept();
         // //prevents duplicated post object to be inserted into the database
         // postsCollection.createIndex({"deptID":1},{unique:true});
         let newPost = {
@@ -95,27 +97,32 @@ let exportedMethods = {
     */
     async updatePost(postID, title, body) {
         //validates number of arguments
-        if (arguments.length != 3) {
+        if (arguments.length < 2) {    //must provide either title or body
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
         if (!postID || typeof(postID) != "string" || postID.length == 0) {
             throw new Error("Invalid post ID was provided");
         }
-        if (!title || typeof(title) != "string" || title.length == 0) {
+        if (title && (typeof(title) != "string" || title.length == 0)) {
             throw new Error("Invalid post title was provided");
         }
-        if (!body || typeof(body) != "string" || body.length == 0) {
+        if (body && (typeof(body) != "string" || body.length == 0)) {
             throw new Error("Invalid post body was provided");
         }
         const postsCollection = await posts();
-        const updatedDestination = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"title": title, "body": body}});
-        if (!updatedDestination || updatedDestination.modifiedCount === 0) {
+        const oldPost = await postsCollection.findOne({_id: ObjectId(postID)});
+        let newTitle = (title) ? title : oldPost.title;
+        let newBody = (body) ? body : oldPost.body;
+        const updatedPost = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"title": newTitle, "body": newBody}});
+        if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error("Unable to update post!");
         }
+        return updatedPost;
     },
     /** 
-     * Sets a specific post's resoled status to true; throws error if wrong type/number of
+     * Sets a specific post's resoled status to the opposite of what it had 
+     * ('true' to 'false' or 'false' to 'true'); throws error if wrong type/number of
      * arguments were provided.
      * 
      * @param postID the ID of the post to be updated.
@@ -130,7 +137,8 @@ let exportedMethods = {
             throw new Error("Invalid Department ID was provided");
         }
         const postsCollection = await posts();
-        const updatedPost = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"resolvedStatus": true}});
+        const oldPost = await postsCollection.findOne({_id: ObjectId(postID)});
+        const updatedPost = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"resolvedStatus": !oldPost.resolvedStatus}});
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(errorMessages.UpdateDestinationError);
         }
@@ -156,7 +164,7 @@ let exportedMethods = {
         if (!singlePost) {
             throw new Error(`Post with ${postID} ID not found!`);
         }
-
+        console.log(`Post with ${postID} ID found!`);
         return singlePost;
     }, 
     /** 
