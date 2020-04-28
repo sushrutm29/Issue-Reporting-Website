@@ -1,5 +1,11 @@
 import React, { Component } from "react";
 import { Switch, Route } from "react-router-dom";
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Navbar from 'react-bootstrap/Navbar';
 // import deptData from './../../../server/data/dept';
 // import postData from '../server/data/posts';
 import axios from "axios";
@@ -11,12 +17,12 @@ class department extends Component {
         super(props);
         this.state = {
             pageNotFound: false,    //boolean indicates whether page exists or not
-            hasDept: undefined,    //stores department data
-            numOfDept: 0,
+            hasDept: true,     //indicates whether any department exists or not
+            allDept: undefined,
             postData: undefined,
-            hasCacheData: false     //indicates whether the department data has been stored in Redis
+            hasCacheData: false,    //indicates whether the department data has been stored in Redis
+            currentDept: undefined
         };
-        this.allDeptsInfo = undefined;
     }
 
     /**
@@ -26,44 +32,38 @@ class department extends Component {
      * 3. 
      */
 
-    // //prevents page from reloading
-    // componentWillReceiveProps(props) {
-    //     this.getPokemons(Number(props.match.params.page));
-    // }
+    //prevents page from reloading
+    componentWillReceiveProps(props) {
+        this.getAllDepts();
+    }
 
     //
     componentDidMount() {
         this.getAllDepts();
+        this.getDeptByID("5ea355671cff57118055d741");
     }
 
-
+    async getDeptByID(deptID) {
+        try {
+            let dept_url = 'http://localhost:3001/data/dept/' + deptID;
+            const singleDept = await axios.get(dept_url);
+            this.setState({ currentDept: singleDept.data });
+        } catch (err) {
+            console.log(err);
+            this.setState({ pageNotFound: true });
+        }
+    }
 
     async getAllDepts() {
-        console.log("@@@@@@@@@@@@@@ getAllDepts is triggered");
         try {
-            // let dept_id = this.props.match.params.id;
             let dept_url = 'http://localhost:3001/data/dept';
             const allDepts = await axios.get(dept_url);
-            // .then(function (response) {
-            //     console.log(`response = ${response}`);
-            // });
-            // .catch(function (error) {
-            //     // handle error
-            //     console.log(`axios error = ${error}`);
-            // })
-            // .finally(function () {
-            //     // always executed
-            // });
-            console.log(`%%%%%%%%%%%allDepts = ${JSON.stringify(allDepts.data.length)}`);
             let numOfDept = allDepts.data.length;
-            // //stores all the department name into an array
-            // let allDeptNames = allDepts.data.map(function (dept) {
-            //     return dept.deptName;
-            // });
-            if (numOfDept != 0) { //exists at least one department
-                
+            if (numOfDept === 0) { //zero department
+                this.setState({ hasDept: false });
+                throw new Error("No department exits at this moment");
             }
-            this.allDeptsInfo = allDepts.data;
+            this.setState({ allDeptsInfo: allDepts.data });
         } catch (err) {
             console.log(err);
             this.setState({ pageNotFound: true });
@@ -71,17 +71,45 @@ class department extends Component {
     }
 
     render() {
-        let allDepts = this.state.deptData;
-        // let li_tag = this.state.deptData && this.state.deptData.results.map((dept) => (
-        //     <li key={dept.deptName} className="cap-first-letter">
-        //         <p>{dept.deptName}</p>
-        //     </li>
-        // ));
+        let allDepts = this.state.allDeptsInfo;
+        let li_tag = allDepts && allDepts.map((dept) => (
+            // <li key={dept.deptName} className="cap-first-letter">{dept.deptName}</li>
+            <li key={dept.deptName} className="cap-first-letter">
+                {dept.posts.map((post) => (
+                    <p>post ID: {post}</p>
+                ))}
+            </li>
+        ));
+
+        let dept01 = (
+            <Card style={{ width: '18rem' }}>
+                <Card.Body>
+                    <Card.Title>Card Title</Card.Title>
+                    <Card.Text>
+                        Some quick example text
+                    </Card.Text>
+                    <Button variant="primary">Go somewhere</Button>
+                </Card.Body>
+            </Card>
+        );
+
         let html_body = (
             <div>
                 <h3 className='App-title'>Department Page</h3>
-                <p>AllDepts: {allDepts}</p>
-                {/* <ul className="list-unstyled">{li_tag}</ul> */}
+                <ul className="list-unstyled">{li_tag}</ul>
+                <Container>
+                    <Row>
+                        <Col xs={12} md={8}>
+                            {dept01}
+                        </Col>
+                        <Col xs={12} md={8}>
+                            {dept01}
+                        </Col>
+                        <Col xs={12} md={8}>
+                            {dept01}
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         );
         return html_body;
