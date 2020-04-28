@@ -1,13 +1,7 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-
-const static = express.static(__dirname + '/public');
-
-const configRoutes = require('./routes');
-
-app.use('/public', static);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const configRoutes = require("./routes");
+app.use(express.json())
 
 configRoutes(app);
 app.listen(3000, () => {

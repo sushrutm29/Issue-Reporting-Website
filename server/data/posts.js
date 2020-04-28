@@ -104,17 +104,17 @@ let exportedMethods = {
         if (!postID || typeof (postID) != "string" || postID.length == 0) {
             throw new Error("Invalid post ID was provided");
         }
-        if (title && (typeof (title) != "string" || title.length == 0)) {
+        if (title && (typeof(title) != "string" || title.length == 0)) {
             throw new Error("Invalid post title was provided");
         }
-        if (body && (typeof (body) != "string" || body.length == 0)) {
+        if (body && (typeof(body) != "string" || body.length == 0)) {
             throw new Error("Invalid post body was provided");
         }
         const postsCollection = await posts();
-        const oldPost = await postsCollection.findOne({ _id: ObjectId(postID) });
+        const oldPost = await postsCollection.findOne({_id: ObjectId(postID)});
         let newTitle = (title) ? title : oldPost.title;
         let newBody = (body) ? body : oldPost.body;
-        const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $set: { "title": newTitle, "body": newBody } });
+        const updatedPost = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"title": newTitle, "body": newBody}});
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error("Unable to update post!");
         }
@@ -137,8 +137,8 @@ let exportedMethods = {
             throw new Error("Invalid Department ID was provided");
         }
         const postsCollection = await posts();
-        const oldPost = await postsCollection.findOne({ _id: ObjectId(postID) });
-        const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $set: { "resolvedStatus": !oldPost.resolvedStatus } });
+        const oldPost = await postsCollection.findOne({_id: ObjectId(postID)});
+        const updatedPost = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"resolvedStatus": !oldPost.resolvedStatus}});
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(errorMessages.UpdateDestinationError);
         }
