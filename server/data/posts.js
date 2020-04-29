@@ -40,8 +40,7 @@ let exportedMethods = {
         let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
         const postsCollection = await posts();
-        const deptCollection = await dept();
-        // //prevents duplicated post object to be inserted into the database
+        //prevents duplicated post object to be inserted into the database
         // postsCollection.createIndex({"deptID":1},{unique:true});
         let newPost = {
             deptID: deptID,
@@ -206,13 +205,12 @@ let exportedMethods = {
     },
     /**
      * Adds a comment ID to a specific post; throws error if wrong type/number of
-     * arguments were provided. Returns the newly created comment afterwards. Returns
-     * the updated post afterwards.
+     * arguments were provided. Returns the updated post afterwards.
      * 
-     * @param postID 
-     * @param commentID 
+     * @param postID the ID of the post to be updated.
+     * @param commentID the ID of the comment to be added.
      */
-    async addComment(postID, commentID) {
+    async addCommentToPost(postID, commentID) {
         //validates number of arguments
         if (arguments.length != 2) {
             throw new Error("Wrong number of arguments");
@@ -228,6 +226,33 @@ let exportedMethods = {
         const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $addToSet: { "comments": commentID } });
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(`Unable to add comment ID to post ${postID}!`);
+        }
+        return updatedPost;
+    },
+    /**
+     * Removes a comment ID from a specific post; throws error if wrong type/number of
+     * arguments were provided. Returns the updated post afterwards.
+     * 
+     * @param postID the ID of the post to be updated.
+     * @param commentID the ID of the comment to be removed.
+     */
+    async removeCommentToPost(postID, commentID) {
+        //validates number of arguments
+        if (arguments.length != 2) {
+            throw new Error("Wrong number of arguments");
+        }
+        //validates arguments type
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
+            throw new Error("Invalid post ID was provided");
+        }
+        if (!commentID || typeof (commentID) != "string" || commentID.length == 0) {
+            throw new Error("Invalid comment ID was provided");
+        }
+        const postsCollection = await posts();
+        const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $pull: { "comments": commentID } });
+        
+        if (!updatedPost || updatedPost.modifiedCount === 0) {
+            throw new Error(`Unable to remove comment ID from post ${postID}!`);
         }
         return updatedPost;
     }

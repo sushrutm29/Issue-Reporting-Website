@@ -54,7 +54,7 @@ let exportedMethods = {
         const newId = insertComment.insertedId;
         const commentResult = await this.getComment(newId.toString());
         //adds the newly created commet ID into post collection
-        await posts.addComment(pID, newId);
+        await posts.addCommentToPost(pID, newId);
 
         return commentResult;
     },
@@ -117,7 +117,7 @@ let exportedMethods = {
 
         let reqComment = await this.getComment(commentID);
         //removes the comment from the post collection
-        postsCollection.update({ '_id': reqComment.postID }, { $pull: { "comments": commentID } }, false, true); //deleted comment from the post
+        posts.removeCommentToPost(reqComment.postID, commentID);
         //deletes comment from commentsCollection
         const deletionInfo = await commentsCollection.removeOne({ _id: ObjectId(commentID) });
         if (deletionInfo.deletedCount === 0) {
