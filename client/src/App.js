@@ -4,6 +4,7 @@ import './App.css';
 // import ShowList from './components/ShowList';
 // import Show from './components/Show';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import {AuthProvider} from './firebase/Auth';
 
 const App = () => {
 	return (
