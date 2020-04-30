@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const postData = require("./../data/posts");
+const bluebird = require("bluebird");
+const redis = require("redis");
+const client = redis.createClient();
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
  * @author Lun-Wei Chang
@@ -9,7 +15,14 @@ const postData = require("./../data/posts");
  */
 router.get('/', async (req, res) => {
     try {
-        const multiPosts = await postData.getAllPosts();
+        let peopleVisited = await client.lrangeAsync("posts", 0, -1);
+        let multiPosts = peopleInCache.find(personObj => JSON.parse(personObj).id == personID);
+        if (multiPosts) {   //posts exist in Redis cache
+
+        } else {    //no post exists in Redis cache
+            multiPosts = await postData.getAllPosts();
+        }
+        // const multiPosts = await postData.getAllPosts();
         return res.status(200).json(multiPosts);
     } catch (error) {
         return res.status(400).json({ error: "Could not get all posts!" });
