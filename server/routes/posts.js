@@ -15,15 +15,17 @@ bluebird.promisifyAll(redis.Multi.prototype);
  */
 router.get('/', async (req, res) => {
     try {
-        let peopleVisited = await client.lrangeAsync("posts", 0, -1);
-        let multiPosts = peopleInCache.find(personObj => JSON.parse(personObj).id == personID);
-        if (multiPosts) {   //posts exist in Redis cache
-
+        let allPosts = await client.lrangeAsync("posts", 0, -1);
+        if (allPosts) {   //posts exist in Redis cache
+            allPosts = JSON.parse(allPosts);
+            console.log(`Redis allPosts = ${allPosts}`);
         } else {    //no post exists in Redis cache
-            multiPosts = await postData.getAllPosts();
+            allPosts = await postData.getAllPosts();
+            await client.lpushAsync(["posts", JSON.stringify(allPosts)]);
+            await client.lpushAsync(['people', JSON.stringify(person)]);
         }
         // const multiPosts = await postData.getAllPosts();
-        return res.status(200).json(multiPosts);
+        return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(400).json({ error: "Could not get all posts!" });
     }
