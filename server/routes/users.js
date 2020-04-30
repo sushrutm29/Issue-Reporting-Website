@@ -107,3 +107,5 @@ router.patch('/removepost/:id', async (req, res) => {
         return res.status(400).json({ error: "Could not remove post from user" });
     }
 });
+
+module.exports = router;

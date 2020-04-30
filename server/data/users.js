@@ -57,8 +57,10 @@ async function createUser(userName, userEmail, admin, profilePic) {
         throw new Error("Argument of incorrect type!");
     }
 
-    if (userName.length == 0 || userEmail.length == 0)
-        const usersCollection = await users();
+    if (userName.length == 0 || userEmail.length == 0) {
+        throw new Error("Empty user name or user email was provided!");
+    }
+    const usersCollection = await users();
 
     let newUser = {
         userName: userName,
