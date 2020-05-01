@@ -15,7 +15,6 @@ bluebird.promisifyAll(redis.Multi.prototype);
  */
 router.get('/', async (req, res) => {
     try {
-        // let allPosts = await client.lrangeAsync("posts", 0, -1);    //gets all the posts from Redis cache
         let allPosts = await client.hvalsAsync("posts");
         if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //posts exist in Redis cache
             let results = [];
@@ -63,7 +62,6 @@ router.get('/dept/:id', async (req, res) => {
         }
         let deptID = req.params.id;
 
-        // let allPosts = await client.lrangeAsync("posts", 0, -1);
         let allPosts = await client.hvalsAsync("posts");
         let currentPosts = allPosts.filter(postObj => JSON.parse(postObj).deptID == deptID);
         if (currentPosts !== undefined && currentPosts !== null && currentPosts.length !== 0) {  //found the post in Redis cache
@@ -123,9 +121,10 @@ router.patch('/update/:id', async (req, res) => {
         if (!req.body) {
             throw "No request body was provided for updatePost function!";
         }
+        let postID = req.params.id;
         let postInfo = req.body;
-        const newPost = await postData.updatePost(req.params.id, postInfo.title, postInfo.body);
-        await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+        const newPost = await postData.updatePost(postID, postInfo.title, postInfo.body);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: "Could not update post's title and body!" });
@@ -137,8 +136,9 @@ router.patch('/resolve/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Post id was not provided for resolvePost function!";
         }
-        const newPost = await postData.resolvePost(req.params.id);
-        await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+        let postID = req.params.id;
+        const newPost = await postData.resolvePost(postID);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: "Could not change post's resolved status!" });

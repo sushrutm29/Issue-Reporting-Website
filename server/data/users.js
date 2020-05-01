@@ -146,7 +146,8 @@ async function updateUser(userID, userInfo) {
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error("Unable to update user!");
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 /**
@@ -173,7 +174,8 @@ async function addPostToUser(userID, postID) {
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error(`Unable to add post ID to user ${userID}!`);
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 /**
@@ -200,7 +202,8 @@ async function removePostFromUser(userID, postID) {
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error(`Unable to add post ID to user ${userID}!`);
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 module.exports = { getUserById, createUser, updateUser, addPostToUser, removePostFromUser };

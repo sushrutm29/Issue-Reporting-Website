@@ -95,7 +95,12 @@ let exportedMethods = {
 
         const commentsCollection = await comments();
         //updates only the comment DB, there is no need to update post DB as it only stores commentID 
-        await commentsCollection.updateOne({ _id: ObjectId(commentID) }, { $set: { "body": newBody, "timeStamp": newTime } });
+        let updatedComment = await commentsCollection.updateOne({ _id: ObjectId(commentID) }, { $set: { "body": newBody, "timeStamp": newTime } });
+        if (!updatedComment || updatedComment.modifiedCount === 0) {
+            throw new Error("Unable to update comment!");
+        }
+        let resultComment = await this.getComment(commentID);
+        return resultComment;
     },
     /**
      * Deletes a specific comment from the comment and post collections; throws error 
@@ -114,15 +119,16 @@ let exportedMethods = {
         }
         const commentsCollection = await comments();
         const postsCollection = await posts();
-
+        const deletedComment = await this.getComment(commentID);
         let reqComment = await this.getComment(commentID);
         //removes the comment from the post collection
-        posts.removeCommentToPost(reqComment.postID, commentID);
+        await postsCollection.removeCommentToPost(reqComment.postID, commentID);
         //deletes comment from commentsCollection
         const deletionInfo = await commentsCollection.removeOne({ _id: ObjectId(commentID) });
         if (deletionInfo.deletedCount === 0) {
-            throw `Could not delete comment with id of ${commentID}`;
+            throw `Could not delete comment with id ${commentID}`;
         }
+        return deletedComment;
     },
     /**
      * Retrieves a specific comment with the given ID; throws error 
@@ -141,9 +147,11 @@ let exportedMethods = {
         }
 
         const commentsCollection = await comments();
-        const retComment = await commentsCollection.findOne({ _id: ObjectId(commentID) });
-        if (retComment === null) throw "No comment with that id";
-        return retComment;
+        const singleComment = await commentsCollection.findOne({ _id: ObjectId(commentID) });
+        if (!singleComment) {
+            throw `No comment found with id ${commentID}`;
+        }
+        return singleComment;
     }
 };
 

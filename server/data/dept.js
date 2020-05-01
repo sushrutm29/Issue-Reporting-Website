@@ -60,7 +60,7 @@ async function createDept(deptInfo) {
         throw new Error('Insert User failed!');
     }
     let insertedDept = await getDeptById(newDeptInformation.insertedId);
-    return insertedDept
+    return insertedDept;
 }
 
 /**
@@ -85,7 +85,6 @@ async function deleteDept(deptId) {
         throw "Could not remove Department";
     }
     return deletedDept;
-
 }
 
 /**
@@ -130,7 +129,8 @@ async function addPost(deptID, postID) {
     if (!updatedDept || updatedDept.modifiedCount === 0) {
         throw new Error(`Unable to add post ${postID} to department ${deptID}!`);
     }
-    return updatedDept;
+    let newDept = await getDeptById(deptID);
+    return newDept;
 }
 
 /** 
@@ -158,7 +158,8 @@ async function removePost(deptID, postID) {
     if (!updatedDept || updatedDept.updatedCount == 0) {
         throw new Error(`Unable to remove post ${postID} from department ${deptID}`);
     }
-    return updatedDept;
+    let newDept = await getDeptById(deptID);
+    return newDept;
 }
 
 module.exports = { getDeptById, createDept, deleteDept, getAllDept, addPost, removePost };

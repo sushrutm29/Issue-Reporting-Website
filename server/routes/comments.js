@@ -32,6 +32,7 @@ router.post('/', async (req, res) => {
 
     try {
         const newComment = await commentData.addComment(cInfo.cBody, cInfo.uID, cInfo.pID, cInfo.time);
+        await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: "Could not create new comment!" });
@@ -57,8 +58,9 @@ router.patch('/update/:id', async (req, res) => {
         if (!commentInfo.newTime || typeof commentInfo.newTime != "string" || commentInfo.newTime.length == 0) {
             return res.status(400).json({ error: "Invalid creation time was provided for editComment function" });
         }
-        
+        let commentID = req.params.id;
         const newComment = await commentData.editComment(req.params.id, commentInfo.uID, commentInfo.newBody, commentInfo.newTime);
+        await client.hsetAsync("comments", commentID, JSON.stringify(newComment));
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: "Could not update comment!" });
@@ -71,7 +73,9 @@ router.delete('/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Comment id was not provided for deleteComment function!";
         }
-        const removedPost = await commentData.deleteComment(req.params.id);
+        const commentID = req.params.id;
+        const removedPost = await commentData.deleteComment(commentID);
+        await client.hdelAsync("comments", commentID);
         return res.status(200).json(removedPost);
     } catch (error) {
         return res.status(400).json({ error: "Could not delete comment!" });
@@ -84,7 +88,15 @@ router.get('/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Comment id was not provided for getComment method!";
         }
-        const currentComment = await commentData.getComment(req.params.id);
+        const commentID = req.params.id;
+        let currentComment = await client.hgetAsync("comments", commentID);
+        
+        if (currentComment) {  //found the post in Redis cache
+            currentComment = JSON.parse(currentComment);
+        } else {    //did not find the post in Redis cache
+            currentComment = await commentData.getComment(commentID);
+            await client.hsetAsync("comments", commentID, JSON.stringify(currentComment));
+        }
         return res.status(200).json(currentComment);
     } catch (error) {
         return res.status(400).json({ error: "Could not get a specific comment!" });

@@ -13,8 +13,17 @@ router.get('/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "User id was not provided for get method!";
         }
-        const currentPost = await userData.getUserById(req.params.id);
-        return res.status(200).json(currentPost);
+        let userID = req.params.id;
+        let currentUser = await client.hgetAsync("users", userID);
+        
+        if (currentUser) {  //found the user in Redis cache
+            currentUser = JSON.parse(currentUser);
+        } else {    //did not find the user in Redis cache
+            currentUser = await postData.getPost(userID);
+            await client.hsetAsync("users", userID, JSON.stringify(currentUser));
+        }
+        // const currentUser = await userData.getUserById(req.params.id);
+        return res.status(200).json(currentUser);
     } catch (error) {
         return res.status(400).json({ error: "Could not get a specific user!" });
     }
@@ -29,25 +38,22 @@ router.post('/', async (req, res) => {
     if (!userInfo) {
         return res.status(400).json({ error: "You must provide information to create a new user!" });
     }
-
     if (!userInfo.userName || typeof userInfo.userName != "string" || userInfo.userName.length == 0) {
         return res.status(400).json({ error: "Invalid user name was provided" });
     }
-
     if (!userInfo.userEmail || typeof userInfo.userEmail != "string" || userInfo.userEmail.length == 0) {
         return res.status(400).json({ error: "Invalid user email was provided" });
     }
-
     if (userInfo.admin == undefined || userInfo.admin == null || typeof userInfo.admin != "boolean") {
         return res.status(400).json({ error: "Invalid user admin status was provided" });
     }
-
     if (userInfo.profilePic == undefined || userInfo.profilePic == null || typeof userInfo.profilePic != "boolean") {
         return res.status(400).json({ error: "Invalid user profile picture status was provided" });
     }
 
     try {
         const newUser = await userData.createUser(userInfo.userName, userInfo.userEmail, userInfo.admin, userInfo.profilePic);
+        await client.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
         return res.status(200).json(newUser);
     } catch (error) {
         return res.status(400).json({ error: "Could not create new user!" });
@@ -63,7 +69,9 @@ router.patch('/update/:id', async (req, res) => {
         if (!req.body) {
             throw "No request body was provided for updateUser function!";
         }
+        let userID = req.params.id;
         const updatedUser = await userData.updateUser(req.params.id, req.body);
+        await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
         return res.status(200).json(updatedUser);
     } catch (error) {
         return res.status(400).json({ error: "Could not update user" });
@@ -82,7 +90,10 @@ router.patch('/addpost/:id', async (req, res) => {
         if (!req.body.postID || typeof req.body.postID != "string" || req.body.postID.length == 0) {
             return res.status(400).json({ error: "Invalid post ID was provided for addPostToUser function" });
         }
-        const updatedUser = await userData.addPostToUser(req.params.id, req.body.postID);
+        let userID = req.params.id;
+        const updatedUser = await userData.addPostToUser(userID, req.body.postID);
+        await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
+        //Do I need to add the new post to posts redis cache?
         return res.status(200).json(updatedUser);
     } catch (error) {
         return res.status(400).json({ error: "Could not add post to user" });
@@ -101,7 +112,10 @@ router.patch('/removepost/:id', async (req, res) => {
         if (!req.body.postID || typeof req.body.postID != "string" || req.body.postID.length == 0) {
             return res.status(400).json({ error: "Invalid post ID was provided for removePostFromUser function" });
         }
-        const updatedUser = await userData.removePostFromUser(req.params.id, req.body.postID);
+        let userID = req.params.id;
+        const updatedUser = await userData.removePostFromUser(userID, req.body.postID);
+        await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
+        //Do I need to remove the post from posts redis cache?
         return res.status(200).json(updatedUser);
     } catch (error) {
         return res.status(400).json({ error: "Could not remove post from user" });
