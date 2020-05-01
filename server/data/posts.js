@@ -79,12 +79,13 @@ let exportedMethods = {
             throw new Error("Invalid post ID was provided");
         }
         const postsCollection = await posts();
+        const deletedPost = await this.getPost(postID);
         const removedPost = await postsCollection.removeOne({ _id: ObjectId(postID) });
         if (!removedPost || removedPost.deletedCount == 0) {
             throw new Error(`Could not remove post with ${postID} ID!`);
         }
 
-        return removedPost;
+        return deletedPost;
     },
     /** 
      * Updates a post's information with the provided arguments; throws error if wrong type/number of
@@ -117,7 +118,8 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error("Unable to update post!");
         }
-        return updatedPost;
+        let resultPost = await this.getPost(postID);
+        return resultPost;
     },
     /** 
      * Sets a specific post's resoled status to the opposite of what it had 
@@ -141,6 +143,8 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(errorMessages.UpdateDestinationError);
         }
+        let resultPost = await this.getPost(postID);
+        return resultPost;
     },
     /** 
      * Retrieves a specific post with the matching ID; throws error if wrong type/number of
@@ -163,7 +167,6 @@ let exportedMethods = {
         if (!singlePost) {
             throw new Error(`Post with ${postID} ID not found!`);
         }
-        console.log(`Post with ${postID} ID found!`);
         return singlePost;
     },
     /** 
@@ -254,7 +257,8 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(`Unable to remove comment ID from post ${postID}!`);
         }
-        return updatedPost;
+        let resultPost = await this.getPost(postID);
+        return resultPost;
     }
 };
 

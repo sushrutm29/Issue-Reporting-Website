@@ -67,14 +67,12 @@ router.get('/dept/:id', async (req, res) => {
         let allPosts = await client.hvalsAsync("posts");
         let currentPosts = allPosts.filter(postObj => JSON.parse(postObj).deptID == deptID);
         if (currentPosts !== undefined && currentPosts !== null && currentPosts.length !== 0) {  //found the post in Redis cache
-            console.log("Gets data from Redis!");
             allPosts = [];
             for (let i = 0; i < currentPosts.length; i++) { //is there a way to do it without loop?
                 allPosts.push(JSON.parse(currentPosts[i]));
             }
             currentPosts = allPosts;
         } else {    //did not find the post in Redis cache
-            console.log("Gets data from MongoDB!");
             currentPosts = await postData.getAllPostsByDeptID(deptID);
             for (let i = 0; i < currentPosts.length; i++) {
                 await client.hsetAsync(["posts", `${currentPosts[i]._id}`, JSON.stringify(currentPosts[i])]);
