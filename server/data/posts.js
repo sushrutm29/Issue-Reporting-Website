@@ -163,7 +163,6 @@ let exportedMethods = {
         if (!singlePost) {
             throw new Error(`Post with ${postID} ID not found!`);
         }
-        console.log(`Post with ${postID} ID found!`);
         return singlePost;
     },
     /** 

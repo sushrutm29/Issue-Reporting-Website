@@ -50,6 +50,7 @@ async function createDept(deptInfo) {
     }
 
     const deptCollection = await dept();
+    deptCollection.createIndex({"deptName":1},{unique: true});
     let newDept = {
         deptName: deptInfo.deptName,
         posts: deptInfo.posts
@@ -60,7 +61,7 @@ async function createDept(deptInfo) {
         throw new Error('Insert User failed!');
     }
     let insertedDept = await getDeptById(newDeptInformation.insertedId);
-    return insertedDept
+    return insertedDept;
 }
 
 /**
