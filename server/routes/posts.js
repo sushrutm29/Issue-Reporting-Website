@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
         }
         return res.status(200).json(allPosts);
     } catch (error) {
-        return res.status(400).json({ error: "Could not get all posts!" });
+        return res.status(400).json({ error: `Could not get all posts! ${error}` });
     }
 });
 
@@ -51,7 +51,7 @@ router.get('/:id', async (req, res) => {
         }
         return res.status(200).json(currentPost);
     } catch (error) {
-        return res.status(400).json({ error: "Could not get a specific post!" });
+        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
     }
 });
 
@@ -78,7 +78,7 @@ router.get('/dept/:id', async (req, res) => {
         }
         return res.status(200).json(currentPosts);
     } catch (error) {
-        return res.status(400).json({ error: "Could not get posts by department ID!" });
+        return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
     }
 });
 
@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
     }
     const postInfo = req.body;
     if (!postInfo) {
-        return res.status(400).json({ error: "You must provide information to create a new post!" });
+        return res.status(400).json({ error: `You must provide information to create a new post! ${error}` });
     }
 
     if (!postInfo.deptID || typeof postInfo.deptID != "string" || postInfo.deptID.length == 0) {
@@ -109,7 +109,7 @@ router.post('/', async (req, res) => {
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
         return res.status(200).json(newPost);
     } catch (error) {
-        return res.status(400).json({ error: "Could not create new post!" });
+        return res.status(400).json({ error: `Could not create new post! ${error}` });
     }
 });
 
@@ -127,7 +127,7 @@ router.patch('/update/:id', async (req, res) => {
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
         return res.status(200).json(newPost);
     } catch (error) {
-        return res.status(400).json({ error: "Could not update post's title and body!" });
+        return res.status(400).json({ error: `Could not update post's title and body! ${error}` });
     }
 });
 
@@ -141,7 +141,7 @@ router.patch('/resolve/:id', async (req, res) => {
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
         return res.status(200).json(newPost);
     } catch (error) {
-        return res.status(400).json({ error: "Could not change post's resolved status!" });
+        return res.status(400).json({ error: `Could not change post's resolved status! ${error}` });
     }
 });
 
@@ -155,7 +155,7 @@ router.delete('/:id', async (req, res) => {
         await client.hdelAsync("posts", postID);
         return res.status(200).json(removedPost);
     } catch (error) {
-        return res.status(400).json({ error: "Could not delete post!" });
+        return res.status(400).json({ error: `Could not delete post! ${error}` });
     }
 });
 

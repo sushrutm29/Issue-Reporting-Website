@@ -1,6 +1,5 @@
 const mongoCollections = require("../config/mongoCollections");
 const posts = mongoCollections.posts;
-const dept = mongoCollections.dept;
 const ObjectId = require("mongodb").ObjectID;
 
 /**
@@ -230,7 +229,8 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(`Unable to add comment ID to post ${postID}!`);
         }
-        return updatedPost;
+        let resultPost = await this.getPost(postID);
+        return resultPost;
     },
     /**
      * Removes a comment ID from a specific post; throws error if wrong type/number of
@@ -239,7 +239,7 @@ let exportedMethods = {
      * @param postID the ID of the post to be updated.
      * @param commentID the ID of the comment to be removed.
      */
-    async removeCommentToPost(postID, commentID) {
+    async removeCommentFromPost(postID, commentID) {
         //validates number of arguments
         if (arguments.length != 2) {
             throw new Error("Wrong number of arguments");

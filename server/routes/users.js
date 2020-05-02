@@ -1,13 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const userData = require("./../data/users");
+const bluebird = require("bluebird");
+const redis = require("redis");
+const client = redis.createClient();
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
  * @author Lun-Wei Chang
  * @version 1.0
  * @date 04/28/2020
  */
-//getUserById(userID)
 router.get('/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
@@ -19,17 +24,15 @@ router.get('/:id', async (req, res) => {
         if (currentUser) {  //found the user in Redis cache
             currentUser = JSON.parse(currentUser);
         } else {    //did not find the user in Redis cache
-            currentUser = await postData.getPost(userID);
+            currentUser = await userData.getUserById(userID);
             await client.hsetAsync("users", userID, JSON.stringify(currentUser));
         }
-        // const currentUser = await userData.getUserById(req.params.id);
         return res.status(200).json(currentUser);
     } catch (error) {
-        return res.status(400).json({ error: "Could not get a specific user!" });
+        return res.status(400).json({ error: `Could not get a specific user! ${error}` });
     }
 });
 
-//createUser(userName, userEmail, admin, profilePic)
 router.post('/', async (req, res) => {
     if (!req.body) {
         throw "No request body was provided for createUser function!";
@@ -56,7 +59,7 @@ router.post('/', async (req, res) => {
         await client.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
         return res.status(200).json(newUser);
     } catch (error) {
-        return res.status(400).json({ error: "Could not create new user!" });
+        return res.status(400).json({ error: `Could not create new user! ${error}` });
     }
 });
 
@@ -74,7 +77,7 @@ router.patch('/update/:id', async (req, res) => {
         await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
         return res.status(200).json(updatedUser);
     } catch (error) {
-        return res.status(400).json({ error: "Could not update user" });
+        return res.status(400).json({ error: `Could not update user information! ${error}` });
     }
 });
 
@@ -84,8 +87,8 @@ router.patch('/addpost/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Post id was not provided for addPostToUser function!";
         }
-        if (!req.body || !req.body.postID) {
-            throw "No post ID was provided for addPostToUser function!";
+        if (!req.body) {
+            throw "No request body was provided for addPostToUser function!";
         }
         if (!req.body.postID || typeof req.body.postID != "string" || req.body.postID.length == 0) {
             return res.status(400).json({ error: "Invalid post ID was provided for addPostToUser function" });
@@ -93,10 +96,9 @@ router.patch('/addpost/:id', async (req, res) => {
         let userID = req.params.id;
         const updatedUser = await userData.addPostToUser(userID, req.body.postID);
         await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
-        //Do I need to add the new post to posts redis cache?
         return res.status(200).json(updatedUser);
     } catch (error) {
-        return res.status(400).json({ error: "Could not add post to user" });
+        return res.status(400).json({ error: `Could not add post to user! ${error}` });
     }
 });
 
@@ -115,10 +117,9 @@ router.patch('/removepost/:id', async (req, res) => {
         let userID = req.params.id;
         const updatedUser = await userData.removePostFromUser(userID, req.body.postID);
         await client.hsetAsync("users", userID, JSON.stringify(updatedUser));
-        //Do I need to remove the post from posts redis cache?
         return res.status(200).json(updatedUser);
     } catch (error) {
-        return res.status(400).json({ error: "Could not remove post from user" });
+        return res.status(400).json({ error: `Could not remove post from user! ${error}` });
     }
 });
 

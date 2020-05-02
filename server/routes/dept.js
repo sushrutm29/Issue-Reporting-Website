@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
         await client.hsetAsync("depts", `${newDept._id}`, JSON.stringify(newDept));
         res.status(200).json(newDept);
     } catch (error) {
-        res.status(400).json({ error: error });
+        res.status(400).json({ error: `Could not create new department! ${error}` });
     }
 });
 
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
         }
         return res.status(200).json(allDepts);
     } catch (error) {
-        return res.status(400).json({ error: "Could not get all the departments!" });
+        return res.status(400).json({ error: `Could not get all the departments!  ${error}` });
     }
 });
 
@@ -65,7 +65,7 @@ router.get("/:id", async (req, res) => {
         }
         res.status(200).json(currentDept);
     } catch (error) {
-        res.status(400).json({ error: error });
+        res.status(400).json({ error: `Could not get a specific department! ${error}` });
     }
 });
 
@@ -76,7 +76,7 @@ router.delete("/:id", async (req, res) => {
         await client.hdelAsync("depts", deptID);
         res.status(200).json(dept);
     } catch (error) {
-        res.status(400).json({ error: error });
+        res.status(400).json({ error: `Could not delete a specific department! ${error}` });
     }
 });
 
@@ -93,7 +93,7 @@ router.patch("/addPost/:id", async (req, res) => {
         await client.hsetAsync("depts", deptID, JSON.stringify(updatedDept));
         res.status(200).json(updatedDept);
     } catch (error) {
-        res.status(400).json({ error: error });
+        res.status(400).json({ error: `Could not add post to a specific department! ${error}` });
     }
 });
 
@@ -110,7 +110,7 @@ router.patch("/removePost/:id", async (req, res) => {
         await client.hsetAsync("depts", deptID, JSON.stringify(updatedDept));
         res.status(200).json(updatedDept);
     } catch (error) {
-        res.status(400).json({ error: error });
+        res.status(400).json({ error: `Could not remove a post from a specific department! ${error}` });
     }
 });
 
