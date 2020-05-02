@@ -37,13 +37,12 @@ router.get('/', async (req, res) => {
             }
             allDepts = results;
         } else {    //no dept exists in Redis cache
-            allDepts = await postData.getallDepts();
+            allDepts = await deptData.getAllDept();
             //loop through all the depts and add them to cache
             for (let i = 0; i < allDepts.length; i++) {
                 await client.hsetAsync(["depts", `${allDepts[i]._id}`, JSON.stringify(allDepts[i])]);
             }
         }
-        // const allDepts = await deptData.getAllDept();
         return res.status(200).json(allDepts);
     } catch (error) {
         return res.status(400).json({ error: "Could not get all the departments!" });
@@ -52,13 +51,16 @@ router.get('/', async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     try {
+        if (!req.params || !req.params.id) {
+            throw "Department id was not provided for get method!";
+        }
         const deptID = req.params.id;
         let currentDept = await client.hgetAsync("depts", deptID);
-        
         if (currentDept) {  //found the dept in Redis cache
             currentDept = JSON.parse(currentDept);
         } else {    //did not find the dept in Redis cache
-            currentDept = await postData.getPost(deptID);
+            console.log(`Get data from MongoDB`);
+            currentDept = await deptData.getDeptById(deptID);
             await client.hsetAsync("depts", deptID, JSON.stringify(currentDept));
         }
         res.status(200).json(currentDept);

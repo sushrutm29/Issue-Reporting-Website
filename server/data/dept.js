@@ -59,7 +59,8 @@ async function createDept(deptInfo) {
     if (!newDeptInformation || newDeptInformation.insertedCount === 0) {
         throw new Error('Insert User failed!');
     }
-    let insertedDept = await getDeptById(newDeptInformation.insertedId);
+    let newDeptID = newDeptInformation.insertedId.toString();
+    let insertedDept = await getDeptById(newDeptID);
     return insertedDept;
 }
 
