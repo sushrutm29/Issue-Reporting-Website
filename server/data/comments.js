@@ -1,8 +1,14 @@
 
 const mongoCollections = require("../config/mongoCollections");
-const posts = mongoCollections.posts;
+const posts = require("./posts");
 const comments = mongoCollections.comments;
 const ObjectId = require("mongodb").ObjectID;
+const bluebird = require("bluebird");
+const redis = require("redis");
+const client = redis.createClient();
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
  * @author Saumya Shastri, Lun-Wei Chang
@@ -54,8 +60,8 @@ let exportedMethods = {
         const newId = insertComment.insertedId;
         const commentResult = await this.getComment(newId.toString());
         //adds the newly created commet ID into post collection
-        await posts.addCommentToPost(pID, newId);
-
+        let updatedPost = await posts.addCommentToPost(pID, newId.toString());
+        await client.hsetAsync("posts", pID, JSON.stringify(updatedPost));
         return commentResult;
     },
     /**
@@ -87,15 +93,20 @@ let exportedMethods = {
             throw new Error("Invalid updated time stamp was provided");
         }
 
+        //checks if the current user is the owner of the comment
         const reqComment = await this.getComment(commentID);
-
         if (uID != reqComment.userID) {
-            throw new Error("Not authorized to edit comment");
+            throw new Error(`User ${uID} Not authorized to edit comment`);
         }
 
         const commentsCollection = await comments();
         //updates only the comment DB, there is no need to update post DB as it only stores commentID 
-        await commentsCollection.updateOne({ _id: ObjectId(commentID) }, { $set: { "body": newBody, "timeStamp": newTime } });
+        let updatedComment = await commentsCollection.updateOne({ _id: ObjectId(commentID) }, { $set: { "body": newBody, "timeStamp": newTime } });
+        if (!updatedComment || updatedComment.modifiedCount === 0) {
+            throw new Error("Unable to update comment!");
+        }
+        let resultComment = await this.getComment(commentID);
+        return resultComment;
     },
     /**
      * Deletes a specific comment from the comment and post collections; throws error 
@@ -103,26 +114,32 @@ let exportedMethods = {
      * 
      * @param commentID the ID of the comment to be deleted.
      */
-    async deleteComment(commentID) {
+    async deleteComment(commentID, uID) {
         //validates number of arguments
-        if (arguments.length != 1) {
+        if (arguments.length != 2) {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
         if (!commentID || typeof (commentID) != "string" || commentID.length == 0) {
             throw new Error("Invalid comment ID was provided");
         }
+        if (!uID || typeof (uID) != "string" || uID.length == 0) {
+            throw new Error("Invalid user ID was provided");
+        }
         const commentsCollection = await comments();
-        const postsCollection = await posts();
-
-        let reqComment = await this.getComment(commentID);
+        const deletedComment = await this.getComment(commentID);
+        if (uID != deletedComment.userID) {
+            throw new Error(`User ${uID} Not authorized to delete comment`);
+        }
         //removes the comment from the post collection
-        posts.removeCommentToPost(reqComment.postID, commentID);
+        let updatedPost = await posts.removeCommentFromPost(deletedComment.postID, commentID);
+        await client.hsetAsync("posts", deletedComment.postID, JSON.stringify(updatedPost));
         //deletes comment from commentsCollection
         const deletionInfo = await commentsCollection.removeOne({ _id: ObjectId(commentID) });
         if (deletionInfo.deletedCount === 0) {
-            throw `Could not delete comment with id of ${commentID}`;
+            throw `Could not delete comment with id ${commentID}`;
         }
+        return deletedComment;
     },
     /**
      * Retrieves a specific comment with the given ID; throws error 
@@ -141,9 +158,11 @@ let exportedMethods = {
         }
 
         const commentsCollection = await comments();
-        const retComment = await commentsCollection.findOne({ _id: ObjectId(commentID) });
-        if (retComment === null) throw "No comment with that id";
-        return retComment;
+        const singleComment = await commentsCollection.findOne({ _id: ObjectId(commentID) });
+        if (!singleComment) {
+            throw `No comment found with id ${commentID}`;
+        }
+        return singleComment;
     }
 };
 

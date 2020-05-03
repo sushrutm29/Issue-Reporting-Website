@@ -67,7 +67,8 @@ async function createUser(userName, userEmail, admin, profilePic) {
         userName: userName,
         userEmail: userEmail,
         admin: admin,
-        posts: []
+        posts: [],
+        profilePic: profilePic
     };
 
     const newInsertInformation = await usersCollection.insertOne(newUser);
@@ -134,20 +135,22 @@ async function updateUser(userID, userInfo) {
     if (userInfo.admin == undefined || userInfo.admin == null || typeof userInfo.admin != "boolean") {
         throw new Error("Invalid admin status was provided");
     }
-    if (!userInfo.posts || !Array.isArray(userInfo.posts)) {
-        throw new Error("Invalid posts array was provided");
+    if (userInfo.profilePic == undefined || userInfo.profilePic == null || typeof userInfo.profilePic != "boolean") {
+        throw new Error("Invalid user profile picture indicator was provided");
     }
 
     const usersCollection = await users();
     const updatedUser = await usersCollection.updateOne({ _id: ObjectId(userID) }, {
         $set: {
-            "userName": userInfo.userName, "userEmail": userInfo.userEmail, "admin": userInfo.admin, "posts": userInfo.posts
+            "userName": userInfo.userName, "userEmail": userInfo.userEmail, 
+            "admin": userInfo.admin, "profilePic": userInfo.profilePic
         }
     });
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error("Unable to update user!");
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 /**
@@ -174,7 +177,8 @@ async function addPostToUser(userID, postID) {
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error(`Unable to add post ID to user ${userID}!`);
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 /**
@@ -201,7 +205,8 @@ async function removePostFromUser(userID, postID) {
     if (!updatedUser || updatedUser.modifiedCount === 0) {
         throw new Error(`Unable to add post ID to user ${userID}!`);
     }
-    return updatedUser;
+    let newUser = await getUserById(userID);
+    return newUser;
 }
 
 module.exports = { getUserById, createUser, updateUser, addPostToUser, removePostFromUser };
