@@ -1,0 +1,42 @@
+[
+    {
+        "title": "Jonas Hall main door does not lock",
+        "body": "The Jonas Hall main entrance door is unlocked since Monday. There seems to be an issue with the key-card system. Anyone can enter and leave the premises. This poses a threat to the security of the students and must be resolved immediately.",
+        "dept": "Housing"
+    },
+    {
+        "title": "Roommate not allocated yet",
+        "body": "I am a resident at Humphrey's hall, dorm 122, I have not received my roomate assignment yet. I have contacted graduate housing and have received no response yet. Please get back to me asap.",
+        "dept": "Housing"
+    },
+    {
+        "title": "Majority of dining hall food choices are unhealthy",
+        "body": "Other than the salad bar, majority of the food choices are unhealthy. The choices are pizza, cakes, muffins, burgers, fries, and so on. It would help the student body overall to accommodate more healthy food options.",
+        "dept": "Dining"
+    },
+    {
+        "title":"Dining Hall plates are dirty", 
+        "body": "A couple of times I have noticed that the plates aren't clean. This is extremely unsanitary and better hygiene regulations should be in place. Plates should be double checked before stacking them up for use.",
+        "dept": "Dining"
+    }, 
+    {
+        "title": "Spring 2020 Tuition paid but not reflecting",
+        "body": "I paid the spring 2020 tuition fee two weeks ago, I even have the bank statement, but the website still shows an outstanding balance on my account. I am also being sent tuition payment reminder emails. Can someone get back to me on this?",
+        "dept": "Finance"
+    }, 
+    {
+        "title": "Spring 2020 tuition calculated incorrectly",
+        "body": "I have registered for 9 credits this semester but I have been charged for 12 credits instead. Can someone clarify this and get back to me please? ",
+        "dept": "Finance"
+    }, 
+    {
+        "title": "Bathroom taps at Babbio are leaking",
+        "body": "The taps in the Babbio bathrooms on the first and second floor are leaking and no staff is around. The floors are wet and the bathrooms aren't easily accessible at the moment.",
+        "dept": "Maintenance"
+    },
+    {
+        "title": "Study Room 222's projector is not working",
+        "body": "The projector on the second floor in the Library, in room 222, is currently not working. We have tried connecting it to all devices and it does not respond, this is making meetings inconvenient.",
+        "dept": "Maintenance"
+    }
+]

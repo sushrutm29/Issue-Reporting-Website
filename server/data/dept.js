@@ -50,6 +50,7 @@ async function createDept(deptInfo) {
     }
 
     const deptCollection = await dept();
+    deptCollection.createIndex({"deptName":1},{unique: true});
     let newDept = {
         deptName: deptInfo.deptName,
         posts: deptInfo.posts

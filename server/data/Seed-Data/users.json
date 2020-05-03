@@ -1,0 +1,38 @@
+[
+    {
+        "userName": "sdeo",
+        "userEmail": "sdeo@stevens.edu",
+        "admin": false,
+        "profilePic": false 
+    }, 
+    {
+        "userName": "sushrutm",
+        "userEmail": "smadhavi@stevens.edu",
+        "admin": false,
+        "profilePic": false 
+    },
+    {
+        "userName": "davidchang",
+        "userEmail": "lchang6@stevens.edu",
+        "admin": false,
+        "profilePic": false 
+    },
+    {
+        "userName": "saumyas",
+        "userEmail": "sshastri@stevens.edu",
+        "admin": false,
+        "profilePic": false 
+    },
+    {
+        "userName": "gayatriv",
+        "userEmail": "svallab2@stevens.edu",
+        "admin": false,
+        "profilePic": false 
+    },
+    {
+        "userName": "graffixnyc",
+        "userEmail": "phill@stevens.edu",
+        "admin": true,
+        "profilePic": false 
+    }
+]

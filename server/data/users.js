@@ -61,6 +61,7 @@ async function createUser(userName, userEmail, admin, profilePic) {
         throw new Error("Empty user name or user email was provided!");
     }
     const usersCollection = await users();
+    usersCollection.createIndex({"userName":1},{unique: true});
 
     let newUser = {
         userName: userName,
