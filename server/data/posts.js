@@ -18,30 +18,34 @@ let exportedMethods = {
      * @param body description of the post.
      * @param username user who created the post.
     */
-    async createPost(deptID, title, body, username)  {
+    async createPost(deptID, title, body, username) {
         //validates number of arguments
         if (arguments.length != 4) {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!deptID || typeof(deptID) != "string" || deptID.length == 0) {
+        if (!deptID || typeof (deptID) != "string" || deptID.length == 0) {
             throw new Error("Invalid Department ID was provided");
         }
-        if (!title || typeof(title) != "string" || title.length == 0) {
+        if (!title || typeof (title) != "string" || title.length == 0) {
             throw new Error("Invalid post title was provided");
         }
-        if (!body || typeof(body) != "string" || body.length == 0) {
+        if (!body || typeof (body) != "string" || body.length == 0) {
             throw new Error("Invalid post body was provided");
         }
-        if (!username || typeof(username) != "string" || username.length == 0) {
+        if (!username || typeof (username) != "string" || username.length == 0) {
             throw new Error("Invalid post username was provided");
         }
-        var currentdate = new Date(); 
-        let creationTime = currentdate.getFullYear() + '-' +(currentdate.getMonth() + 1) + '-' + currentdate.getDate();
+        var currentdate = new Date();
+        let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
         const postsCollection = await posts();
+<<<<<<< HEAD
         const deptCollection = await dept();
         // //prevents duplicated post object to be inserted into the database
+=======
+        //prevents duplicated post object to be inserted into the database
+>>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
         // postsCollection.createIndex({"deptID":1},{unique:true});
         let newPost = {
             deptID: deptID,
@@ -61,8 +65,8 @@ let exportedMethods = {
 
         //gets the inserted post and returns it
         const newId = insertPost.insertedId;
-        const postResult = await this.getPost(newId.toString()); 
-        return postResult; 
+        const postResult = await this.getPost(newId.toString());
+        return postResult;
     },
     /** 
      * Deletes a post with the matching post ID; throws error if wrong type/number of
@@ -76,16 +80,17 @@ let exportedMethods = {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
             throw new Error("Invalid post ID was provided");
         }
         const postsCollection = await posts();
-        const removedPost = await postsCollection.removeOne({_id: ObjectId(postID)});
+        const deletedPost = await this.getPost(postID);
+        const removedPost = await postsCollection.removeOne({ _id: ObjectId(postID) });
         if (!removedPost || removedPost.deletedCount == 0) {
             throw new Error(`Could not remove post with ${postID} ID!`);
         }
-        
-        return removedPost;
+
+        return deletedPost;
     },
     /** 
      * Updates a post's information with the provided arguments; throws error if wrong type/number of
@@ -101,7 +106,7 @@ let exportedMethods = {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
             throw new Error("Invalid post ID was provided");
         }
         if (title && (typeof(title) != "string" || title.length == 0)) {
@@ -118,7 +123,12 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error("Unable to update post!");
         }
+<<<<<<< HEAD
         return updatedPost;
+=======
+        let resultPost = await this.getPost(postID);
+        return resultPost;
+>>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
     },
     /** 
      * Sets a specific post's resoled status to the opposite of what it had 
@@ -133,7 +143,7 @@ let exportedMethods = {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
             throw new Error("Invalid Department ID was provided");
         }
         const postsCollection = await posts();
@@ -142,7 +152,9 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error(errorMessages.UpdateDestinationError);
         }
-    }, 
+        let resultPost = await this.getPost(postID);
+        return resultPost;
+    },
     /** 
      * Retrieves a specific post with the matching ID; throws error if wrong type/number of
      * arguments were provided or no post found with matching ID.
@@ -155,18 +167,21 @@ let exportedMethods = {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!postID || typeof(postID) != "string" || postID.length == 0) {
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
             throw new Error("Invalid Department ID was provided");
         }
         //gets the specific post
         const postsCollection = await posts();
-        const singlePost = await postsCollection.findOne({_id: ObjectId(postID)});
+        const singlePost = await postsCollection.findOne({ _id: ObjectId(postID) });
         if (!singlePost) {
             throw new Error(`Post with ${postID} ID not found!`);
         }
+<<<<<<< HEAD
         console.log(`Post with ${postID} ID found!`);
+=======
+>>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
         return singlePost;
-    }, 
+    },
     /** 
      * Returns all the posts with the same department ID as the provided one; throws error if wrong type/number of
      * arguments were provided or no post found with matching department ID.
@@ -179,12 +194,12 @@ let exportedMethods = {
             throw new Error("Wrong number of arguments");
         }
         //validates arguments type
-        if (!deptID || typeof(deptID) != "string" || deptID.length == 0) {
+        if (!deptID || typeof (deptID) != "string" || deptID.length == 0) {
             throw new Error("Invalid Department ID was provided");
         }
         //gets the post with matching department ID
         const postsCollection = await posts();
-        const allPosts = await postsCollection.find({deptID: deptID}).toArray();
+        const allPosts = await postsCollection.find({ deptID: deptID }).toArray();
         if (!allPosts) {
             throw new Error(`Couldn't retrieve any post with department ID: ${deptID}`);
         }
@@ -203,6 +218,61 @@ let exportedMethods = {
         const postsCollection = await posts();
         const allPosts = await postsCollection.find({}).toArray();
         return allPosts;
+    },
+    /**
+     * Adds a comment ID to a specific post; throws error if wrong type/number of
+     * arguments were provided. Returns the updated post afterwards.
+     * 
+     * @param postID the ID of the post to be updated.
+     * @param commentID the ID of the comment to be added.
+     */
+    async addCommentToPost(postID, commentID) {
+        //validates number of arguments
+        if (arguments.length != 2) {
+            throw new Error("Wrong number of arguments");
+        }
+        //validates arguments type
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
+            throw new Error("Invalid post ID was provided");
+        }
+        if (!commentID || typeof (commentID) != "string" || commentID.length == 0) {
+            throw new Error("Invalid comment ID was provided");
+        }
+        const postsCollection = await posts();
+        const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $addToSet: { "comments": commentID } });
+        if (!updatedPost || updatedPost.modifiedCount === 0) {
+            throw new Error(`Unable to add comment ID to post ${postID}!`);
+        }
+        let resultPost = await this.getPost(postID);
+        return resultPost;
+    },
+    /**
+     * Removes a comment ID from a specific post; throws error if wrong type/number of
+     * arguments were provided. Returns the updated post afterwards.
+     * 
+     * @param postID the ID of the post to be updated.
+     * @param commentID the ID of the comment to be removed.
+     */
+    async removeCommentFromPost(postID, commentID) {
+        //validates number of arguments
+        if (arguments.length != 2) {
+            throw new Error("Wrong number of arguments");
+        }
+        //validates arguments type
+        if (!postID || typeof (postID) != "string" || postID.length == 0) {
+            throw new Error("Invalid post ID was provided");
+        }
+        if (!commentID || typeof (commentID) != "string" || commentID.length == 0) {
+            throw new Error("Invalid comment ID was provided");
+        }
+        const postsCollection = await posts();
+        const updatedPost = await postsCollection.updateOne({ _id: ObjectId(postID) }, { $pull: { "comments": commentID } });
+        
+        if (!updatedPost || updatedPost.modifiedCount === 0) {
+            throw new Error(`Unable to remove comment ID from post ${postID}!`);
+        }
+        let resultPost = await this.getPost(postID);
+        return resultPost;
     }
 };
 

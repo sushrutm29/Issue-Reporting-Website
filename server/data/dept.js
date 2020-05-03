@@ -2,48 +2,80 @@ const mongoCollections = require('../config/mongoCollections');
 const dept = mongoCollections.dept;
 const ObjectId = require('mongodb').ObjectId;
 
-async function getDeptById(id) {
-    if (!id || typeof id == "undefined") {
-        throw "Invalid Id";
+/**
+ * @author Sri Vallabhaneni, Lun-Wei Chang
+ * @version 1.0
+ * @date 04/08/2020
+ */
+/**
+ * Returns the department with matchin id; throws error 
+ * if wrong type/number of arguments were provided.
+ * 
+ * @param id ID of the department to be retrieved.
+ */
+async function getDeptById(deptID) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
+    if (!deptID || typeof deptID == "undefined" || typeof deptID != "string" || deptID.length == 0) {
+        throw "Invalid department id is provided for getDeptById function";
     }
     const deptCollection = await dept();
-    const department = await deptCollection.findOne({ _id: ObjectId(id) });
+    const department = await deptCollection.findOne({ _id: ObjectId(deptID) });
     if (!department) {
-        throw 'User not found';
+        throw 'Department not found';
     }
     return department;
 }
 
-async function createDept(reqbody) {
-    console.log("enter createDept function");
-    let deptName = reqbody.deptName;
-    let posts = reqbody.posts;
-
-    if (!deptName || !posts || !Array.isArray(posts) || typeof deptName != 'string') {
-        throw "Argument of incorrect type";
+/**
+ * Inserts a new department with the provided information into the db; throws error 
+ * if wrong type/number of arguments were provided.
+ * 
+ * @param deptInfo information needed to create a new department.
+ */
+async function createDept(deptInfo) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
     }
-
-    if (!Array.isArray(posts) || typeof deptName != 'string') {
-        throw "Argument of incorrect type";
+    //validates arguments type
+    if (!deptInfo.deptName || typeof deptInfo.deptName != 'string' || deptInfo.deptName == 0) {
+        throw "Invalid department name is provided";
+    }
+    if (!deptInfo.posts || !Array.isArray(deptInfo.posts)) {
+        throw "Invalid posts are provided";
     }
 
     const deptCollection = await dept();
-
+    deptCollection.createIndex({"deptName":1},{unique: true});
     let newDept = {
-        deptName: deptName,
-        posts: posts
+        deptName: deptInfo.deptName,
+        posts: deptInfo.posts
     };
 
     const newDeptInformation = await deptCollection.insertOne(newDept);
-
-    if (!newDeptInformation || newDeptInformation.insertedCount === 0) throw new Error('Insert User failed!');
-
-    let insertedDept = await getDeptById(newDeptInformation.insertedId);
-    return insertedDept
-
+    if (!newDeptInformation || newDeptInformation.insertedCount === 0) {
+        throw new Error('Insert User failed!');
+    }
+    let newDeptID = newDeptInformation.insertedId.toString();
+    let insertedDept = await getDeptById(newDeptID);
+    return insertedDept;
 }
 
+/**
+ * Deletes the department with matching ID; throws error 
+ * if wrong type/number of arguments were provided.
+ * @param deptId ID of the department to be deleted.
+ */
 async function deleteDept(deptId) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
     if (!deptId || typeof (deptId) != "string" || deptId.length == 0) {
         throw "Invalid Department ID";
     }
@@ -55,9 +87,12 @@ async function deleteDept(deptId) {
         throw "Could not remove Department";
     }
     return deletedDept;
-
 }
 
+/**
+ * Retrieves all the department available; throws error 
+ * if wrong type/number of arguments were provided. 
+ */
 async function getAllDept() {
     //validates number of arguments
     if (arguments.length != 0) {
@@ -66,17 +101,16 @@ async function getAllDept() {
     //gets all the departments in the dept collection
     const deptCollection = await dept();
     const allDepts = await deptCollection.find({}).toArray();
-    console.log(`all Departments = ${JSON.stringify(allDepts)}`);
     return allDepts;
 }
 
 /** 
-     * Appends the given post ID to a specific department posts list; 
-     * throws error if wrong type/number of arguments were provided.
-     * 
-     * @param deptID the ID of the department to be updated.
-     * @param postID the ID of the post to be appended.
-    */
+ * Appends the given post ID to a specific department posts list; 
+ * throws error if wrong type/number of arguments were provided.
+ * 
+ * @param deptID the ID of the department to be updated.
+ * @param postID the ID of the post to be appended.
+*/
 async function addPost(deptID, postID) {
     //validates number of arguments
     if (arguments.length != 2) {
@@ -97,7 +131,8 @@ async function addPost(deptID, postID) {
     if (!updatedDept || updatedDept.modifiedCount === 0) {
         throw new Error(`Unable to add post ${postID} to department ${deptID}!`);
     }
-    return updatedDept;
+    let newDept = await getDeptById(deptID);
+    return newDept;
 }
 
 /** 
@@ -120,17 +155,13 @@ async function removePost(deptID, postID) {
         throw new Error("Invalid post ID was provided");
     }
     const deptCollection = await dept();
-    const updatedDept = await deptCollection.updateOne({ _id: ObjectId(deptID) }, {$pull: {posts: postID}});
+    const updatedDept = await deptCollection.updateOne({ _id: ObjectId(deptID) }, { $pull: { posts: postID } });
 
     if (!updatedDept || updatedDept.updatedCount == 0) {
         throw new Error(`Unable to remove post ${postID} from department ${deptID}`);
     }
-    return updatedDept;
+    let newDept = await getDeptById(deptID);
+    return newDept;
 }
-
-//Redis function
-// function storeDept(deptData) {
-
-// }
 
 module.exports = { getDeptById, createDept, deleteDept, getAllDept, addPost, removePost };
