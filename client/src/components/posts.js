@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
 
+/**
+ * @author Shiwani Deo
+ * @version 1.0
+ * @date 05/03/2020
+ */
 const PostsList = (props) => {
     let card = null;
     const [postList, setPostList] = useState(undefined);
@@ -10,7 +15,7 @@ const PostsList = (props) => {
         () => {
             async function fetchData() {
                 try {
-                    const { data } = await axios.get('http://localhost:3000/data/post/');
+                    const { data } = await axios.get('http://localhost:3001/data/post/');
                     setPostList(data);
                 } catch (error) {
                     console.log(error);

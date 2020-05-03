@@ -5,7 +5,18 @@ const posts = require("../data/Seed-Data/posts.json")
 const userFunctions = require("../data/users");
 const deptFunctions = require("../data/dept");
 const postFunctions = require("../data/posts");
+const bluebird = require("bluebird");
+const redis = require("redis");
+const client = redis.createClient();
 
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
+
+/**
+ * @author Shiwani Deo
+ * @version 1.0
+ * @date 05/03/2020
+ */
 function getDepartmentId(depts, deptName) {
     for(index in depts) {
         if(depts[index].deptName == deptName) {
@@ -22,7 +33,8 @@ function getDepartmentId(depts, deptName) {
             try {
                 let user = users[index];
                 email = user.userEmail.toLowerCase();
-                await userFunctions.createUser(user.userName, user.userEmail, user.admin, user.profilePic);
+                let newUser = await userFunctions.createUser(user.userName, user.userEmail, user.admin, user.profilePic);
+                await client.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
@@ -34,7 +46,8 @@ function getDepartmentId(depts, deptName) {
         for(index in departments) {
             try {
                 let dept = departments[index];
-                await deptFunctions.createDept(dept);
+                let newDept = await deptFunctions.createDept(dept);
+                await client.hsetAsync("depts", `${newDept._id}`, JSON.stringify(newDept));
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
@@ -56,7 +69,8 @@ function getDepartmentId(depts, deptName) {
             } else {
                 user = user2;
             }
-            await postFunctions.createPost(departmentID, post.title, post.body, user)
+            let newPost = await postFunctions.createPost(departmentID, post.title, post.body, user)
+            await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
             index++;
         }
 
@@ -64,7 +78,7 @@ function getDepartmentId(depts, deptName) {
     } catch (error) {
         console.log(error.message);
     }
-
     const db = await connection();
     await db.serverConfig.close();
+    process.exit(0);
 })();
