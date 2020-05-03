@@ -35,8 +35,8 @@
         "dept": "Maintenance"
     },
     {
-        "body": "Study Room 222's projector is not working",
-        "title": "The projector on the second floor in the Library, in room 222, is currently not working. We have tried connecting it to all devices and it does not respond, this is making meetings inconvenient.",
+        "title": "Study Room 222's projector is not working",
+        "body": "The projector on the second floor in the Library, in room 222, is currently not working. We have tried connecting it to all devices and it does not respond, this is making meetings inconvenient.",
         "dept": "Maintenance"
     }
 ]
