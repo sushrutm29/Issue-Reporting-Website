@@ -77,9 +77,9 @@ router.get("/getDeptByName/:name", async (req, res) => {
         const deptName = req.params.name;
         let currentDept;
         let allDepts = await client.hvalsAsync("depts");
-        if (allDepts) {  //found the dept in Redis cache
-            let allDeptsJS = JSON.parse(allDepts);
-            currentDept = allDeptsJS.find(deptObj => deptObj.deptName == deptName);
+        if (allDepts !== undefined && allDepts !== null && allDepts.length !== 0) {  //found the dept in Redis cache
+            console.log(`Get data from Redis`);
+            currentDept = JSON.parse(allDepts.find(({deptName}) => deptName === deptName));
         } else {    //did not find the dept in Redis cache
             console.log(`Get data from MongoDB`);
             currentDept = await deptData.getDeptByName(deptName);

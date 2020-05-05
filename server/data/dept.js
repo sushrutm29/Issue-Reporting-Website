@@ -45,11 +45,14 @@ async function getDeptByName(deptName) {
     if (!deptName || typeof deptName == "undefined" || typeof deptName != "string" || deptID.length == 0) {
         throw "Invalid department name is provided for getDeptByName function";
     }
+    console.log("start getDeptByName");
     const deptCollection = await dept();
-    const department = await deptCollection.findOne({ deptName: ObjectId(deptName) });
+    const department = await deptCollection.findOne({ "deptName": deptName });
+    console.log(`Found Dept = ${department}`);
     if (!department) {
         throw `Department not found with name ${deptName}`;
     }
+    
     return department;
 }
 
