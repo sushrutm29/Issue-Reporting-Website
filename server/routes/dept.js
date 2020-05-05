@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
-            throw "Department id was not provided for get method!";
+            throw "Department id was not provided for getDeptById method!";
         }
         const deptID = req.params.id;
         let currentDept = await client.hgetAsync("depts", deptID);
@@ -61,6 +61,29 @@ router.get("/:id", async (req, res) => {
         } else {    //did not find the dept in Redis cache
             console.log(`Get data from MongoDB`);
             currentDept = await deptData.getDeptById(deptID);
+            await client.hsetAsync("depts", deptID, JSON.stringify(currentDept));
+        }
+        res.status(200).json(currentDept);
+    } catch (error) {
+        res.status(400).json({ error: `Could not get a specific department! ${error}` });
+    }
+});
+
+router.get("/getDeptByName/:name", async (req, res) => {
+    try {
+        if (!req.params || !req.params.name) {
+            throw "Department name was not provided for getDeptById method!";
+        }
+        const deptName = req.params.name;
+        let currentDept;
+        let allDepts = await client.hvalsAsync("depts");
+        if (allDepts) {  //found the dept in Redis cache
+            let allDeptsJS = JSON.parse(allDepts);
+            currentDept = allDeptsJS.find(deptObj => deptObj.deptName == deptName);
+        } else {    //did not find the dept in Redis cache
+            console.log(`Get data from MongoDB`);
+            currentDept = await deptData.getDeptByName(deptName);
+            let deptID = allDepts._id;
             await client.hsetAsync("depts", deptID, JSON.stringify(currentDept));
         }
         res.status(200).json(currentDept);
