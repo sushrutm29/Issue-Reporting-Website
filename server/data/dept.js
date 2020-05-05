@@ -8,7 +8,7 @@ const ObjectId = require('mongodb').ObjectId;
  * @date 04/08/2020
  */
 /**
- * Returns the department with matchin id; throws error 
+ * Returns the department with matching id; throws error 
  * if wrong type/number of arguments were provided.
  * 
  * @param id ID of the department to be retrieved.
@@ -25,7 +25,30 @@ async function getDeptById(deptID) {
     const deptCollection = await dept();
     const department = await deptCollection.findOne({ _id: ObjectId(deptID) });
     if (!department) {
-        throw 'Department not found';
+        throw `Department not found with ID ${deptID}`;
+    }
+    return department;
+}
+
+/**
+ * Returns the department with matching name; throws error 
+ * if wrong type/number of arguments were provided.
+ * 
+ * @param id ID of the department to be retrieved.
+ */
+async function getDeptByName(deptName) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
+    if (!deptName || typeof deptName == "undefined" || typeof deptName != "string" || deptID.length == 0) {
+        throw "Invalid department name is provided for getDeptByName function";
+    }
+    const deptCollection = await dept();
+    const department = await deptCollection.findOne({ deptName: ObjectId(deptName) });
+    if (!department) {
+        throw `Department not found with name ${deptName}`;
     }
     return department;
 }
@@ -50,7 +73,7 @@ async function createDept(deptInfo) {
     }
 
     const deptCollection = await dept();
-    deptCollection.createIndex({"deptName":1},{unique: true});
+    deptCollection.createIndex({ "deptName": 1 }, { unique: true });
     let newDept = {
         deptName: deptInfo.deptName,
         posts: deptInfo.posts
@@ -164,4 +187,12 @@ async function removePost(deptID, postID) {
     return newDept;
 }
 
-module.exports = { getDeptById, createDept, deleteDept, getAllDept, addPost, removePost };
+module.exports = {
+    getDeptById,
+    getDeptByName,
+    createDept,
+    deleteDept,
+    getAllDept,
+    addPost,
+    removePost
+};
