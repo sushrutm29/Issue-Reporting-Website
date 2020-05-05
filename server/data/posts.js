@@ -1,6 +1,5 @@
 const mongoCollections = require("../config/mongoCollections");
 const posts = mongoCollections.posts;
-const dept = mongoCollections.dept;
 const ObjectId = require("mongodb").ObjectID;
 
 /**
@@ -40,12 +39,7 @@ let exportedMethods = {
         let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
         const postsCollection = await posts();
-<<<<<<< HEAD
-        const deptCollection = await dept();
-        // //prevents duplicated post object to be inserted into the database
-=======
         //prevents duplicated post object to be inserted into the database
->>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
         // postsCollection.createIndex({"deptID":1},{unique:true});
         let newPost = {
             deptID: deptID,
@@ -123,12 +117,8 @@ let exportedMethods = {
         if (!updatedPost || updatedPost.modifiedCount === 0) {
             throw new Error("Unable to update post!");
         }
-<<<<<<< HEAD
-        return updatedPost;
-=======
         let resultPost = await this.getPost(postID);
         return resultPost;
->>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
     },
     /** 
      * Sets a specific post's resoled status to the opposite of what it had 
@@ -176,10 +166,6 @@ let exportedMethods = {
         if (!singlePost) {
             throw new Error(`Post with ${postID} ID not found!`);
         }
-<<<<<<< HEAD
-        console.log(`Post with ${postID} ID found!`);
-=======
->>>>>>> 2fb9b596b34258b91f0c43991b7996a2fbac21a5
         return singlePost;
     },
     /** 
