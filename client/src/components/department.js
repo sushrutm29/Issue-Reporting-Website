@@ -16,16 +16,25 @@ const department = (props) => {
     useEffect(() => {
         console.log('useEffect has been called');
 
+        async function fetchDeptData() {
+            try {
+                let deptName = undefined;
+                currentDept = await axios.get(`http://localhost:3001/data/post/dept/getDeptByName/${deptName}`);
+            } catch (err) {
+                console.log(err);
+            }
+        }
         async function fetchPostData() {
             try {
+                let deptID = currentDept._id;
                 const { postData } = await axios.get(`http://localhost:3001/data/post/dept/${currentDept}`);
                 setPostList(postData);
             } catch (err) {
                 console.log(err);
             }
         }
-
-        fetchPostData();
+        fetchDeptData();    //gets the current department first
+        fetchPostData();    //gets the posts within the current department
     }, []); //should it be empty inside the brackets???
 
     //build the post boostrap card
