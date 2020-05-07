@@ -42,13 +42,11 @@ async function getDeptByName(deptName) {
         throw new Error("Wrong number of arguments");
     }
     //validates arguments type
-    if (!deptName || typeof deptName == "undefined" || typeof deptName != "string" || deptID.length == 0) {
+    if (!deptName || typeof deptName == "undefined" || typeof deptName != "string" || deptName.length == 0) {
         throw "Invalid department name is provided for getDeptByName function";
     }
-    console.log("start getDeptByName");
     const deptCollection = await dept();
-    const department = await deptCollection.findOne({ "deptName": deptName });
-    console.log(`Found Dept = ${department}`);
+    const department = await deptCollection.findOne({ deptName: deptName });
     if (!department) {
         throw `Department not found with name ${deptName}`;
     }
@@ -76,9 +74,10 @@ async function createDept(deptInfo) {
     }
 
     const deptCollection = await dept();
+    //prevents duplicated post object to be inserted into the database
     deptCollection.createIndex({ "deptName": 1 }, { unique: true });
     let newDept = {
-        deptName: deptInfo.deptName,
+        deptName: deptInfo.deptName.toLowerCase(),
         posts: deptInfo.posts
     };
 
@@ -150,10 +149,7 @@ async function addPost(deptID, postID) {
         throw new Error("Invalid post ID was provided");
     }
     const deptCollection = await dept();
-    const oldDept = await deptCollection.findOne({ _id: ObjectId(deptID) });
-    let newPostList = oldDept.posts;
-    newPostList.push(postID);
-    const updatedDept = await deptCollection.updateOne({ _id: ObjectId(deptID) }, { $set: { "posts": newPostList } });
+    const updatedDept = await deptCollection.updateOne({ _id: ObjectId(deptID) }, { $push: { "posts": postID } });
     if (!updatedDept || updatedDept.modifiedCount === 0) {
         throw new Error(`Unable to add post ${postID} to department ${deptID}!`);
     }

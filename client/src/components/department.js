@@ -1,83 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
-import { Switch, Route} from "react-router-dom";
+import PostsList from './posts';
 
 /**
  * @author Lun-Wei Chang
  * @version 1.0
  * @date 05/03/2020
  */
-const department = (props) => {
-    let card = null;
+const Department = (props) => {
     const [postList, setPostList] = useState(undefined);
-    const [currentDept, setDept] = useState(undefined);
+    const [currentDeptName, setDept] = useState(props.match.params.deptName);
+    // const [ totalNumPages, setTotal ] = useState(0);
+    // const [ currentPageNum, setPage ] = useState(props.match.params.pageNum);
+    // const [ curretPageURL, setURL ] = useState(undefined);
+    // const [ pageNotFound, setNotFound ] = useState(false);
 
     useEffect(() => {
-        console.log('useEffect has been called');
-
-        async function fetchDeptData() {
-            try {
-                let deptName = undefined;
-                currentDept = await axios.get(`http://localhost:3001/data/post/dept/getDeptByName/${deptName}`);
-            } catch (err) {
-                console.log(err);
-            }
-        }
+        // function calTotalNumPages(currentPageNum) {
+        //     console.log(`@@@@currentPageNum = ${currentPageNum}`);
+        //     setPage(currentPageNum);
+        // }
+        console.log(`#### Department Page Current props = ${JSON.stringify(props.match.params.deptName)}`);
+        // console.log(`$$$$ currentPageNum = ${currentPageNum}`);
         async function fetchPostData() {
             try {
-                let deptID = currentDept._id;
-                const { postData } = await axios.get(`http://localhost:3001/data/post/dept/${currentDept}`);
-                setPostList(postData);
+                // setDept(props.match.params.deptName);
+                let currentDept = await axios.get(`http://localhost:3001/data/dept/getDeptByName/${currentDeptName}`);
+                let currentDeptID = currentDept.data._id;
+                console.log(`%%%%%%currentDeptID = ${currentDeptID}`);
+                const { data } = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}`);
+                // const { data } = await axios.get('http://localhost:3001/data/post/');
+                setPostList(data);
             } catch (err) {
                 console.log(err);
             }
         }
-        fetchDeptData();    //gets the current department first
-        fetchPostData();    //gets the posts within the current department
-    }, []); //should it be empty inside the brackets???
+        // calTotalNumPages(props.match.params.pageNum);
+        fetchPostData();    //the posts within the current department
+    }, [currentDeptName]);
 
-    //build the post boostrap card
-    const buildListItem = (post) => {
-        var postDetails = post.body.slice(0, 140) + '...';
-        return (
-            <div className="post">
-                <Col lg={4} key={post._id}>
-                    <Card style={{ width: '18rem' }} className="postCard">
-                        <Card.Header className="cardTitle">{post.title}</Card.Header>
-                        <Card.Body>
-                            <Card.Text>
-                                {postDetails}
-                            </Card.Text>
-                            <Button variant="primary">
-                                Post Details
-                            </Button>
-                        </Card.Body>
-                        <Card.Footer className="username">Posted by: {post.username}</Card.Footer>
-                    </Card>
-                </Col>
+    // let nextPage = <li><Link to={curretPageURL}>Next Page</Link></li>;
 
-            </div>
-        );
-    }
+    // let previousPage = <li><Link to={curretPageURL}>Previous Page</Link></li>;
 
-    if (postList) {
-        card = postList && postList.map((post) => {
-            return buildListItem(post);
-        });
-    }
+    console.log(`outside currentDeptName = ${currentDeptName}`);
 
     return (
-        <div className="postListing">
-            <Container>
-                <Row>
-                    {card}
-                </Row>
-            </Container>
+        <div className="deptPostList">
+            <PostsList allPosts={postList}/>
+            {/* <Route path='/posts' render={(props) => <PostsList {...props} allPosts={postList} />}/> */}
         </div>
     );
 
 
 }
 
-export default department;
+export default Department;

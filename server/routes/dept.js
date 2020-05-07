@@ -59,7 +59,6 @@ router.get("/:id", async (req, res) => {
         if (currentDept) {  //found the dept in Redis cache
             currentDept = JSON.parse(currentDept);
         } else {    //did not find the dept in Redis cache
-            console.log(`Get data from MongoDB`);
             currentDept = await deptData.getDeptById(deptID);
             await client.hsetAsync("depts", deptID, JSON.stringify(currentDept));
         }
@@ -78,12 +77,10 @@ router.get("/getDeptByName/:name", async (req, res) => {
         let currentDept;
         let allDepts = await client.hvalsAsync("depts");
         if (allDepts !== undefined && allDepts !== null && allDepts.length !== 0) {  //found the dept in Redis cache
-            console.log(`Get data from Redis`);
-            currentDept = JSON.parse(allDepts.find(({deptName}) => deptName === deptName));
+            currentDept = JSON.parse(allDepts.find((dept) => JSON.parse(dept).deptName === deptName));
         } else {    //did not find the dept in Redis cache
-            console.log(`Get data from MongoDB`);
             currentDept = await deptData.getDeptByName(deptName);
-            let deptID = allDepts._id;
+            let deptID = currentDept._id.toString();
             await client.hsetAsync("depts", deptID, JSON.stringify(currentDept));
         }
         res.status(200).json(currentDept);
