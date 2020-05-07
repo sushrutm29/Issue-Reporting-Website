@@ -8,7 +8,6 @@ const postFunctions = require("../data/posts");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
-const flatten = require("flat");
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
@@ -43,7 +42,7 @@ function getDepartmentId(depts, deptName) {
                 }
             }
         }
-        
+      
         //Insert departments from departments.JSON into the database 
         for(index in departments) {
             try {

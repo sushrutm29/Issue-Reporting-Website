@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import PostsList from './components/posts';	//need to go through home >> then posts page
 import homePage from './components/home';
 import DeptPage from './components/department';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
