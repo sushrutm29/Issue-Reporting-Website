@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
-import PostsList from './components/posts';
+import homePage from './components/home';
+import DeptPage from './components/department';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -18,7 +19,8 @@ const App = () => {
 				<br />
 				<div className='App-body'>
 					<Switch>
-						<Route path='/home/posts' component={PostsList} />
+						<Route path='/home/' component={homePage} />
+						<Route path='/dept/:deptName' component={DeptPage} />
 					</Switch>
 				</div>
 			</div>

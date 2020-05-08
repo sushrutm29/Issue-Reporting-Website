@@ -1,6 +1,15 @@
 const mongoCollections = require("../config/mongoCollections");
 const posts = mongoCollections.posts;
+const deptData = require("./dept");
+const users = mongoCollections.users;
+const userData = require("./users");
 const ObjectId = require("mongodb").ObjectID;
+const bluebird = require("bluebird");
+const redis = require("redis");
+const client = redis.createClient();
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
  * @author Lun-Wei Chang
@@ -24,7 +33,7 @@ let exportedMethods = {
         }
         //validates arguments type
         if (!deptID || typeof (deptID) != "string" || deptID.length == 0) {
-            throw new Error("Invalid Department ID was provided");
+            throw new Error("Invalid department ID was provided");
         }
         if (!title || typeof (title) != "string" || title.length == 0) {
             throw new Error("Invalid post title was provided");
@@ -40,7 +49,7 @@ let exportedMethods = {
 
         const postsCollection = await posts();
         //prevents duplicated post object to be inserted into the database
-        // postsCollection.createIndex({"deptID":1},{unique:true});
+        postsCollection.createIndex({ "title": 1, "username": 1 }, { unique: true });
         let newPost = {
             deptID: deptID,
             title: title,
@@ -58,8 +67,16 @@ let exportedMethods = {
         }
 
         //gets the inserted post and returns it
-        const newId = insertPost.insertedId;
-        const postResult = await this.getPost(newId.toString());
+        const newPostID = insertPost.insertedId;
+        const postResult = await this.getPost(newPostID.toString());
+        //adds the new post into department collection
+        let updatedDept = await deptData.addPost(postResult.deptID, newPostID.toString());
+        await client.hsetAsync("depts", `${updatedDept._id}`, JSON.stringify(updatedDept));
+        //adds the new post ID into user collection
+        const usersCollection = new users();
+        const currentUser = await usersCollection.findOne({ userName: username});
+        let updatedUser = await userData.addPostToUser(currentUser._id.toString(), newPostID.toString());
+        await client.hsetAsync("users", currentUser._id.toString(), JSON.stringify(updatedUser));
         return postResult;
     },
     /** 
@@ -78,12 +95,15 @@ let exportedMethods = {
             throw new Error("Invalid post ID was provided");
         }
         const postsCollection = await posts();
+        
         const deletedPost = await this.getPost(postID);
         const removedPost = await postsCollection.removeOne({ _id: ObjectId(postID) });
         if (!removedPost || removedPost.deletedCount == 0) {
             throw new Error(`Could not remove post with ${postID} ID!`);
         }
-
+        //removes the post from department collection
+        let updatedDept = await deptData.removePost(deletedPost.deptID, postID);
+        await client.hsetAsync("depts", `${updatedDept._id}`, JSON.stringify(updatedDept));
         return deletedPost;
     },
     /** 
@@ -134,7 +154,7 @@ let exportedMethods = {
         }
         //validates arguments type
         if (!postID || typeof (postID) != "string" || postID.length == 0) {
-            throw new Error("Invalid Department ID was provided");
+            throw new Error("Invalid post ID was provided");
         }
         const postsCollection = await posts();
         const oldPost = await postsCollection.findOne({_id: ObjectId(postID)});
@@ -158,7 +178,7 @@ let exportedMethods = {
         }
         //validates arguments type
         if (!postID || typeof (postID) != "string" || postID.length == 0) {
-            throw new Error("Invalid Department ID was provided");
+            throw new Error("Invalid post ID was provided");
         }
         //gets the specific post
         const postsCollection = await posts();
@@ -181,7 +201,7 @@ let exportedMethods = {
         }
         //validates arguments type
         if (!deptID || typeof (deptID) != "string" || deptID.length == 0) {
-            throw new Error("Invalid Department ID was provided");
+            throw new Error("Invalid department ID was provided");
         }
         //gets the post with matching department ID
         const postsCollection = await posts();

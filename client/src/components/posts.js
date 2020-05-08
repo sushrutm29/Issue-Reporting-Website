@@ -1,36 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
 
 /**
- * @author Shiwani Deo
+ * @author Shiwani Deo, Lun-Wei Chang
  * @version 1.0
  * @date 05/03/2020
  */
-const PostsList = (props) => {
+function PostsList (props) {
     let card = null;
-    const [postList, setPostList] = useState(undefined);
+    const [ postList, setPostList ] = useState(props.allPosts);
 
-    useEffect(
-        () => {
-            async function fetchData() {
-                try {
-                    const { data } = await axios.get('http://localhost:3001/data/post/');
-                    setPostList(data);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            fetchData();
+    useEffect(() => {
+            setPostList(props.allPosts);
         },
-        [postList]
+        [props.allPosts]
     );
 
     const buildListItem = (post) => {
         var postDetails = post.body.slice(0, 140) + '...';
         return (
-            <div className="post"> 
-                <Col lg={4} key={post._id}>
+            <div key={`post_${post._id}`} className="post">
+                <Col key={post._id} lg={4}>
                     <Card style={{ width: '18rem' }} className="postCard">
                         <Card.Header className="cardTitle">{post.title}</Card.Header>
                         <Card.Body>
@@ -44,7 +34,6 @@ const PostsList = (props) => {
                         <Card.Footer className="username">Posted by: {post.username}</Card.Footer>
                     </Card>
                 </Col>
-
             </div>
         );
     }
