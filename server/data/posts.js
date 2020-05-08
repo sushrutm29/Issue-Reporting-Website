@@ -102,7 +102,8 @@ let exportedMethods = {
             throw new Error(`Could not remove post with ${postID} ID!`);
         }
         //removes the post from department collection
-        deptData.removePost(deletedPost.deptID, postID);
+        let updatedDept = await deptData.removePost(deletedPost.deptID, postID);
+        await client.hsetAsync("depts", `${updatedDept._id}`, JSON.stringify(updatedDept));
         return deletedPost;
     },
     /** 
