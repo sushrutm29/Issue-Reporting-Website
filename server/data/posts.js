@@ -65,7 +65,6 @@ let exportedMethods = {
         if (!insertPost || insertPost.insertedCount === 0) {
             throw new Error("Unable to add new post!");
         }
-
         //gets the inserted post and returns it
         const newPostID = insertPost.insertedId;
         const postResult = await this.getPost(newPostID.toString());
@@ -73,7 +72,8 @@ let exportedMethods = {
         let updatedDept = await deptData.addPost(postResult.deptID, newPostID.toString());
         await client.hsetAsync("depts", `${updatedDept._id}`, JSON.stringify(updatedDept));
         //adds the new post ID into user collection
-        const usersCollection = new users();
+        
+        const usersCollection = await users();
         const currentUser = await usersCollection.findOne({ userName: username});
         let updatedUser = await userData.addPostToUser(currentUser._id.toString(), newPostID.toString());
         await client.hsetAsync("users", currentUser._id.toString(), JSON.stringify(updatedUser));
