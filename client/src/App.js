@@ -4,6 +4,7 @@ import homePage from './components/home';
 import DeptPage from './components/department';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import userProfile from './components/userProfile';
 
 const App = () => {
 	return (
@@ -21,6 +22,7 @@ const App = () => {
 					<Switch>
 						<Route path='/home/' component={homePage} />
 						<Route path='/dept/:deptName' component={DeptPage} />
+						<Route path='/profile' component={userProfile} />
 					</Switch>
 				</div>
 			</div>
