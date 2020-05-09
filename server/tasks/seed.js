@@ -2,6 +2,7 @@ const connection = require("../config//mongoConnection");
 const users = require("../data/Seed-Data/users.json");
 const departments = require("../data/Seed-Data/departments.json");
 const posts = require("../data/Seed-Data/posts.json")
+const comments = require("../data/Seed-Data/posts.json")
 const userFunctions = require("../data/users");
 const deptFunctions = require("../data/dept");
 const postFunctions = require("../data/posts");

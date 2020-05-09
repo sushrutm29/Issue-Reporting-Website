@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import homePage from './components/home';
-import DeptPage from './components/department';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import Home from './components/home';
+import Department from './components/department';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
@@ -19,8 +19,8 @@ const App = () => {
 				<br />
 				<div className='App-body'>
 					<Switch>
-						<Route path='/home/' component={homePage} />
-						<Route path='/dept/:deptName' component={DeptPage} />
+						<Route path='/home/' component={Home} />
+						<Route path='/dept/:deptName' component={Department} />
 					</Switch>
 				</div>
 			</div>

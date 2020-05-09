@@ -20,6 +20,7 @@ const Department = (props) => {
         //     console.log(`@@@@currentPageNum = ${currentPageNum}`);
         //     setPage(currentPageNum);
         // }
+        setDept(props.match.params.deptName);
         console.log(`#### Department Page Current props = ${JSON.stringify(props.match.params.deptName)}`);
         // console.log(`$$$$ currentPageNum = ${currentPageNum}`);
         async function fetchPostData() {
@@ -37,13 +38,13 @@ const Department = (props) => {
         }
         // calTotalNumPages(props.match.params.pageNum);
         fetchPostData();    //the posts within the current department
-    }, [currentDeptName]);
+    }, [currentDeptName, props.match.params.deptName, postList]);
 
     // let nextPage = <li><Link to={curretPageURL}>Next Page</Link></li>;
 
     // let previousPage = <li><Link to={curretPageURL}>Previous Page</Link></li>;
 
-    console.log(`outside currentDeptName = ${currentDeptName}`);
+    // console.log(`outside currentDeptName = ${currentDeptName}`);
 
     return (
         <div className="deptPostList">
