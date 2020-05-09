@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Route } from 'react';
+import React, { useState, useEffect } from 'react';
 import PostsList from './posts';
 import axios from 'axios';
 
