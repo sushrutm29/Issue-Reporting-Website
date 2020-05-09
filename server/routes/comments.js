@@ -97,11 +97,9 @@ router.get('/:id', async (req, res) => {
         const commentID = req.params.id;
         let currentComment = await client.hgetAsync("comments", commentID);
         
-        if (currentComment) {  //found the post in Redis cache
-            console.log("found the post in Redis cache");
+        if (currentComment) {  //found the comment in Redis cache
             currentComment = JSON.parse(currentComment);
-        } else {    //did not find the post in Redis cache
-            console.log("did not find the post in Redis cache");
+        } else {    //did not find the comment in Redis cache
             currentComment = await commentData.getComment(commentID);
             await client.hsetAsync("comments", commentID, JSON.stringify(currentComment));
         }
