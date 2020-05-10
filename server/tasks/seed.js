@@ -92,12 +92,19 @@ function getDepartmentId(depts, deptName) {
             try {
                 let currentComment = comments[index];
                 let cBody = currentComment.commentBody;
-                let randomNum = Math.floor(Math.random() * Math.floor(6));
+                let randomNum = Math.floor(Math.random() * Math.floor(2));
                 let uID = userIDs[randomNum];
-                let newComment = await comFunctions.addComment(cBody, uID)
+                let newComment = await comFunctions.addComment(cBody, uID);
                 await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
+                //gets the current user name
+                let currentuser = await userFunctions.getUserById(uID);
+                let currentUserName = currentuser.userName;
+                //gets the post via user name
+                let currentPost = await postFunctions.getPostByUsername(currentUserName);
                 //adds the comment to post
-                
+                let updatedPost = await postFunctions.addCommentToPost(currentPost._id.toString(), newComment._id.toString());
+                //adds the updated post into the Redis cache
+                await client.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue

@@ -1,7 +1,6 @@
 
 const mongoCollections = require("../config/mongoCollections");
 const comments = mongoCollections.comments;
-// const postsData = require("./posts");
 const ObjectId = require("mongodb").ObjectID;
 
 /**
