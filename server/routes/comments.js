@@ -31,12 +31,9 @@ router.post('/', async (req, res) => {
     if (!cInfo.postID || typeof cInfo.postID != "string" || cInfo.postID.length == 0) {
         return res.status(400).json({ error: "Invalid comment post ID was provided" });
     }
-    if (!cInfo.time || typeof cInfo.time != "string" || cInfo.time.length == 0) {
-        return res.status(400).json({ error: "Invalid comment creation time was provided" });
-    }
 
     try {
-        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID, cInfo.postID, cInfo.time);
+        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
         return res.status(200).json(newComment);
     } catch (error) {

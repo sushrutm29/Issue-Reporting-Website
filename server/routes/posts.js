@@ -145,6 +145,40 @@ router.patch('/resolve/:id', async (req, res) => {
     }
 });
 
+router.patch('/addcom/:id', async (req, res) => {
+    try {
+        if (!req.params || !req.params.id) {
+            throw "Post id was not provided for resolvePost function!";
+        }
+        if (!req.body || req.body.cID) {
+            throw "No request body was provided for updatePost function!";
+        }
+        let postID = req.params.id;
+        const newPost = await postData.addCommentToPost(postID, req.body.cID);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        return res.status(200).json(newPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not add comment to post! ${error}` });
+    }
+});
+
+router.patch('/deletecom/:id', async (req, res) => {
+    try {
+        if (!req.params || !req.params.id) {
+            throw "Post id was not provided for removeCommentFromPost function!";
+        }
+        if (!req.body || req.body.cID) {
+            throw "No request body was provided for removeCommentFromPost function!";
+        }
+        let postID = req.params.id;
+        const newPost = await postData.removeCommentFromPost(postID, req.body.cID);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        return res.status(200).json(newPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not remove comment from post! ${error}` });
+    }
+});
+
 router.delete('/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {

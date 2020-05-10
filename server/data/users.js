@@ -65,7 +65,7 @@ async function createUser(userName, userEmail, admin, profilePic) {
     usersCollection.createIndex({ "userName": 1, "userEmail": 1 }, { unique: true });
     let newUser = {
         userName: userName,
-        userEmail: userEmail,
+        userEmail: userEmail.toLowerCase(),
         admin: admin,
         posts: [],
         profilePic: profilePic
