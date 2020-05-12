@@ -4,6 +4,23 @@ const postData = require("./../data/posts");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
+var elasticsearch = require('elasticsearch');
+var elasticClient = new elasticsearch.Client({
+  host: 'localhost:9200',
+  log: 'trace',
+  apiVersion: '7.6'
+});
+// bluebird.promisifyAll(elasticsearch.Client.prototype);
+
+// elasticClient.ping({
+//         requestTimeout: 30000,
+//         }, function(error) {
+//         if (error) {
+//             console.error('Cannot connect to Elasticsearch.');
+//         } else {
+//             console.log('@@@@@Connected to Elasticsearch was successful!');
+//         }
+//     });
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
@@ -50,6 +67,21 @@ router.get('/:id', async (req, res) => {
             await client.hsetAsync("posts", postID, JSON.stringify(currentPost));
         }
         return res.status(200).json(currentPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
+    }
+});
+
+router.get('/elastic/:keyword', async (req, res) => {
+    try {
+        if (!req.params || !req.params.keyword) {
+            throw "Search keywords were not provided for searchElasticDoc method!";
+        }
+        console.log("calls searchElasticDoc");
+        await searchElasticDoc();
+        // await getElasticSearch();
+        // await getAllElastic();
+        return res.status(200).json({ success: "ran searchElasticDoc"});
     } catch (error) {
         return res.status(400).json({ error: `Could not get a specific post! ${error}` });
     }
@@ -120,6 +152,7 @@ router.post('/', async (req, res) => {
     try {
         const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username);
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+        await createElasticDoc("issues", newPost._id.toString(), "posts", newPost);
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new post! ${error}` });
@@ -205,5 +238,84 @@ router.delete('/:id', async (req, res) => {
         return res.status(400).json({ error: `Could not delete post! ${error}` });
     }
 });
+
+/**
+ * Creates a post elasticsearch document
+ * 
+ * @param docID the ID of the document.
+ * @param data the data used to created the document.
+ */
+async function createElasticDoc(docIndex, docID, docType, dataBody) {
+    //validates number of arguments
+    if (arguments.length != 4) {
+        throw new Error("Wrong number of arguments");
+    }
+    console.log(`###dataBody = ${JSON.stringify(dataBody)}`);
+    //removes the underscore from id field
+    // let data = dataBody;
+    dataBody.id = dataBody._id;
+    delete dataBody._id;
+    console.log(`&&&&dataBody = ${JSON.stringify(dataBody)}`);
+    //validates arguments type
+    console.log("Starts createElasticDoc function");
+    elasticClient.index({
+        index: docIndex,
+        type: docType,
+        id: docID,    //an automatic id will be generated if not specified
+        body: dataBody
+    }, function(err, resp, status) {
+        console.log(`resp = ${JSON.stringify(resp)}`);
+    })
+}
+
+async function searchElasticDoc() {
+    //createElasticDoc("issues", newPost._id.toString(), "posts", newPost);
+    console.log("Starts searchElasticDoc function");
+    await elasticClient.search({
+        index: "issues",
+        type: "posts",
+        body: {
+            query: {
+                regexp: {
+                    title: ".*05.*"
+                }
+            }
+        }
+    }).then(function(resp) {
+        console.log(resp);
+        console.log(`body.hits.hits = ${JSON.stringify(resp.hits.hits)}`);
+    }, function(err) {
+        console.trace(err.message);
+    });
+}
+
+async function getAllElastic() {
+    await elasticClient.search({
+        index: "issues",
+        type: "posts",
+        body: {
+            query: {
+                match_all: {}
+            }
+        }
+    }).then(function(resp) {
+        console.log(resp);
+        console.log(`body.hits.hits = ${JSON.stringify(resp.hits.hits)}`);
+    }, function(err) {
+        console.trace(err.message);
+    });
+}
+
+async function getElasticSearch() {
+    console.log("Starts getElasticSearch function");
+    await elasticClient.get({
+        index: "issues",
+        id: "5eb9edfa8c60937b80ce4a5f"
+    }).then(function(resp) {
+        console.log(`getElasticSearch = ${JSON.stringify(resp)}`);
+    }, function(err) {
+        console.trace(err.message);
+    });
+}
 
 module.exports = router;
