@@ -39,7 +39,6 @@ export {
 	doSocialSignIn,
 	doSignInWithEmailAndPassword,
 	doPasswordReset,
-	doPasswordUpdate,
 	doSignOut,
 	doChangePassword
 };

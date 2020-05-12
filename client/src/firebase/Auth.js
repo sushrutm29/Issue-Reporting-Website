@@ -3,7 +3,7 @@ import firebaseApp from './Firebase';
 
 export const AuthContext = React.createContext(null);
 
-export const AuthProvicer = ({children}) => {
+export const AuthProvider = ({children}) => {
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
