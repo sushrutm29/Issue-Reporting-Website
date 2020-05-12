@@ -10,17 +10,6 @@ var elasticClient = new elasticsearch.Client({
   log: 'trace',
   apiVersion: '7.6'
 });
-// bluebird.promisifyAll(elasticsearch.Client.prototype);
-
-// elasticClient.ping({
-//         requestTimeout: 30000,
-//         }, function(error) {
-//         if (error) {
-//             console.error('Cannot connect to Elasticsearch.');
-//         } else {
-//             console.log('@@@@@Connected to Elasticsearch was successful!');
-//         }
-//     });
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
@@ -52,6 +41,52 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/elasticsearch', async (req, res) => {
+    console.log("starts elasticsearch");
+    try {
+        let titleKey = ".*";   //keyword for post title
+        let bodyKey = ".*";    //keyword for post body
+        const postInfo = req.body;
+        if (postInfo) { //search keywords are provided
+            if (postInfo.title && typeof postInfo.title == "string" && postInfo.title.length != 0) {
+                console.log(`postInfo.title = ${postInfo.title}`);
+                // titleKey = `.*(${postInfo.title}).*`;
+                titleKey = `(.|\n)*${postInfo.title}(.|\n)*`
+            }
+            if (postInfo.body && typeof postInfo.body == "string" && postInfo.body.length != 0) {
+                console.log(`postInfo.body = ${postInfo.body}`);
+                bodyKey = `.*(${postInfo.body}).*`;
+            }
+        }
+        console.log(`&&&&&titleKey = ${titleKey}`);
+        // let currentPost = undefined;
+        await elasticClient.search({
+            index: "issues",
+            type: "posts",
+            body: {
+                query: {
+                    dis_max: {
+                        queries: [
+                            { regexp : { title: titleKey }},
+                            { regexp : { body: bodyKey }}
+                        ]
+                    }
+                }
+            }
+        }).then(function(resp) {
+            console.log(resp);
+            // console.log(`%%%%body.hits.hits = ${JSON.stringify(resp.hits.hits)}`);
+            return res.status(200).json(resp.hits.hits);
+        }, function(error) {
+            console.trace(error.message);
+            return res.status(400).json({ error: `Could not get a specific post! ${error}` });
+        });
+        // return res.status(200).json(currentPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
@@ -67,21 +102,6 @@ router.get('/:id', async (req, res) => {
             await client.hsetAsync("posts", postID, JSON.stringify(currentPost));
         }
         return res.status(200).json(currentPost);
-    } catch (error) {
-        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
-    }
-});
-
-router.get('/elastic/:keyword', async (req, res) => {
-    try {
-        if (!req.params || !req.params.keyword) {
-            throw "Search keywords were not provided for searchElasticDoc method!";
-        }
-        console.log("calls searchElasticDoc");
-        await searchElasticDoc();
-        // await getElasticSearch();
-        // await getAllElastic();
-        return res.status(200).json({ success: "ran searchElasticDoc"});
     } catch (error) {
         return res.status(400).json({ error: `Could not get a specific post! ${error}` });
     }
@@ -152,7 +172,20 @@ router.post('/', async (req, res) => {
     try {
         const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username);
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
-        await createElasticDoc("issues", newPost._id.toString(), "posts", newPost);
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPost._id.toString(), 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new post! ${error}` });
@@ -171,6 +204,20 @@ router.patch('/update/:id', async (req, res) => {
         let postInfo = req.body;
         const newPost = await postData.updatePost(postID, postInfo.title, postInfo.body);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPost._id.toString(), 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not update post's title and body! ${error}` });
@@ -185,6 +232,20 @@ router.patch('/resolve/:id', async (req, res) => {
         let postID = req.params.id;
         const newPost = await postData.resolvePost(postID);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPost._id.toString(), 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not change post's resolved status! ${error}` });
@@ -202,6 +263,20 @@ router.patch('/addcom/:id', async (req, res) => {
         let postID = req.params.id;
         const newPost = await postData.addCommentToPost(postID, req.body.cID);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPost._id.toString(), 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not add comment to post! ${error}` });
@@ -219,6 +294,20 @@ router.patch('/deletecom/:id', async (req, res) => {
         let postID = req.params.id;
         const newPost = await postData.removeCommentFromPost(postID, req.body.cID);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPost._id.toString(), 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not remove comment from post! ${error}` });
@@ -233,6 +322,16 @@ router.delete('/:id', async (req, res) => {
         let postID = req.params.id;
         const removedPost = await postData.deletePost(postID);
         await client.hdelAsync("posts", postID);
+        //deletes the post document in elasticsearch server
+        await elasticClient.delete({
+            index: "issues",
+            type: "posts",
+            id: postID
+        }).then(function(resp) {
+            console.log(resp);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(removedPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not delete post! ${error}` });
@@ -250,22 +349,32 @@ async function createElasticDoc(docIndex, docID, docType, dataBody) {
     if (arguments.length != 4) {
         throw new Error("Wrong number of arguments");
     }
-    console.log(`###dataBody = ${JSON.stringify(dataBody)}`);
+    //validates arguments type
     //removes the underscore from id field
-    // let data = dataBody;
     dataBody.id = dataBody._id;
     delete dataBody._id;
-    console.log(`&&&&dataBody = ${JSON.stringify(dataBody)}`);
-    //validates arguments type
-    console.log("Starts createElasticDoc function");
-    elasticClient.index({
+    await elasticClient.index({
         index: docIndex,
         type: docType,
         id: docID,    //an automatic id will be generated if not specified
         body: dataBody
-    }, function(err, resp, status) {
-        console.log(`resp = ${JSON.stringify(resp)}`);
-    })
+    }).then(function(resp) {
+        console.log(resp);
+    }, function(err) {
+        console.trace(err.message);
+    });
+}
+
+async function deleteElasticDoc() {
+    await elasticClient.delete({
+        index: "issues",
+        type: "posts",
+        id: "5eb9edfa8c60937b80ce4a5f"
+    }).then(function(resp) {
+        console.log(resp);
+    }, function(err) {
+        console.trace(err.message);
+    });
 }
 
 async function searchElasticDoc() {
@@ -277,7 +386,8 @@ async function searchElasticDoc() {
         body: {
             query: {
                 regexp: {
-                    title: ".*05.*"
+                    // title: ".*05.*"
+                    title: ".*"
                 }
             }
         }
