@@ -46,9 +46,22 @@ router.get('/:id', async (req, res) => {
         if (currentPost) {  //found the post in Redis cache
             currentPost = JSON.parse(currentPost);
         } else {    //did not find the post in Redis cache
-            currentPost = await postData.getPost(postID);
+            currentPost = await postData.getPostById(postID);
             await client.hsetAsync("posts", postID, JSON.stringify(currentPost));
         }
+        return res.status(200).json(currentPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
+    }
+});
+
+router.get('/name/:name', async (req, res) => {
+    try {
+        if (!req.params || !req.params.name) {
+            throw "User name was not provided for get method!";
+        }
+        let userName = req.params.name;
+        currentPost = await postData.getPostByUsername(userName);
         return res.status(200).json(currentPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not get a specific post! ${error}` });
@@ -142,6 +155,40 @@ router.patch('/resolve/:id', async (req, res) => {
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not change post's resolved status! ${error}` });
+    }
+});
+
+router.patch('/addcom/:id', async (req, res) => {
+    try {
+        if (!req.params || !req.params.id) {
+            throw "Post id was not provided for resolvePost function!";
+        }
+        if (!req.body || req.body.cID) {
+            throw "No request body was provided for updatePost function!";
+        }
+        let postID = req.params.id;
+        const newPost = await postData.addCommentToPost(postID, req.body.cID);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        return res.status(200).json(newPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not add comment to post! ${error}` });
+    }
+});
+
+router.patch('/deletecom/:id', async (req, res) => {
+    try {
+        if (!req.params || !req.params.id) {
+            throw "Post id was not provided for removeCommentFromPost function!";
+        }
+        if (!req.body || req.body.cID) {
+            throw "No request body was provided for removeCommentFromPost function!";
+        }
+        let postID = req.params.id;
+        const newPost = await postData.removeCommentFromPost(postID, req.body.cID);
+        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        return res.status(200).json(newPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not remove comment from post! ${error}` });
     }
 });
 
