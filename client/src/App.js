@@ -23,6 +23,7 @@ const App = () => {
 						<Route path='/home/' component={homePage} />
 						<Route path='/dept/:deptName' component={DeptPage} />
 						<Route path='/profile' component={userProfile} />
+						
 					</Switch>
 				</div>
 			</div>
