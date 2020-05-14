@@ -8,25 +8,7 @@ class userProfile extends Component {
     constructor(props) {
         super(props);
         this.state = { userData: undefined, posts: undefined };
-        const [currentDeptName, setDept] = useState(props.match.params.id);
-        this.state = {
-            postsData: ''
-        }
     }
-
-    // async getUserDetails() {
-    //     try {
-    //         let { data } = await axios.get(`http://localhost:3001/data/user/5e8d57d8a0890e28c5bdd2a0`);
-    //         let postIds = data.posts;
-    //         let posts = [];
-    //         for (const id of postIds) {
-    //             let post = await axios.get(`http://localhost:3001/data/post/${id}`);
-    //             posts.push(post.data)
-    //         }
-    //         this.setState({ userData: data, posts: posts });
-    //     } catch (error) {
-    //     }
-    // }
 
     handleSubmit = (event) => {
         event.preventDefault();
@@ -70,7 +52,6 @@ class userProfile extends Component {
                     <Modal.Dialog>
                         {post.title}
                         <br />
-                        {/* Resolved Status :  */}
                         {post.deptID}
                         <form onSubmit={this.handleSubmit}>
                             <input type='text' placeholder='User Name' name='userName' value={post.title} onChange={this.handleInputChange} />
