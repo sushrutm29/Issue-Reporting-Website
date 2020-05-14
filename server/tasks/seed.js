@@ -9,13 +9,14 @@ const postFunctions = require("../data/posts");
 const comFunctions = require("../data/comments");
 const bluebird = require("bluebird");
 const redis = require("redis");
-const client = redis.createClient();
+const redisClient = redis.createClient();
+const elasticClient = require("../config/elasticConnection");
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
- * @author Shiwani Deo
+ * @author Shiwani Deo, Lun-Wei Chang
  * @version 1.0
  * @date 05/03/2020
  */
@@ -31,6 +32,27 @@ function getDepartmentId(depts, deptName) {
     try {
         let userIDs = [];
         let index;
+        //cleas redis cache
+        await redisClient.delAsync("users", "depts", "posts", "comments");
+        //deletes old issues elasticsearch index
+        await elasticClient.indices.delete({
+            index: "issues"
+        }).then(function(resp) {
+            console.log(`Deleted Elasticsearch index = ${JSON.stringify(resp)}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
+        //creates new issues elasticsearch index
+        await elasticClient.indices.create({  
+            index: "issues"
+        },function(err,resp,status) {
+            if(err) {
+                console.log(err);
+            }
+            else {
+                console.log("create",resp);
+            }
+        });
         //inserts initial user(s) from users.json into the database
         for (index in users) {
             try {
@@ -38,7 +60,7 @@ function getDepartmentId(depts, deptName) {
                 email = user.userEmail.toLowerCase();
                 let newUser = await userFunctions.createUser(user.userName, user.userEmail, user.admin, user.profilePic);
                 //adds the new user into the Redis cache
-                await client.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
+                await redisClient.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
                 userIDs.push(newUser._id.toString());
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
@@ -53,7 +75,7 @@ function getDepartmentId(depts, deptName) {
                 let dept = departments[index];
                 let newDept = await deptFunctions.createDept(dept);
                 //adds the new department into the Redis cache
-                await client.hsetAsync("depts", `${newDept._id}`, JSON.stringify(newDept));
+                await redisClient.hsetAsync("depts", `${newDept._id}`, JSON.stringify(newDept));
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
@@ -78,7 +100,23 @@ function getDepartmentId(depts, deptName) {
                 }
                 let newPost = await postFunctions.createPost(departmentID, post.title, post.body, user)
                 //adds the new post into the Redis cache
-                await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+                await redisClient.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+                console.log("!!!!creates post document in elasticsearch server");
+                //creates post document in elasticsearch server
+                let newPostID = newPost._id.toString();
+                let dataBody = newPost;
+                dataBody.id = dataBody._id;
+                delete dataBody._id;
+                await elasticClient.index({
+                    index: "issues",
+                    id: newPostID, 
+                    type: "posts",
+                    body: dataBody
+                }).then(function(resp) {
+                    console.log(`creates post elasticsearch document = ${JSON.stringify(resp)}`);
+                }, function(err) {
+                    console.trace(err.message);
+                });
                 index++;
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
@@ -95,7 +133,7 @@ function getDepartmentId(depts, deptName) {
                 let randomNum = Math.floor(Math.random() * Math.floor(2));
                 let uID = userIDs[randomNum];
                 let newComment = await comFunctions.addComment(cBody, uID);
-                await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
+                await redisClient.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
                 //gets the current user name
                 let currentuser = await userFunctions.getUserById(uID);
                 let currentUserName = currentuser.userName;
@@ -104,7 +142,21 @@ function getDepartmentId(depts, deptName) {
                 //adds the comment to post
                 let updatedPost = await postFunctions.addCommentToPost(currentPost._id.toString(), newComment._id.toString());
                 //adds the updated post into the Redis cache
-                await client.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
+                await redisClient.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
+                //updates post document in elasticsearch server
+                let dataBody = updatedPost;
+                dataBody.id = dataBody._id;
+                delete dataBody._id;
+                await elasticClient.index({
+                    index: "issues",
+                    id: currentPost._id.toString(),
+                    type: "posts",
+                    body: dataBody
+                }).then(function(resp) {
+                    console.log(`####updates post elasticsearch document = ${JSON.stringify(resp)}`);
+                }, function(err) {
+                    console.trace(err.message);
+                });
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
@@ -112,6 +164,20 @@ function getDepartmentId(depts, deptName) {
             }
         }
 
+        //displays all the posts elasticsearch documents
+        await elasticClient.search({
+            index: "issues",
+            type: "posts",
+            body: {
+                query: {
+                    match_all: {}
+                }
+            }
+        }).then(function(resp) {
+            console.log(`getAllElasticIssues = ${JSON.stringify(resp)}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
     } catch (error) {
         console.log(error.message);
     }
