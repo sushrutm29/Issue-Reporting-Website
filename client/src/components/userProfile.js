@@ -12,6 +12,8 @@ class userProfile extends Component {
         this.state = {
             postsData: ''
         }
+        this.state = { showPost: false }
+
     }
 
     handleSubmit = (event) => {
@@ -20,13 +22,21 @@ class userProfile extends Component {
         console.log(event.target.value)
     }
 
+    handleShow = (event) => {
+        this.setState({
+            showPost: true
+        })
+    }
+
+    handleClose = (event) => {
+        this.setState({
+            showPost: false
+        })
+    }
     handleInputChange = (event) => {
         event.preventDefault();
-        console.log(event)
-        console.log(event.target.name)
-        console.log(event.target.value)
         this.setState({
-            [event.target.name] : event.target.value
+            [event.target.name]: event.target.value
         })
     }
 
@@ -44,7 +54,7 @@ class userProfile extends Component {
         } catch (error) {
         }
     }
-    
+
 
     render() {
         let html_body = (
@@ -52,22 +62,49 @@ class userProfile extends Component {
                 Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here :( "}
                 User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here :( "}
                 Posts :  {this.state.posts && this.state.posts.map((post) => (
-                    <Modal.Dialog>
-                        {post.title}
-                        <br />
-                        {/* Resolved Status :  */}
-                        {post.deptID}
-                        <form onSubmit={this.handleSubmit}>
-                            <input type='text' placeholder='User Name' name='userName' value={post.title} onChange={this.handleInputChange} />
-                            <br></br>
-                            <Modal.Footer>
-                                <Button variant="secondary">Edit </Button>
-                                <Button variant="primary">Save changes</Button>
-                                <Button variant="secondary">Cancel </Button>
-                            </Modal.Footer>
-                        </form >
-                    </Modal.Dialog>
+                    <Card style={{ width: '20rem' }}>
+                        <Card.Body>
+                            <Card.Title> {post.title} </Card.Title>
+                            <Card.Text>
+                                <div> {post.deptID} </div>
+                                <div> {post.body} </div>
+
+                            </Card.Text>
+                            <Button variant="primary" onClick={this.handleShow}>Edit</Button>
+                        </Card.Body>
+                    </Card>
                 ))}
+
+                <Modal show={this.state.showPost} onHide={this.handleClose} >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {this.state.posts && this.state.posts.map((post) => (
+                            <Card style={{ width: '20rem' }}>
+                                <Card.Body>
+                                    <Card.Title> {post.title} </Card.Title>
+                                    <Card.Text>
+                                        <input type='text' {post.deptID} />
+                                        <div> {post.body} </div>
+
+                                    </Card.Text>
+                                    <Button variant="secondary" onClick={this.handleClose}>
+                                        Close </Button>
+                                    <br></br>
+                                    <Button variant="primary" onClick={this.handleClose}>
+                                        Save Changes </Button>
+                                </Card.Body>
+                            </Card>
+                        ))}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleClose}>
+                            Close </Button>
+                        <Button variant="primary" onClick={this.handleClose}>
+                            Save Changes </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         );
         return html_body;
