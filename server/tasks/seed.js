@@ -53,6 +53,45 @@ function getDepartmentId(depts, deptName) {
                 console.log("create",resp);
             }
         });
+        //specify the elasticsearch posts type document fields' types
+        await elasticClient.indices.putMapping({
+            index: "issues",
+            type: "posts",
+            body: {
+              properties: {
+                id: {
+                  type: "keyword"
+                },
+                deptID: {
+                    type: "keyword"
+                },
+                title: {
+                    type: "keyword"
+                },
+                body: {
+                    type: "keyword"
+                },
+                username: {
+                    type: "keyword"
+                },
+                resolvedStatus: {
+                    type: "boolean"
+                },
+                CreationTime: {
+                    type: "date"
+                },
+                comments: {
+                    type: "object"
+                }
+              },
+            },
+        }, (err, resp, status) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(resp);
+            }
+        });
         //inserts initial user(s) from users.json into the database
         for (index in users) {
             try {

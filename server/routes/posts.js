@@ -35,24 +35,38 @@ router.get('/', async (req, res) => {
     }
 });
 
+// // for testing Elasticsearch getAll function
+// router.get('/elasticAll', async (req, res) => {
+//     console.log("starts getAllResults");
+//     try {
+//         let getAllResults = await getAllElastic();
+//         console.log(`getAllResults = ${JSON.stringify(getAllResults)}`);
+//         return res.status(200).json(getAllResults);
+//     } catch (error) {
+//         return res.status(400).json({ error: `Could not get all elastic posts! ${error}` });
+//     }
+// });
+
 router.get('/elasticsearch', async (req, res) => {
     try {
         let keyWord = "";   //keyword to be searched among post's title and body
+        // let keyWord = ".*";
         const postInfo = req.body;
         if (postInfo) { //search keywords are provided
             if (postInfo.keyword && typeof postInfo.keyword == "string" && postInfo.keyword.length != 0) {
                 keyWord = postInfo.keyword;
+                // keyWord = `.*${postInfo.keyword}.*`;
             }
         }
         await elasticClient.search({
             index: "issues",
             type: "posts",
             body: {
-                query: {
-                    dis_max: {
-                        queries: [  //regexp, match
-                            { match : { title: keyWord }},
-                            { match : { body: keyWord }}
+                query: {  
+                    bool: {
+                        should: [
+                            { match_phrase : { title: keyWord }},
+                            { match_phrase : { body: keyWord }}
                         ]
                     }
                 }
@@ -323,18 +337,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// for testing Elasticsearch
-// router.get('/elasticAll', async (req, res) => {
-//     console.log("starts getAllResults");
-//     try {
-//         let getAllResults = await getAllElastic();
-//         console.log(`getAllResults = ${JSON.stringify(getAllResults)}`);
-//         return res.status(200).json(getAllResults);
-//     } catch (error) {
-//         return res.status(400).json({ error: `Could not get all elastic posts! ${error}` });
-//     }
-// });
-
+// for testing elasticsearch
 // async function getAllElastic() {
 //     let results = await elasticClient.search({
 //         index: "issues",
