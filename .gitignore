@@ -6,6 +6,7 @@ node_modules
 /server/package-lock.json
 package-lock.json
 .vscode/
+/client/.env
 
 # dependencies
 /node_modules
