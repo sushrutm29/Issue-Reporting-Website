@@ -16,7 +16,6 @@ const Department = (props) => {
     const [lastPage, setLastpage] = useState(undefined);
 
     useEffect(() => {
-        setLastpage(false); //Assume user is initially not on the last page
         setDept(props.match.params.deptName);
         async function fetchPostData() {
             try {
@@ -29,6 +28,8 @@ const Department = (props) => {
                 data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${nextPageNo}`); //Check if next page has any data
                 if (data.data.length === 0) {
                     setLastpage(true);
+                } else {
+                    setLastpage(false);
                 }
             } catch (err) {
                 console.log(err);
