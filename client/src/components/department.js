@@ -16,7 +16,7 @@ const Department = (props) => {
     const [lastPage, setLastpage] = useState(undefined);
 
     useEffect(() => {
-
+        setLastpage(false); //Assume user is initially not on the last page
         setDept(props.match.params.deptName);
         async function fetchPostData() {
             try {
@@ -39,7 +39,7 @@ const Department = (props) => {
     }, [currentDeptName, props.match.params.deptName, postList, currentPageNum, props.match.params.pageNo]);
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo))) {
+    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <=0) {
         return <Error404 />;
     }
 

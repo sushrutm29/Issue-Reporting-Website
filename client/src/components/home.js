@@ -36,7 +36,7 @@ function Home(props) {
     );
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo))) {
+    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <=0) {
         return <Error404 />;
     }
 
