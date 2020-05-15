@@ -2,10 +2,11 @@ const connection = require("../config//mongoConnection");
 const users = require("../data/Seed-Data/users.json");
 const departments = require("../data/Seed-Data/departments.json");
 const posts = require("../data/Seed-Data/posts.json")
-const comments = require("../data/Seed-Data/posts.json")
+const comments = require("../data/Seed-Data/comments.json")
 const userFunctions = require("../data/users");
 const deptFunctions = require("../data/dept");
 const postFunctions = require("../data/posts");
+const comFunctions = require("../data/comments");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
@@ -19,8 +20,8 @@ bluebird.promisifyAll(redis.Multi.prototype);
  * @date 05/03/2020
  */
 function getDepartmentId(depts, deptName) {
-    for(index in depts) {
-        if(depts[index].deptName == deptName) {
+    for (index in depts) {
+        if (depts[index].deptName == deptName) {
             return depts[index]._id.toString();
         }
     }
@@ -28,8 +29,9 @@ function getDepartmentId(depts, deptName) {
 
 (async () => {
     try {
+        let userIDs = [];
         let index;
-        //Insert initial user(s) from users.JSON into the database
+        //inserts initial user(s) from users.json into the database
         for (index in users) {
             try {
                 let user = users[index];
@@ -37,15 +39,16 @@ function getDepartmentId(depts, deptName) {
                 let newUser = await userFunctions.createUser(user.userName, user.userEmail, user.admin, user.profilePic);
                 //adds the new user into the Redis cache
                 await client.hsetAsync("users", `${newUser._id}`, JSON.stringify(newUser));
+                userIDs.push(newUser._id.toString());
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
                 }
             }
         }
-      
-        //Insert departments from departments.JSON into the database 
-        for(index in departments) {
+
+        //inserts departments from departments.json into the database 
+        for (index in departments) {
             try {
                 let dept = departments[index];
                 let newDept = await deptFunctions.createDept(dept);
@@ -62,13 +65,13 @@ function getDepartmentId(depts, deptName) {
         //Set two users as post authors
         const user1 = "sdeo";
         const user2 = "sushrutm";
-        //Insert posts from posts.JSON into the database 
-        for(index in posts) {
+        //inserts posts from posts.json into the database 
+        for (index in posts) {
             try {
                 let user;
                 let post = posts[index];
                 let departmentID = getDepartmentId(allDepartments, post.dept); //Get department ID for post department
-                if(index % 2 == 0) {
+                if (index % 2 == 0) {
                     user = user1;
                 } else {
                     user = user2;
@@ -84,6 +87,30 @@ function getDepartmentId(depts, deptName) {
             }
         }
 
+        //inserts comments from comments.json
+        for (index in comments) {
+            try {
+                let currentComment = comments[index];
+                let cBody = currentComment.commentBody;
+                let randomNum = Math.floor(Math.random() * Math.floor(2));
+                let uID = userIDs[randomNum];
+                let newComment = await comFunctions.addComment(cBody, uID);
+                await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
+                //gets the current user name
+                let currentuser = await userFunctions.getUserById(uID);
+                let currentUserName = currentuser.userName;
+                //gets the post via user name
+                let currentPost = await postFunctions.getPostByUsername(currentUserName);
+                //adds the comment to post
+                let updatedPost = await postFunctions.addCommentToPost(currentPost._id.toString(), newComment._id.toString());
+                //adds the updated post into the Redis cache
+                await client.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
+            } catch (error) {
+                if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
+                    index++; //Skip duplicate entry and continue
+                }
+            }
+        }
 
     } catch (error) {
         console.log(error.message);
