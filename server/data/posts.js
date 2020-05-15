@@ -3,6 +3,8 @@ const posts = mongoCollections.posts;
 const comments = mongoCollections.comments;
 const ObjectId = require("mongodb").ObjectID;
 
+var swearjar = require('swearjar');
+
 /**
  * @author Lun-Wei Chang
  * @version 1.0
@@ -36,6 +38,13 @@ let exportedMethods = {
         if (!username || typeof(username) != "string" || username.length == 0) {
             throw new Error("Invalid post username was provided");
         }
+        if(swearjar.profane(title == true)){
+            throw new Error("Inappropriate title");
+        }
+        if(swearjar.profane(body == true)){
+            throw new Error("Inappropriate body content");
+        }
+
         var currentdate = new Date(); 
         let creationTime = currentdate.getFullYear() + '-' +(currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
@@ -108,6 +117,12 @@ let exportedMethods = {
         }
         if (!body || typeof(body) != "string" || body.length == 0) {
             throw new Error("Invalid post body was provided");
+        }
+        if(swearjar.profane(title == true)){
+            throw new Error("Inappropriate title");
+        }
+        if(swearjar.profane(body == true)){
+            throw new Error("Inappropriate body content");
         }
         const postsCollection = await posts();
         const updatedDestination = await postsCollection.updateOne({_id: ObjectId(postID)}, {$set: {"title": title, "body": body}});
@@ -219,6 +234,9 @@ let exportedMethods = {
         if (!time || typeof(time) != "string" || time.length == 0) {
             throw new Error("Invalid timestamp was provided");
         }
+        if(swearjar.profane(cbody == true)){
+            throw new Error("Inappropriate comment");
+        }
 
         const commentsCollection = await comments();
 
@@ -261,6 +279,9 @@ let exportedMethods = {
         }
         if (!newTime || typeof(newTime) != "string" || newTime.length == 0) {
             throw new Error("Invalid updated time stamp was provided");
+        }
+        if(swearjar.profane(newBody == true)){
+            throw new Error("Inappropriate comment");
         }
 
         const reqComment = await this.getComment(commentID);
