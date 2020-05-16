@@ -45,7 +45,9 @@ async function createPost(deptID, title, body, username) {
         throw new Error("Invalid post username was provided");
     }
     var currentdate = new Date();
-    let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
+    let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) 
+    + '-' + currentdate.getDate() + " " + currentdate.getHours() + ":" 
+    + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
 
     const postsCollection = await posts();
     //prevents duplicated post object to be inserted into the database
