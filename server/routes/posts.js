@@ -4,7 +4,7 @@ const postData = require("./../data/posts");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
-
+const elasticClient = require("../config/elasticConnection");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
@@ -15,6 +15,10 @@ bluebird.promisifyAll(redis.Multi.prototype);
  */
 router.get('/', async (req, res) => {
     try {
+        let sortOrder = "asce"; //ascending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let allPosts = await client.hvalsAsync("posts");
         if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //posts exist in Redis cache
             let results = [];
@@ -29,16 +33,88 @@ router.get('/', async (req, res) => {
                 await client.hsetAsync(["posts", `${allPosts[i]._id}`, JSON.stringify(allPosts[i])]);
             }
         }
+        //sorts the outputs by time
+        allPosts.sort(function(a, b){ 
+            if (sortOrder === "asce") {
+                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+            } else {
+                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+            }
+        });
+        
         return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
     }
 });
 
+// for testing Elasticsearch getAll function
+// router.get('/elasticAll', async (req, res) => {
+//     console.log("starts getAllResults");
+//     try {
+//         let getAllResults = await getAllElastic();
+//         console.log(`getAllResults = ${JSON.stringify(getAllResults)}`);
+//         return res.status(200).json(getAllResults);
+//     } catch (error) {
+//         return res.status(400).json({ error: `Could not get all elastic posts! ${error}` });
+//     }
+// });
+
+router.get('/elasticsearch', async (req, res) => {
+    try {
+        if (!req.body) {
+            throw "No request body was provided for elasticsearch function!";
+        }
+        let keyWord = "";   //keyword to be searched among post's title and body
+        let departmentID = ".*";
+        const postInfo = req.body;
+        if (!postInfo.keyword) {    //empty keyword will cause error as well
+            throw "No keyword was provided for elasticsearch function!";
+        } else {
+            keyWord = `*${postInfo.keyword.toLowerCase()}*`;
+        }
+        if (postInfo.deptID) {
+            departmentID = postInfo.deptID;
+        }
+        await elasticClient.search({
+            index: "issues",
+            type: "posts",
+            body: {
+                query: {    //match_phrase + wildcard???
+                    bool: { 
+                        must: {
+                            query_string : {
+                                query : keyWord,
+                                // default_field : "title",
+                                default_operator: "AND",
+                                fields: [
+                                    "title",
+                                    "body"
+                                ]
+                            }
+                        },
+                        filter: {
+                            regexp:  {
+                                deptID: departmentID 
+                            }
+                        }
+                    }
+                }
+            }
+        }).then(function(resp) {
+            return res.status(200).json(resp.hits.hits);
+        }, function(error) {
+            return res.status(400).json({ error: `Could not get a specific post via elastic search! ${error}` });
+        });
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post via elastic search! ${error}` });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
-            throw "Post id was not provided for get method!";
+            throw "Post id was not provided for getPostById method!";
         }
         let postID = req.params.id;
         let currentPost = await client.hgetAsync("posts", postID);
@@ -58,7 +134,7 @@ router.get('/:id', async (req, res) => {
 router.get('/name/:name', async (req, res) => {
     try {
         if (!req.params || !req.params.name) {
-            throw "User name was not provided for get method!";
+            throw "User name was not provided for getPostByUsername method!";
         }
         let userName = req.params.name;
         currentPost = await postData.getPostByUsername(userName);
@@ -72,6 +148,10 @@ router.get('/dept/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
             throw "Department id was not provided for getAllPostsByDeptID method!";
+        }
+        let sortOrder = "asce"; //ascending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
         }
         let deptID = req.params.id;
 
@@ -89,6 +169,14 @@ router.get('/dept/:id', async (req, res) => {
                 await client.hsetAsync(["posts", `${currentPosts[i]._id}`, JSON.stringify(currentPosts[i])]);
             }
         }
+        //sorts the outputs by time
+        allPosts.sort(function(a, b){ 
+            if (sortOrder === "asce") {
+                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+            } else {
+                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+            }
+        });
         return res.status(200).json(currentPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
@@ -120,6 +208,21 @@ router.post('/', async (req, res) => {
     try {
         const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username);
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
+        //creates post document in elasticsearch server
+        let newPostID = newPost._id.toString();
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`createPost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new post! ${error}` });
@@ -138,6 +241,21 @@ router.patch('/update/:id', async (req, res) => {
         let postInfo = req.body;
         const newPost = await postData.updatePost(postID, postInfo.title, postInfo.body);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let newPostID = newPost._id.toString();
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`updatePost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not update post's title and body! ${error}` });
@@ -152,6 +270,21 @@ router.patch('/resolve/:id', async (req, res) => {
         let postID = req.params.id;
         const newPost = await postData.resolvePost(postID);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let newPostID = newPost._id.toString();
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`resolvePost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not change post's resolved status! ${error}` });
@@ -161,14 +294,29 @@ router.patch('/resolve/:id', async (req, res) => {
 router.patch('/addcom/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
-            throw "Post id was not provided for resolvePost function!";
+            throw "Post id was not provided for addCommentToPost function!";
         }
-        if (!req.body || req.body.cID) {
-            throw "No request body was provided for updatePost function!";
+        if (!req.body || !req.body.cID) {
+            throw "No request body was provided for addCommentToPost function!";
         }
         let postID = req.params.id;
         const newPost = await postData.addCommentToPost(postID, req.body.cID);
         await client.hsetAsync("posts", postID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let newPostID = newPost._id.toString();
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`addCommentToPost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not add comment to post! ${error}` });
@@ -180,13 +328,28 @@ router.patch('/deletecom/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Post id was not provided for removeCommentFromPost function!";
         }
-        if (!req.body || req.body.cID) {
+        if (!req.body || !req.body.cID) {
             throw "No request body was provided for removeCommentFromPost function!";
         }
         let postID = req.params.id;
-        const newPost = await postData.removeCommentFromPost(postID, req.body.cID);
-        await client.hsetAsync("posts", postID, JSON.stringify(newPost));
-        return res.status(200).json(newPost);
+        const deletedPost = await postData.removeCommentFromPost(postID, req.body.cID);
+        await client.hsetAsync("posts", postID, JSON.stringify(deletedPost));
+        //updates post document in elasticsearch server
+        let deletedPostID = deletedPost._id.toString();
+        let dataBody = deletedPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: deletedPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`removeCommentFromPost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
+        return res.status(200).json(deletedPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not remove comment from post! ${error}` });
     }
@@ -195,15 +358,52 @@ router.patch('/deletecom/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
-            throw "Post id was not provided for updatePost function!";
+            throw "Post id was not provided for deletePost function!";
         }
         let postID = req.params.id;
         const removedPost = await postData.deletePost(postID);
         await client.hdelAsync("posts", postID);
+        //deletes the post document in elasticsearch server
+        await elasticClient.delete({
+            index: "issues",
+            id: postID,
+            type: "posts"
+        }).then(function(resp) {
+            console.log(`deletePost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(`Deleted Elasticsearch document error = ${err.message}`);
+        });
         return res.status(200).json(removedPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not delete post! ${error}` });
     }
 });
+
+// // for testing elasticsearch
+// async function getAllElastic() {
+//     let results = await elasticClient.search({
+//         index: "issues",
+//         type: "posts",
+//         body: {
+//             query: {
+//                 bool: {
+//                     must: {
+//                         match_all: {}
+//                     },
+//                     filter: {
+//                         regexp:  {
+//                             deptID: ".*" 
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }).then(function(resp) {
+//         return resp.hits.hits;
+//     }, function(err) {
+//         console.trace(err.message);
+//     });
+//     return results;
+// }
 
 module.exports = router;
