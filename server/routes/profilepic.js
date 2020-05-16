@@ -14,14 +14,13 @@ router.post('/', async (req, res) => {
 
         const uploadPath = __dirname + '/../../client/public/uploads';
 
-        fs.readdir(uploadPath, (err, files) => {
-            if (err) throw err;
-            for(let i=0; i<files.length; i++){
-                fs.unlink(path.join(uploadPath, files[i]), err => {
-                    if (err) throw err;
-                });
-            }
-        });
+        let files = fs.readdirSync(__dirname + '/../../client/public/uploads');
+
+        files.forEach(function(file) {
+            fs.unlink(path.join(uploadPath, file), err => {
+                if (err) throw err;
+            });
+        })
 
         const profilePic = req.files.image;
         const profilePicName = req.files.image.name;
@@ -34,6 +33,7 @@ router.post('/', async (req, res) => {
 
         return res.status(200).json({"Filename": profilePicName, "Filepath": `/uploads/${profilePicName}`});
     } catch (error) {
+        console.log(error);
         return res.status(400).json({"File Upload failed ": error});
     }
 });

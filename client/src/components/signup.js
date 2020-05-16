@@ -22,6 +22,7 @@ function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     const { displayName, email, passwordOne, passwordTwo } = e.target.elements;
+
     if (passwordOne.value !== passwordTwo.value) {
       setPwMatch('Passwords do not match!');
       return false;

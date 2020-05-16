@@ -104,6 +104,7 @@ async function createUser(userName, userEmail, admin, profilePic) {
         return insertedUser;
     } else {
         const uploadPath = __dirname + '/../../client/public/uploads';
+        console.log(uploadPath);
         const connection = await mongoConnection();
         let bucket = new mongodb.GridFSBucket(connection, {
             bucketName: 'profilePics'
