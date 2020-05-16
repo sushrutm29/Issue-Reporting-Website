@@ -6,6 +6,8 @@ import SocialSignIn from './socialSignIn';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+var swearjar = require('swearjar');
+
 function SignUp() {
   const { currentUser } = useContext(AuthContext);
   const [pwMatch, setPwMatch] = useState('');
@@ -22,6 +24,7 @@ function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     const { displayName, email, passwordOne, passwordTwo } = e.target.elements;
+
     if (passwordOne.value !== passwordTwo.value) {
       setPwMatch('Passwords do not match!');
       return false;
@@ -33,6 +36,10 @@ function SignUp() {
         passwordOne.value,
         displayName.value
       );
+          //profanity filter
+        if(swearjar.profane(displayName.value) == true){
+            throw new Error("Inapproprite username");
+        }
 
       if(file !== ''){
         let formData = new FormData();
