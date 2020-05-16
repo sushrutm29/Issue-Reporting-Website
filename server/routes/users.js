@@ -53,6 +53,7 @@ router.post('/', async (req, res) => {
         throw "No request body was provided for createUser function!";
     }
     const userInfo = req.body;
+    console.log(userInfo);
     if (!userInfo) {
         return res.status(400).json({ error: "You must provide information to create a new user!" });
     }

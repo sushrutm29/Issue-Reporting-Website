@@ -1,38 +1,45 @@
 import React, { Component } from "react";
 import { Card, Container, Row, Col, Modal, Button, Image } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
-import { Switch, Route } from "react-router-dom";
+import { AuthContext } from '../firebase/Auth';
 import axios from 'axios';
 
-
 class userProfile extends Component {
+    static contextType = AuthContext;
     constructor(props) {
         super(props);
         this.state = { userData: undefined, posts: undefined };
-        this.state = {
-            postsData: ''
-        }
-        this.state = { showPost: false }
-
+        this.state = { postsData: '' };
+    
     }
 
-    handleSubmit = (event) => {
+    signUp = (event) => {
+        const user = this.context;
+        console.log(this.context)
+    }
+
+    handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(event.target.name)
-        console.log(event.target.value)
+        const title = event.target.postTitle.value;
+        const body = event.target.postBody.value;
+        const id = event.target.postID.value;
+        const postDetails = {
+            title,
+            body
+        }
+        console.log(postDetails)
+        try {
+            await axios({
+                method: 'patch',
+                url: `http://localhost:3001/data/post/update/${id}`,
+                data: postDetails
+            });
+            window.location.reload();
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    handleShow = (event) => {
-        this.setState({
-            showPost: true
-        })
-    }
-
-    handleClose = (event) => {
-        this.setState({
-            showPost: false
-        })
-    }
     handleInputChange = (event) => {
         event.preventDefault();
         this.setState({
@@ -40,10 +47,26 @@ class userProfile extends Component {
         })
     }
 
-    async componentDidMount() {
+    openEditForm = (openClassName, closeClassName ) => {
+        var divToOpen = document.getElementsByClassName(openClassName);
+        var divToClose = document.getElementsByClassName(closeClassName);
+
+        for(var i = 0; i < divToOpen.length; i++){
+            divToOpen[i].style.display = "block"; 
+        }
+
+        for(var i = 0; i < divToClose.length; i++){
+            divToClose[i].style.display = "none"; 
+        }
+    }
+
+    async getUserPostDetails(){
         try {
+            this.signUp();
+            const user = this.context;
+            console.log(user);
             let { data } = await axios.get(`http://localhost:3001/data/user/5e8d57d8a0890e28c5bdd2a0`);
-            console.log(this.params)
+            // let { data } = await axios.get(`http://localhost:3001/data/user/name/${this.user.currentUser.displayName}`);
             let postIds = data.posts;
             let posts = [];
             for (const id of postIds) {
@@ -51,60 +74,63 @@ class userProfile extends Component {
                 posts.push(post.data)
             }
             this.setState({ userData: data, posts: posts });
+            
         } catch (error) {
+            console.log(error)
         }
     }
 
+    async componentDidMount() {
+        try {
+            await this.getUserPostDetails();
+            // console.log(this.context);
+            // let { data } = await axios.get(`http://localhost:3001/data/user/5e8d57d8a0890e28c5bdd2a0`);
+            // // let { data } = await axios.get(`http://localhost:3001/data/user/name/${this.user.currentUser.displayName}`);
+            // let postIds = data.posts;
+            // let posts = [];
+            // for (const id of postIds) {
+            //     let post = await axios.get(`http://localhost:3001/data/post/${id}`);
+            //     posts.push(post.data)
+            // }
+            // this.setState({ userData: data, posts: posts });
+        } catch (error) {
+            console.log("error : ", error);
+        }
+    }
 
     render() {
         let html_body = (
-            <div>
-                Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here :( "}
-                User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here :( "}
-                Posts :  {this.state.posts && this.state.posts.map((post) => (
-                    <Card style={{ width: '20rem' }}>
-                        <Card.Body>
-                            <Card.Title> {post.title} </Card.Title>
-                            <Card.Text>
-                                <div> {post.deptID} </div>
-                                <div> {post.body} </div>
+            <div>  
+                <h2>Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here :( "}</h2>
+                <br></br>
+                <h2>User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here :( "}</h2>
+                {this.state.posts && this.state.posts.map((post, index) => (
+                    <Modal.Dialog key={index}>
+                        <form onSubmit={this.handleSubmit}>
+                            <div className={index + "-edit edit-post-div"} style={{display : "none"}}>
+                                <br></br>
+                                <label>Post Title  :  </label>
+                                <input type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
+                                <br></br>
+                                <input type='text' name='postID' hidden value={post._id} readOnly />
+                                <br></br>
+                                <label>Post Body  : </label>
+                                <input type='text' placeholder='post-body' name='postBody' defaultValue={post.body} onChange={this.handleInputChange} />
+                                <br></br>
+                                <br></br>
+                                <Modal.Footer>
+                                    <Button type="submit" variant="primary"> Save changes</Button>
+                                </Modal.Footer>
+                            </div>
+                            <div className={index + "-show"}>
+                                <div>Post Title : {post.title}</div>
+                                <div>Post Body  : {post.body}</div>
+                                <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index+"-edit", index+"-show")} > Edit</Button>
+                            </div>
 
-                            </Card.Text>
-                            <Button variant="primary" onClick={this.handleShow}>Edit</Button>
-                        </Card.Body>
-                    </Card>
+                        </form >
+                    </Modal.Dialog>
                 ))}
-
-                <Modal show={this.state.showPost} onHide={this.handleClose} >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {this.state.posts && this.state.posts.map((post) => (
-                            <Card style={{ width: '20rem' }}>
-                                <Card.Body>
-                                    <Card.Title> {post.title} </Card.Title>
-                                    <Card.Text>
-                                        <input type='text' {post.deptID} />
-                                        <div> {post.body} </div>
-
-                                    </Card.Text>
-                                    <Button variant="secondary" onClick={this.handleClose}>
-                                        Close </Button>
-                                    <br></br>
-                                    <Button variant="primary" onClick={this.handleClose}>
-                                        Save Changes </Button>
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={this.handleClose}>
-                            Close </Button>
-                        <Button variant="primary" onClick={this.handleClose}>
-                            Save Changes </Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
         );
         return html_body;

@@ -35,19 +35,14 @@ function SignUp() {
       );
 
       if(file !== ''){
-        // await axios.delete('http://localhost:3001/data/profilepic');
-
         let formData = new FormData();
-    
         formData.append('image', file);
-        console.log(formData.get('image'));
 
-        const resUpload = await axios.post('http://localhost:3001/data/profilepic', formData, {
+        await axios.post('http://localhost:3001/data/profilepic', formData, {
           headers: { 
             'Content-Type': 'multipart/form-data' 
           }
         });
-        console.log(resUpload);
       }
 
       await axios({
@@ -62,7 +57,7 @@ function SignUp() {
       });
 
     } catch (error) {
-      console.log(error)
+      alert(error);
     }
   };
 
