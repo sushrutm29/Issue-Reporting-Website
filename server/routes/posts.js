@@ -7,6 +7,7 @@ const client = redis.createClient();
 const elasticClient = require("../config/elasticConnection");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
+const postsPerPage = 9;
 
 /**
  * @author Lun-Wei Chang
@@ -48,17 +49,31 @@ router.get('/', async (req, res) => {
     }
 });
 
-// for testing Elasticsearch getAll function
-// router.get('/elasticAll', async (req, res) => {
-//     console.log("starts getAllResults");
-//     try {
-//         let getAllResults = await getAllElastic();
-//         console.log(`getAllResults = ${JSON.stringify(getAllResults)}`);
-//         return res.status(200).json(getAllResults);
-//     } catch (error) {
-//         return res.status(400).json({ error: `Could not get all elastic posts! ${error}` });
-//     }
-// });
+router.get('/page/:pageNo', async (req, res) => {
+    try {
+        let pageNo = (parseInt(req.params.pageNo)) - 1;
+        let offset = postsPerPage * pageNo;
+        let stopIndex = offset + postsPerPage;
+
+        let allPosts = await client.hvalsAsync("posts");
+        if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //Post exists in Redis cache
+            let results = [];
+            for (let i = 0; i < allPosts.length; i++) { 
+                results.push(JSON.parse(allPosts[i]));
+            }
+            allPosts = results;
+        } else {    //No post exists in Redis cache
+            allPosts = await postData.getAllPosts();
+            //Loop through all the posts and add them to cache
+            for (let i = 0; i < allPosts.length; i++) {
+                await client.hsetAsync(["posts", `${allPosts[i]._id}`, JSON.stringify(allPosts[i])]);
+            }
+        }
+        return res.status(200).json(allPosts.slice(offset, stopIndex));
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get all posts! ${error}` });
+    }
+});
 
 router.get('/elasticsearch', async (req, res) => {
     try {
@@ -178,6 +193,37 @@ router.get('/dept/:id', async (req, res) => {
             }
         });
         return res.status(200).json(currentPosts);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
+    }
+});
+
+router.get('/dept/:id/:pageNo', async (req, res) => {
+    try {
+        if (!req.params || !req.params.id || !req.params.pageNo) {
+            throw "Department id or page No. was not provided for getAllPostsByDeptID method!";
+        }
+
+        let deptID = req.params.id;
+        let pageNo = (parseInt(req.params.pageNo)) - 1;
+        let offset = postsPerPage * pageNo;
+        let stopIndex = offset + postsPerPage;
+
+        let allPosts = await client.hvalsAsync("posts");
+        let currentPosts = allPosts.filter(postObj => JSON.parse(postObj).deptID == deptID);
+        if (currentPosts !== undefined && currentPosts !== null && currentPosts.length !== 0) {  //found the post in Redis cache
+            allPosts = [];
+            for (let i = 0; i < currentPosts.length; i++) {
+                allPosts.push(JSON.parse(currentPosts[i]));
+            }
+            currentPosts = allPosts;
+        } else {    //did not find the post in Redis cache
+            currentPosts = await postData.getAllPostsByDeptID(deptID);
+            for (let i = 0; i < currentPosts.length; i++) {
+                await client.hsetAsync(["posts", `${currentPosts[i]._id}`, JSON.stringify(currentPosts[i])]);
+            }
+        }
+        return res.status(200).json(currentPosts.slice(offset, stopIndex)); //Return posts only for that page
     } catch (error) {
         return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
     }
@@ -378,32 +424,5 @@ router.delete('/:id', async (req, res) => {
         return res.status(400).json({ error: `Could not delete post! ${error}` });
     }
 });
-
-// // for testing elasticsearch
-// async function getAllElastic() {
-//     let results = await elasticClient.search({
-//         index: "issues",
-//         type: "posts",
-//         body: {
-//             query: {
-//                 bool: {
-//                     must: {
-//                         match_all: {}
-//                     },
-//                     filter: {
-//                         regexp:  {
-//                             deptID: ".*" 
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }).then(function(resp) {
-//         return resp.hits.hits;
-//     }, function(err) {
-//         console.trace(err.message);
-//     });
-//     return results;
-// }
 
 module.exports = router;
