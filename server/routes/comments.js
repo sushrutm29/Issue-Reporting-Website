@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const commentData = require("./../data/comments");
-const postData = require("./../data/posts")
+const postData = require("./../data/posts");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
@@ -29,14 +29,11 @@ router.post('/', async (req, res) => {
     if (!cInfo.userID || typeof cInfo.userID != "string" || cInfo.userID.length == 0) {
         return res.status(400).json({ error: "Invalid comment user ID was provided" });
     }
-    if (!cInfo.postID || typeof cInfo.postID != "string" || cInfo.postID.length == 0) {
-        return res.status(400).json({ error: "Invalid comment post ID was provided" });
-    }
 
     try {
         const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
-        await postData.addCommentToPost(cInfo.postID, newComment._id.toString());
+        await postData.addCommentToPost(cInfo.postID, newComment._id.toString()); //Add comment to posts collection
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new comment! ${error}` });

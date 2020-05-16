@@ -31,14 +31,12 @@ router.get('/', async (req, res) => {
     try {
         let allDepts = await client.hvalsAsync("depts");
         if (allDepts !== undefined && allDepts !== null && allDepts.length !== 0) {   //depts exist in Redis cache
-            console.log("get allDept from Redis!");
             let results = [];
             for (let i = 0; i < allDepts.length; i++) {
                 results.push(JSON.parse(allDepts[i]));
             }
             allDepts = results;
         } else {    //no dept exists in Redis cache
-            console.log("get allDept from MongoDB!");
             allDepts = await deptData.getAllDept();
             //loop through all the depts and add them to cache
             for (let i = 0; i < allDepts.length; i++) {

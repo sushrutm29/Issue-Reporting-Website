@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import NavigationBar from './navigation';
 
 /**
  * @author Shiwani Deo, Lun-Wei Chang
  * @version 1.0
- * @date 05/03/2020
+ * @date 05/03/2020 
  */
 function PostsList(props) {
     let card = null;
@@ -14,16 +15,27 @@ function PostsList(props) {
     const [modalBody, setModalBody] = useState(undefined);
     const [show, setShow] = useState(false);
     const [postID, setPostID] = useState(undefined);
+    const [postUserID, setUserID] = useState(undefined);
     const [comment, setComment] = useState("");
-    const [postUserID, setUserID] = useState(undefined)
+    const [commentList, setCommentList] = useState("");
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
     }
-    const handleShow = (post) => { //Set current post data to display in the modal
+    async function handleShow(post) { //Set current post data to display in the modal
         setModalTitle(post.title);
         setModalBody(post.body);
         setPostID(post._id);
+        if (post.comments.length !== 0) {
+            let commentIDList = post.comments;
+            let comments = []
+            for (let index in commentIDList) {
+                const { data } = await axios.get(`http://localhost:3001/data/comment/${commentIDList[index]}`);
+                comments.push(data.body);
+            }
+            setCommentList(comments);
+            console.log(commentList);
+        }
         setShow(true);
     }
 
@@ -31,18 +43,18 @@ function PostsList(props) {
         setComment(commentBody);
     }
 
-    async function submitComment () {
+    async function submitComment() {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ commentBody: comment, userID: postUserID})
+            body: JSON.stringify({ commentBody: comment, userID: postUserID, postID: postID })
         };
         const response = await fetch('http://localhost:3001/data/comment/', requestOptions);
         const data = await response.json();
-        console.log(data);
     }
 
     useEffect(() => {
+
         setPostList(props.allPosts);
     },
         [props.allPosts]
@@ -86,7 +98,7 @@ function PostsList(props) {
             <Container>
                 <Row>
                     {card}
-                    <Modal show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
+                    <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
                         <Modal.Header closeButton>
                             <Modal.Title>{modalTitle}</Modal.Title>
                         </Modal.Header>
