@@ -1,7 +1,7 @@
 
 const mongoCollections = require("../config/mongoCollections");
 const comments = mongoCollections.comments;
-// const postsData = require("./posts");
+const postsData = require("./posts");
 const ObjectId = require("mongodb").ObjectID;
 const bluebird = require("bluebird");
 const redis = require("redis");
@@ -54,12 +54,11 @@ async function addComment(cBody, uID, pID) {
     if (!insertComment || insertComment.insertedCount === 0) {
         throw new Error("Unable to add new comment!");
     }
+
     //gets the inserted comment and returns it
     const newId = insertComment.insertedId;
     const commentResult = await this.getComment(newId.toString());
-    // //adds the newly created commet ID into post collection
-    // let updatedPost = await postsData.addCommentToPost(pID, newId.toString());
-    // await client.hsetAsync("posts", pID, JSON.stringify(updatedPost));
+
     return commentResult;
 }
 /**

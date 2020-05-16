@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Container, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import NavigationBar from './navigation';
 
 /**
@@ -13,6 +13,9 @@ function PostsList(props) {
     const [modalTitle, setModalTitle] = useState(undefined);
     const [modalBody, setModalBody] = useState(undefined);
     const [show, setShow] = useState(false);
+    const [postID, setPostID] = useState(undefined);
+    const [comment, setComment] = useState("");
+    const [postUserID, setUserID] = useState(undefined)
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
@@ -20,7 +23,23 @@ function PostsList(props) {
     const handleShow = (post) => { //Set current post data to display in the modal
         setModalTitle(post.title);
         setModalBody(post.body);
+        setPostID(post._id);
         setShow(true);
+    }
+
+    const setCommentDetails = (commentBody) => { //Link comment to Post ID
+        setComment(commentBody);
+    }
+
+    async function submitComment () {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ commentBody: comment, userID: postUserID, postID: postID})
+        };
+        const response = await fetch('http://localhost:3001/data/comment/', requestOptions);
+        const data = await response.json();
+        console.log(data);
     }
 
     useEffect(() => {
@@ -44,7 +63,9 @@ function PostsList(props) {
                                 Post Details
                             </Button>
                         </Card.Body>
-                        <Card.Footer className="username">Posted by: {post.username}</Card.Footer>
+                        <Card.Footer className="username">
+                            Posted by: {post.username}
+                        </Card.Footer>
                     </Card>
                 </Col>
             </div>
@@ -65,11 +86,21 @@ function PostsList(props) {
             <Container>
                 <Row>
                     {card}
-                    <Modal show={show} onHide={handleClose}  size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+                    <Modal show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
                         <Modal.Header closeButton>
                             <Modal.Title>{modalTitle}</Modal.Title>
                         </Modal.Header>
-                        <Modal.Body>{modalBody}</Modal.Body>
+                        <Modal.Body>
+                            {modalBody}
+                            <br></br>
+                            <br></br>
+                            <Form>
+                                <Form.Group controlId={postID}>
+                                    <Form.Control postid={postID} className="commentPlaceholder" type="text" name="commentBody" onChange={e => { setCommentDetails(e.target.value) }} placeholder="Enter comment" />
+                                </Form.Group>
+                            </Form>
+                            <Button variant="secondary" size="sm" type="submit" onClick={submitComment}> Submit </Button>
+                        </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleClose}>
                                 Close

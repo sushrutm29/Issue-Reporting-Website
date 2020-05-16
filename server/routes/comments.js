@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const commentData = require("./../data/comments");
+const postData = require("./../data/posts")
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
@@ -31,13 +32,11 @@ router.post('/', async (req, res) => {
     if (!cInfo.postID || typeof cInfo.postID != "string" || cInfo.postID.length == 0) {
         return res.status(400).json({ error: "Invalid comment post ID was provided" });
     }
-    if (!cInfo.time || typeof cInfo.time != "string" || cInfo.time.length == 0) {
-        return res.status(400).json({ error: "Invalid comment creation time was provided" });
-    }
 
     try {
-        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID, cInfo.postID, cInfo.time);
+        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID, cInfo.postID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
+        await postData.addCommentToPost(cInfo.postID, newComment._id.toString());
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new comment! ${error}` });
@@ -47,7 +46,7 @@ router.post('/', async (req, res) => {
 router.patch('/update/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
-            throw "Commet id was not provided for editComment function!";
+            throw "Comment id was not provided for editComment function!";
         }
         if (!req.body) {
             throw "No request body was provided for editComment function!";
