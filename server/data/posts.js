@@ -45,7 +45,9 @@ async function createPost(deptID, title, body, username) {
         throw new Error("Invalid post username was provided");
     }
     var currentdate = new Date();
-    let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
+    let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) 
+    + '-' + currentdate.getDate() + " " + currentdate.getHours() + ":" 
+    + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
 
     const postsCollection = await posts();
     //prevents duplicated post object to be inserted into the database
@@ -67,7 +69,7 @@ async function createPost(deptID, title, body, username) {
     }
     //gets the inserted post and returns it
     const newPostID = insertPost.insertedId;
-    const postResult = await this.getPost(newPostID.toString());
+    const postResult = await this.getPostById(newPostID.toString());
     //adds the new post into department collection
     let updatedDept = await deptData.addPost(postResult.deptID, newPostID.toString());
     await client.hsetAsync("depts", `${updatedDept._id}`, JSON.stringify(updatedDept));
@@ -96,7 +98,7 @@ async function deletePost(postID) {
     }
     const postsCollection = await posts();
     
-    const deletedPost = await this.getPost(postID);
+    const deletedPost = await this.getPostById(postID);
     const removedPost = await postsCollection.removeOne({ _id: ObjectId(postID) });
     if (!removedPost || removedPost.deletedCount == 0) {
         throw new Error(`Could not remove post with ${postID} ID!`);
@@ -150,7 +152,7 @@ async function updatePost(postID, title, body) {
     if (!updatedPost || updatedPost.modifiedCount === 0) {
         throw new Error("Unable to update post!");
     }
-    let resultPost = await this.getPost(postID);
+    let resultPost = await this.getPostById(postID);
     return resultPost;
 }
 /** 
@@ -175,7 +177,7 @@ async function resolvePost(postID) {
     if (!updatedPost || updatedPost.modifiedCount === 0) {
         throw new Error(errorMessages.UpdateDestinationError);
     }
-    let resultPost = await this.getPost(postID);
+    let resultPost = await this.getPostById(postID);
     return resultPost;
 }
 /** 
@@ -184,7 +186,7 @@ async function resolvePost(postID) {
  * 
  * @param postID the post ID of the post to be retrieved.
 */
-async function getPost(postID) {
+async function getPostById(postID) {
     //validates number of arguments
     if (arguments.length != 1) {
         throw new Error("Wrong number of arguments");
@@ -201,6 +203,29 @@ async function getPost(postID) {
     }
     return singlePost;
 }
+/** 
+ * Retrieves a specific post with the matching user name; throws error if wrong type/number of
+ * arguments were provided or no post found with matching ID.
+ * 
+ * @param userName the user name of the post to be retrieved.
+*/
+async function getPostByUsername(userName) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
+    if (!userName || typeof userName != "string" || userName.length == 0) {
+        throw "Invalid user name is provided for getPostByUsername function";
+    }
+    const postsCollection = await posts();
+    const post = await postsCollection.findOne({ username: userName });
+    if (!post) {
+        throw `Post not found with user name ${userName}`;
+    }
+    return post;
+}
+
 /** 
  * Returns all the posts with the same department ID as the provided one; throws error if wrong type/number of
  * arguments were provided or no post found with matching department ID.
@@ -262,7 +287,7 @@ async function addCommentToPost(postID, commentID) {
     if (!updatedPost || updatedPost.modifiedCount === 0) {
         throw new Error(`Unable to add comment ID to post ${postID}!`);
     }
-    let resultPost = await this.getPost(postID);
+    let resultPost = await this.getPostById(postID);
     return resultPost;
 }
 /**
@@ -290,7 +315,7 @@ async function removeCommentFromPost(postID, commentID) {
     if (!updatedPost || updatedPost.modifiedCount === 0) {
         throw new Error(`Unable to remove comment ID from post ${postID}!`);
     }
-    let resultPost = await this.getPost(postID);
+    let resultPost = await this.getPostById(postID);
     return resultPost;
 }
 
@@ -300,7 +325,8 @@ module.exports = {
     deletePost,
     updatePost,
     resolvePost,
-    getPost,
+    getPostById,
+    getPostByUsername,
     getAllPostsByDeptID,
     getAllPosts,
     addCommentToPost,

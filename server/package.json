@@ -6,6 +6,7 @@
     "axios": "^0.19.2",
     "bluebird": "^3.7.2",
     "cors": "^2.8.5",
+    "elasticsearch": "^16.7.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.7-alpha.3",
     "express-session": "^1.17.1",

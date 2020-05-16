@@ -35,6 +35,29 @@ async function getUserById(userID) {
 }
 
 /**
+ * Returns a user with matching user name as the provided one; throws error if wrong type/number of
+ * arguments were provided. 
+ * @param userName the name of the user to be retrieved.
+ */
+async function getUserByName(userName) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
+    if (!userName || typeof userName != "string" || userName.length == 0) {
+        throw "Invalid user name is provided for getUserByName function";
+    }
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ userName: userName });
+    if (!user) {
+        throw `User not found with name ${userName}`;
+    }
+    
+    return user;
+}
+
+/**
  * Creates a new user with the provided information; throws error if wrong type/number of
  * arguments were provided. 
  * 
@@ -65,7 +88,7 @@ async function createUser(userName, userEmail, admin, profilePic) {
     usersCollection.createIndex({ "userName": 1, "userEmail": 1 }, { unique: true });
     let newUser = {
         userName: userName,
-        userEmail: userEmail,
+        userEmail: userEmail.toLowerCase(),
         admin: admin,
         posts: [],
         profilePic: profilePic
@@ -209,4 +232,11 @@ async function removePostFromUser(userID, postID) {
     return newUser;
 }
 
-module.exports = { getUserById, createUser, updateUser, addPostToUser, removePostFromUser };
+module.exports = { 
+    getUserById, 
+    createUser, 
+    updateUser, 
+    addPostToUser, 
+    removePostFromUser,
+    getUserByName
+ };
