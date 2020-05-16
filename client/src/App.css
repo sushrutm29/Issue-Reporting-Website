@@ -1,4 +1,4 @@
-.App {
+.App, .commentPlaceholder {
   text-align: center;
 }
 
@@ -38,3 +38,19 @@
   width: 75%;
   float: left;
 }
+.next, .prev {
+  margin: 15px;
+  padding: 8px;
+}
+
+.username {
+  font-size: 12px;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.cardTitle{
+  font-weight: bold;
+}
+
+

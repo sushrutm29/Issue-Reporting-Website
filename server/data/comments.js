@@ -1,14 +1,8 @@
 
 const mongoCollections = require("../config/mongoCollections");
 const comments = mongoCollections.comments;
-// const postsData = require("./posts");
+const postsData = require("./posts");
 const ObjectId = require("mongodb").ObjectID;
-const bluebird = require("bluebird");
-const redis = require("redis");
-const client = redis.createClient();
-
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
 
 /**
  * @author Saumya Shastri, Lun-Wei Chang
@@ -20,12 +14,11 @@ bluebird.promisifyAll(redis.Multi.prototype);
  * arguments were provided. Returns the newly created comment afterwards.
  * @param cBody comment content.
  * @param uID ID of the user who wrote the comment.
- * @param pID the ID of the post this comment belongs to.
  * @param time creation time of the comment.
  */
-async function addComment(cBody, uID, pID) {
+async function addComment(cBody, uID) {
     //validates number of arguments
-    if (arguments.length != 3) {
+    if (arguments.length != 2) {
         throw new Error("Wrong number of arguments");
     }
     //validates arguments type
@@ -35,9 +28,6 @@ async function addComment(cBody, uID, pID) {
     if (!uID || typeof (uID) != "string" || uID.length == 0) {
         throw new Error("Invalid user ID was provided");
     }
-    if (!pID || typeof (pID) != "string" || pID.length == 0) {
-        throw new Error("Invalid post ID was provided");
-    }
     var currentdate = new Date();
     let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate();
 
@@ -45,7 +35,6 @@ async function addComment(cBody, uID, pID) {
     let newComment = {
         body: cBody,
         userID: uID,
-        postID: pID,
         timeStamp: creationTime,
     };
 
@@ -54,12 +43,11 @@ async function addComment(cBody, uID, pID) {
     if (!insertComment || insertComment.insertedCount === 0) {
         throw new Error("Unable to add new comment!");
     }
+
     //gets the inserted comment and returns it
     const newId = insertComment.insertedId;
     const commentResult = await this.getComment(newId.toString());
-    // //adds the newly created commet ID into post collection
-    // let updatedPost = await postsData.addCommentToPost(pID, newId.toString());
-    // await client.hsetAsync("posts", pID, JSON.stringify(updatedPost));
+
     return commentResult;
 }
 /**
@@ -129,9 +117,6 @@ async function deleteComment(commentID, uID) {
     if (uID != deletedComment.userID) {
         throw new Error(`User ${uID} Not authorized to delete comment`);
     }
-    // //removes the comment from the post collection
-    // let updatedPost = await postsData.removeCommentFromPost(deletedComment.postID, commentID);
-    // await client.hsetAsync("posts", deletedComment.postID, JSON.stringify(updatedPost));
     //deletes comment from commentsCollection
     const deletionInfo = await commentsCollection.removeOne({ _id: ObjectId(commentID) });
     if (deletionInfo.deletedCount === 0) {
