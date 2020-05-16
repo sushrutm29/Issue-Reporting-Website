@@ -31,20 +31,24 @@ router.get('/', async (req, res) => {
     try {
         let allDepts = await client.hvalsAsync("depts");
         if (allDepts !== undefined && allDepts !== null && allDepts.length !== 0) {   //depts exist in Redis cache
-            console.log("get allDept from Redis!");
             let results = [];
             for (let i = 0; i < allDepts.length; i++) {
                 results.push(JSON.parse(allDepts[i]));
             }
             allDepts = results;
         } else {    //no dept exists in Redis cache
-            console.log("get allDept from MongoDB!");
             allDepts = await deptData.getAllDept();
             //loop through all the depts and add them to cache
             for (let i = 0; i < allDepts.length; i++) {
                 await client.hsetAsync(["depts", `${allDepts[i]._id}`, JSON.stringify(allDepts[i])]);
             }
         }
+        //sorts all departments' names alphabetically
+        allDepts.sort(function(a, b) {
+            var textA = a.deptName.toUpperCase();
+            var textB = b.deptName.toUpperCase();
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+        });
         return res.status(200).json(allDepts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get all the departments!  ${error}` });

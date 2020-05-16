@@ -1,6 +1,7 @@
 
 const mongoCollections = require("../config/mongoCollections");
 const comments = mongoCollections.comments;
+const postsData = require("./posts");
 const ObjectId = require("mongodb").ObjectID;
 
 /**
@@ -42,9 +43,11 @@ async function addComment(cBody, uID) {
     if (!insertComment || insertComment.insertedCount === 0) {
         throw new Error("Unable to add new comment!");
     }
+
     //gets the inserted comment and returns it
     const newId = insertComment.insertedId;
     const commentResult = await this.getComment(newId.toString());
+
     return commentResult;
 }
 /**
