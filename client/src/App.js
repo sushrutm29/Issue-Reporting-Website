@@ -5,6 +5,10 @@ import Department from './components/department';
 import Error404 from './components/Error404';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthProvider } from './firebase/Auth';
+import PrivateRoute from './components/privateRoute';
+import Login from './components/login';
+import SignUp from './components/signup'
 
 const App = () => {
 	return (
@@ -17,11 +21,13 @@ const App = () => {
 					<Switch>
 						<Route path='/home/page/:pageNo' component={Home} />
 						<Route path='/dept/:deptName/page/:pageNo' component={Department} />
+            <Route path='/login' component={Login} />
+            <Route path='/signup' component={SignUp} />
 						<Route component={Error404} />
 					</Switch>
 				</div>
-			</div>
-		</Router>
+			</Router>
+		</AuthProvider>
 	);
 };
 

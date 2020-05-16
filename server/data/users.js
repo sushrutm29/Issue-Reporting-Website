@@ -64,7 +64,7 @@ async function getUserByName(userName) {
  * @param userName name of the new user.
  * @param userEmail email of the new user.
  * @param admin specifies whether the new user is admin or not.
- * @param profilePic profile picture of the new user.
+ * @param profilePic specifies whether user uploaded profile picture or not
  */
 async function createUser(userName, userEmail, admin, profilePic) {
     //validates number of arguments
