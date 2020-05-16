@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, Container, Row, Col, Modal, Button, Image } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
 import axios from 'axios';
+import * as firebase from 'firebase';
 
 class userProfile extends Component {
     static contextType = AuthContext;
@@ -9,7 +10,8 @@ class userProfile extends Component {
         super(props);
         this.state = { userData: undefined, posts: undefined };
         this.state = { postsData: '' };
-    
+        this.state = { userState: null }
+
     }
 
     signUp = (event) => {
@@ -47,26 +49,36 @@ class userProfile extends Component {
         })
     }
 
-    openEditForm = (openClassName, closeClassName ) => {
+    currentUser = () => {
+        return new Promise((resolve, reject) => {
+                firebase.auth().onAuthStateChanged( (user) => {
+                    if (user) {
+                        resolve(user.displayName);
+                    } else {
+                        console.log("no user logged in");
+                    }
+                });
+        });
+    }
+
+    openEditForm = (openClassName, closeClassName) => {
         var divToOpen = document.getElementsByClassName(openClassName);
         var divToClose = document.getElementsByClassName(closeClassName);
 
-        for(var i = 0; i < divToOpen.length; i++){
-            divToOpen[i].style.display = "block"; 
+        for (var i = 0; i < divToOpen.length; i++) {
+            divToOpen[i].style.display = "block";
         }
 
-        for(var i = 0; i < divToClose.length; i++){
-            divToClose[i].style.display = "none"; 
+        for (var i = 0; i < divToClose.length; i++) {
+            divToClose[i].style.display = "none";
         }
     }
 
-    async getUserPostDetails(){
+    async getUserPostDetails() {
         try {
-            this.signUp();
-            const user = this.context;
+            let user = await this.currentUser();
             console.log(user);
-            let { data } = await axios.get(`http://localhost:3001/data/user/5e8d57d8a0890e28c5bdd2a0`);
-            // let { data } = await axios.get(`http://localhost:3001/data/user/name/${this.user.currentUser.displayName}`);
+            let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
             let postIds = data.posts;
             let posts = [];
             for (const id of postIds) {
@@ -74,7 +86,6 @@ class userProfile extends Component {
                 posts.push(post.data)
             }
             this.setState({ userData: data, posts: posts });
-            
         } catch (error) {
             console.log(error)
         }
@@ -82,17 +93,8 @@ class userProfile extends Component {
 
     async componentDidMount() {
         try {
+            
             await this.getUserPostDetails();
-            // console.log(this.context);
-            // let { data } = await axios.get(`http://localhost:3001/data/user/5e8d57d8a0890e28c5bdd2a0`);
-            // // let { data } = await axios.get(`http://localhost:3001/data/user/name/${this.user.currentUser.displayName}`);
-            // let postIds = data.posts;
-            // let posts = [];
-            // for (const id of postIds) {
-            //     let post = await axios.get(`http://localhost:3001/data/post/${id}`);
-            //     posts.push(post.data)
-            // }
-            // this.setState({ userData: data, posts: posts });
         } catch (error) {
             console.log("error : ", error);
         }
@@ -100,14 +102,14 @@ class userProfile extends Component {
 
     render() {
         let html_body = (
-            <div>  
-                <h2>Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here :( "}</h2>
+            <div>
+                <h2>Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h2>
                 <br></br>
-                <h2>User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here :( "}</h2>
+                <h2>User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here  "}</h2>
                 {this.state.posts && this.state.posts.map((post, index) => (
                     <Modal.Dialog key={index}>
                         <form onSubmit={this.handleSubmit}>
-                            <div className={index + "-edit edit-post-div"} style={{display : "none"}}>
+                            <div className={index + "-edit edit-post-div"} style={{ display: "none" }}>
                                 <br></br>
                                 <label>Post Title  :  </label>
                                 <input type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
@@ -125,7 +127,7 @@ class userProfile extends Component {
                             <div className={index + "-show"}>
                                 <div>Post Title : {post.title}</div>
                                 <div>Post Body  : {post.body}</div>
-                                <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index+"-edit", index+"-show")} > Edit</Button>
+                                <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index + "-edit", index + "-show")} > Edit</Button>
                             </div>
 
                         </form >
