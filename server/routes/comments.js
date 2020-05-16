@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID, cInfo.postID);
+        const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
         await postData.addCommentToPost(cInfo.postID, newComment._id.toString());
         return res.status(200).json(newComment);

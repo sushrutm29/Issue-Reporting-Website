@@ -35,7 +35,7 @@ function PostsList(props) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ commentBody: comment, userID: postUserID, postID: postID})
+            body: JSON.stringify({ commentBody: comment, userID: postUserID})
         };
         const response = await fetch('http://localhost:3001/data/comment/', requestOptions);
         const data = await response.json();
