@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PostsList from './posts';
 import axios from 'axios';
-import SignOutButton from './signOut';
+import SignOutButton from './SignOut';
 
 /**
  * @author Lun-Wei Chang
