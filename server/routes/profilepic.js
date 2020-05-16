@@ -14,10 +14,6 @@ router.post('/', async (req, res) => {
 
         const uploadPath = __dirname + '/../../client/public/uploads';
 
-        if(!fs.existsSync(uploadPath));{
-            fs.mkdirSync(uploadPath);
-        }
-
         fs.readdir(uploadPath, (err, files) => {
             if (err) throw err;
             for(let i=0; i<files.length; i++){
