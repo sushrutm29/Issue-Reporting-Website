@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import SignOutButton from './SignOut';
 import Error404 from './Error404';
 
 /**
@@ -72,7 +71,6 @@ function Home(props) {
 
     return (
         <div className="homePage">
-            <SignOutButton />
             <PostsList allPosts={postList} />
             {prevLink}
             {nextLink}
