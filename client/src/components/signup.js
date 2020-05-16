@@ -31,15 +31,16 @@ function SignUp() {
     }
 
     try {
+      
+      if(swearjar.profane(displayName.value) == true){
+      throw new Error("Inapproprite username");
+      }
+      
       await doCreateUserWithEmailAndPassword(
         email.value,
         passwordOne.value,
         displayName.value
       );
-          //profanity filter
-        if(swearjar.profane(displayName.value) == true){
-            throw new Error("Inapproprite username");
-        }
 
       if(file !== ''){
         let formData = new FormData();
