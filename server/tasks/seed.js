@@ -57,33 +57,33 @@ function getDepartmentId(depts, deptName) {
         await elasticClient.indices.putMapping({
             index: "issues",
             type: "posts",
-            body: {
-              properties: {
-                id: {
-                  type: "keyword"
-                },
-                deptID: {
-                    type: "keyword"
-                },
-                title: {
-                    type: "keyword"
-                },
-                body: {
-                    type: "keyword"
-                },
-                username: {
-                    type: "keyword"
-                },
-                resolvedStatus: {
-                    type: "boolean"
-                },
-                CreationTime: {
-                    type: "date"
-                },
-                comments: {
-                    type: "object"
+             body: {
+                properties: {
+                    id: {
+                        type: "keyword"
+                    },
+                    deptID: {
+                        type: "keyword"
+                    },
+                    title: {
+                        type: "keyword"
+                    },
+                    body: {
+                        type: "keyword"
+                    },
+                    username: {
+                        type: "keyword"
+                    },
+                    resolvedStatus: {
+                        type: "boolean"
+                    },
+                    CreationTime: {
+                        type: "date"
+                    },
+                    comments: {
+                        type: "object"
+                    }
                 }
-              },
             },
         }, (err, resp, status) => {
             if (err) {

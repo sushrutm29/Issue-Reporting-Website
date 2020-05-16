@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// // for testing Elasticsearch getAll function
+// for testing Elasticsearch getAll function
 // router.get('/elasticAll', async (req, res) => {
 //     console.log("starts getAllResults");
 //     try {
@@ -49,25 +49,42 @@ router.get('/', async (req, res) => {
 
 router.get('/elasticsearch', async (req, res) => {
     try {
+        if (!req.body) {
+            throw "No request body was provided for elasticsearch function!";
+        }
         let keyWord = "";   //keyword to be searched among post's title and body
-        // let keyWord = ".*";
+        let departmentID = ".*";
         const postInfo = req.body;
-        if (postInfo) { //search keywords are provided
-            if (postInfo.keyword && typeof postInfo.keyword == "string" && postInfo.keyword.length != 0) {
-                keyWord = postInfo.keyword;
-                // keyWord = `.*${postInfo.keyword}.*`;
-            }
+        if (!postInfo.keyword) {    //empty keyword will cause error as well
+            throw "No keyword was provided for elasticsearch function!";
+        } else {
+            keyWord = `*${postInfo.keyword.toLowerCase()}*`;
+        }
+        if (postInfo.deptID) {
+            departmentID = postInfo.deptID;
         }
         await elasticClient.search({
             index: "issues",
             type: "posts",
             body: {
-                query: {  
-                    bool: {
-                        should: [
-                            { match_phrase : { title: keyWord }},
-                            { match_phrase : { body: keyWord }}
-                        ]
+                query: {    //match_phrase + wildcard???
+                    bool: { 
+                        must: {
+                            query_string : {
+                                query : keyWord,
+                                // default_field : "title",
+                                default_operator: "AND",
+                                fields: [
+                                    "title",
+                                    "body"
+                                ]
+                            }
+                        },
+                        filter: {
+                            regexp:  {
+                                deptID: departmentID 
+                            }
+                        }
                     }
                 }
             }
@@ -337,14 +354,23 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// for testing elasticsearch
+// // for testing elasticsearch
 // async function getAllElastic() {
 //     let results = await elasticClient.search({
 //         index: "issues",
 //         type: "posts",
 //         body: {
 //             query: {
-//                 match_all: {}
+//                 bool: {
+//                     must: {
+//                         match_all: {}
+//                     },
+//                     filter: {
+//                         regexp:  {
+//                             deptID: ".*" 
+//                         }
+//                     }
+//                 }
 //             }
 //         }
 //     }).then(function(resp) {
