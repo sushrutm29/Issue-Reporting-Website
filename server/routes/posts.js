@@ -15,6 +15,10 @@ bluebird.promisifyAll(redis.Multi.prototype);
  */
 router.get('/', async (req, res) => {
     try {
+        let sortOrder = "asce"; //ascending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let allPosts = await client.hvalsAsync("posts");
         if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //posts exist in Redis cache
             let results = [];
@@ -29,6 +33,15 @@ router.get('/', async (req, res) => {
                 await client.hsetAsync(["posts", `${allPosts[i]._id}`, JSON.stringify(allPosts[i])]);
             }
         }
+        //sorts the outputs by time
+        allPosts.sort(function(a, b){ 
+            if (sortOrder === "asce") {
+                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+            } else {
+                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+            }
+        });
+        
         return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
@@ -136,6 +149,10 @@ router.get('/dept/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Department id was not provided for getAllPostsByDeptID method!";
         }
+        let sortOrder = "asce"; //ascending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let deptID = req.params.id;
 
         let allPosts = await client.hvalsAsync("posts");
@@ -152,6 +169,14 @@ router.get('/dept/:id', async (req, res) => {
                 await client.hsetAsync(["posts", `${currentPosts[i]._id}`, JSON.stringify(currentPosts[i])]);
             }
         }
+        //sorts the outputs by time
+        allPosts.sort(function(a, b){ 
+            if (sortOrder === "asce") {
+                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+            } else {
+                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+            }
+        });
         return res.status(200).json(currentPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
