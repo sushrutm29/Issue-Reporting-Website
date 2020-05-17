@@ -13,7 +13,7 @@ function PostModal(props) {
     useEffect(() => {
         setModalTitle(props.post.title);
         setModalBody(props.post.body);
-    }, []);
+    }, [props.post.title, props.post.body]);
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);

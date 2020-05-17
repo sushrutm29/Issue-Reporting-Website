@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import CommentList from './comments';
 
 function SubmitComment(props) {
     const [comment, setComment] = useState("");
     const [postUserID, setUserID] = useState(props.userID);
-    const [commentList, setCommentList] = useState(props.allComments);
 
     useEffect(() => {
-        setCommentList(props.allComments);
         setUserID(props.userID);
-    }, []
+    }, [props.userID]
     )
 
     async function submitComment() {
