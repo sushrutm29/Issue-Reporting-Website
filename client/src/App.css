@@ -40,4 +40,6 @@
   font-weight: bold;
 }
 
-
+.createPostButton{
+  margin: 10px;
+}

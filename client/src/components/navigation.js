@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import CreatePost from './createIssue'
 
 function NavigationBar(props) {
     let departmentDropdown = null;
@@ -50,6 +51,7 @@ function NavigationBar(props) {
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                         <Button variant="outline-success">Search</Button>
                     </Form>
+                    <CreatePost/>
                 </Nav>
                 <Button variant="outline-success" href="#">Signout</Button>
             </Navbar.Collapse>

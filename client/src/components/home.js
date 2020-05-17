@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import SignOutButton from './signOut';
 import Error404 from './Error404';
+import { AuthContext } from '../firebase/Auth';
 
 /**
  * @author Lun-Wei Chang
@@ -11,7 +12,7 @@ import Error404 from './Error404';
  * @date 05/06/2020
  */
 function Home(props) {
-
+    const { currentUser } = useContext(AuthContext);
     const [postList, setPostList] = useState(undefined);
     const [currentPageNum, setPage] = useState(props.match.params.pageNo);
     const [lastPage, setLastpage] = useState(undefined);
