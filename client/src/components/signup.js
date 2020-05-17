@@ -6,7 +6,7 @@ import SocialSignIn from './socialSignIn';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-var swearjar = require('swearjar');
+//var swearjar = require('swearjar');
 
 function SignUp() {
   const { currentUser } = useContext(AuthContext);
@@ -32,9 +32,9 @@ function SignUp() {
 
     try {
 
-      if(swearjar.profane(displayName.value) === true){
-      throw new Error("Inapproprite username");
-      }
+      // if(swearjar.profane(displayName.value) === true){
+      // throw new Error("Inapproprite username");
+      // }
       
       await doCreateUserWithEmailAndPassword(
         email.value,
