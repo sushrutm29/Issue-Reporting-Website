@@ -36,11 +36,26 @@ router.get('/:id', async (req, res) => {
 router.get('/name/:username', async (req, res) => {
     try {
         if (!req.params || !req.params.username) {
-            throw "Username was not provided for get method!";
+            throw "Username was not provided for getUserByName method!";
         }
 
         let username = req.params.username;
         currentUser = await userData.getUserByName(username);
+        
+        return res.status(200).json(currentUser);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific user! ${error}` });
+    }
+});
+
+router.get('/email/:email', async (req, res) => {
+    try {
+        if (!req.params || !req.params.email) {
+            throw "Username was not provided for getUserByName method!";
+        }
+
+        let email = req.params.email;
+        currentUser = await userData.getUserByEmail(email);
         
         return res.status(200).json(currentUser);
     } catch (error) {
