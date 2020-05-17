@@ -33,7 +33,8 @@ router.post('/', async (req, res) => {
     try {
         const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
-        await postData.addCommentToPost(cInfo.postID, newComment._id.toString()); //Add comment to posts collection
+        let newPost = await postData.addCommentToPost(cInfo.postID, newComment._id.toString()); //Add comment to posts collection
+        await client.hsetAsync("posts", cInfo.postID, JSON.stringify(newPost));
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new comment! ${error}` });
