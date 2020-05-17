@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import { doSignOut } from '../firebase/FirebaseFunctions';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
@@ -42,7 +43,9 @@ function NavigationBar(props) {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
                     <Nav.Link href="/home/page/1">Home</Nav.Link>
-                    <Nav.Link href="#">Profile</Nav.Link>
+                    <Nav.Link href="/profile">Profile</Nav.Link>
+                    <Nav.Link href="/login">Login</Nav.Link>
+                    <Nav.Link href="/signup">Sign Up</Nav.Link>
                     <NavDropdown title="Department" id="basic-nav-dropdown">
                         {departmentDropdown}
                     </NavDropdown>
@@ -51,7 +54,7 @@ function NavigationBar(props) {
                         <Button variant="outline-success">Search</Button>
                     </Form>
                 </Nav>
-                <Button variant="outline-success" href="#">Signout</Button>
+                <Button variant="outline-success" onClick={ doSignOut } href="#">Signout</Button>
             </Navbar.Collapse>
         </Navbar>
     )

@@ -7,6 +7,12 @@ import { doChangePassword } from '../firebase/FirebaseFunctions';
 import * as firebase from 'firebase';
 import ModalHeader from "react-bootstrap/ModalHeader";
 
+/**
+ * @author Sri Vallabhaneni
+ * @version 1.0
+ * @date 05/06/2020
+ */
+
 class userProfile extends Component {
     static contextType = AuthContext;
     constructor(props) {
@@ -121,11 +127,13 @@ class userProfile extends Component {
     render() {
         let html_body = (
             <div>
+                <br></br>
+                <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
 
-                    <h1>Username : {(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h1>
+                    <h1>{(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h1>
                     <br></br>
-                    <h3>User's Email : {(this.state.userData && this.state.userData.userEmail) || " No User email available Here  "}</h3>
+                    <h3> {(this.state.userData && this.state.userData.userEmail) || " No User email available Here  "}</h3>
                 </Card>
 
                 <div className="change-password-wrapper" style={{ margin: "0px auto", width: "250px" }}>
