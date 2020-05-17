@@ -51,11 +51,7 @@ router.get('/name/:username', async (req, res) => {
 router.get('/email/:email', async (req, res) => {
     try {
         if (!req.params || !req.params.email) {
-<<<<<<< HEAD
-            throw "Username was not provided for getUserByName method!";
-=======
             throw "Email was not provided for get method!";
->>>>>>> c9e7d68ce92253a82768e6c7b2004c9cc00094f5
         }
 
         let email = req.params.email;

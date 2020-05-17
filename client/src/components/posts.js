@@ -12,10 +12,8 @@ import { AuthContext } from '../firebase/Auth';
 function PostsList(props) {
     const { currentUser } = useContext(AuthContext);
     let card = null;
-    const { currentUser } = useContext(AuthContext);
     const [postList, setPostList] = useState(props.allPosts);
     const [postUserID, setUserID] = useState(undefined);
-    const [adminStatus, setAdminStatus] = useState(false);
     const [postUserEmail, setUserEmail] = useState(undefined);
 
     useEffect(() => {
@@ -25,7 +23,6 @@ function PostsList(props) {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
                 setUserEmail(data.userEmail);
-                setAdminStatus(data.admin);
             } catch (error) {
                 console.log(error);
             }
@@ -56,14 +53,6 @@ function PostsList(props) {
             </div>
         );
     }
-
-    let edit_button = null;
-    if (adminStatus) {
-        edit_button = <Button variant="primary" onClick={() => {}} >
-        Edit Post
-        </Button>;
-    }
-
 
     if (postList) {
         card = postList && postList.map((post) => {

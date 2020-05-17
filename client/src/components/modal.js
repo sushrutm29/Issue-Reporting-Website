@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
 import CommentList from './comments';
+import { AuthContext } from '../firebase/Auth';
 
 function PostModal(props) {
+    const { currentUser } = useContext(AuthContext);
     const [modalTitle, setModalTitle] = useState(undefined);
     const [modalBody, setModalBody] = useState(undefined);
     const [postID, setPostID] = useState(undefined);
@@ -11,11 +13,20 @@ function PostModal(props) {
     const [show, setShow] = useState(false);
     const [comment, setComment] = useState("");
     const [commentList, setCommentList] = useState([]);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     useEffect(() => {
         setUserID(props.userID);
-
-    }, [commentList]);
+        async function fetchPostData() {
+            try {
+                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                setAdminStatus(data.admin);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchPostData();
+    }, [commentList, currentUser.email]);
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
@@ -50,11 +61,19 @@ function PostModal(props) {
        setCommentList(commentList => commentList.concat(data._id));
     }
 
+    let edit_button = null;
+    if (adminStatus) {
+        edit_button = <Button variant="primary" onClick={() => {}} >
+        Edit Post
+        </Button>;
+    }
+
     return (
         <div>
             <Button variant="primary" onClick={() => { handleShow(props.post) }} >
                 Post Details
             </Button>
+            {edit_button}
             <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalTitle}</Modal.Title>

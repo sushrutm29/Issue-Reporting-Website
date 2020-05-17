@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 import {doSignOut} from '../firebase/FirebaseFunctions';
+import { AuthContext } from '../firebase/Auth';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
     const [deptList, setDeptList] = useState(props);
+    const { currentUser } = useContext(AuthContext);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -16,6 +19,15 @@ function NavigationBar(props) {
                 console.log(error)
             }
         }
+        async function fetchUserData() {
+            try {
+                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                setAdminStatus(data.admin);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchUserData();
         fetchData();
     },
         [deptList]
@@ -36,6 +48,17 @@ function NavigationBar(props) {
         });
     }
 
+    let edit_button = null;
+    if (adminStatus) {
+        edit_button = 
+        <div><Button variant="outline-success" onClick={() => {}} >
+        Add Dept
+        </Button>
+        <Button variant="outline-success" onClick={() => {}} >
+        Delete Dept
+        </Button></div>;
+    }
+
 
     return (
         <Navbar bg="light" expand="lg" className="navBar">
@@ -51,6 +74,7 @@ function NavigationBar(props) {
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                         <Button variant="outline-success">Search</Button>
                     </Form>
+                    {edit_button}
                 </Nav>
                 <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
             </Navbar.Collapse>
