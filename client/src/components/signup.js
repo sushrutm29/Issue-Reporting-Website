@@ -31,8 +31,8 @@ function SignUp() {
     }
 
     try {
-      
-      if(swearjar.profane(displayName.value) == true){
+
+      if(swearjar.profane(displayName.value) === true){
       throw new Error("Inapproprite username");
       }
       
