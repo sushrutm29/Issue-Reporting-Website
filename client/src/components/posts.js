@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import { AuthContext } from '../firebase/Auth';
 
 /**
  * @author Shiwani Deo, Lun-Wei Chang
@@ -8,6 +9,7 @@ import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap'
  * @date 05/03/2020 
  */
 function PostsList(props) {
+    const { currentUser } = useContext(AuthContext);
     let card = null;
     const [postList, setPostList] = useState(props.allPosts);
     const [modalTitle, setModalTitle] = useState(undefined);
@@ -38,6 +40,11 @@ function PostsList(props) {
         setShow(true);
     }
 
+    const handleDelete = async (post) => {
+        const res = await axios.delete(`http://localhost:3001/data/post/${post._id}`);
+        props.action();
+    }
+
     const setCommentDetails = (commentBody) => { //Link comment to Post ID
         setComment(commentBody);
     }
@@ -61,26 +68,52 @@ function PostsList(props) {
 
     const buildListItem = (post) => {
         var postDetails = post.body.slice(0, 140) + '...';
-        return (
-            <div className="post" key={post._id}>
-                <Col lg={4}>
-                    <Card style={{ width: '18rem' }} className="postCard">
-                        <Card.Header className="cardTitle">{post.title}</Card.Header>
-                        <Card.Body>
-                            <Card.Text>
-                                {postDetails}
-                            </Card.Text>
-                            <Button variant="primary" onClick={() => { handleShow(post) }} >
-                                Post Details
-                            </Button>
-                        </Card.Body>
-                        <Card.Footer className="username">
-                            Posted by: {post.username}
-                        </Card.Footer>
-                    </Card>
-                </Col>
-            </div>
-        );
+        if(post.username === currentUser.displayName){
+            return (
+                <div className="post" key={post._id}>
+                    <Col lg={4}>
+                        <Card style={{ width: '18rem' }} className="postCard">
+                            <Card.Header className="cardTitle">{post.title}</Card.Header>
+                            <Card.Body>
+                                <Card.Text>
+                                    {postDetails}
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => { handleShow(post) }} >
+                                    Post Details
+                                </Button>
+                                <Button variant="danger" className="deletePostButton" onClick={() => { handleDelete(post) }} >
+                                    Delete
+                                </Button>
+                            </Card.Body>
+                            <Card.Footer className="username">
+                                Posted by: {post.username}
+                            </Card.Footer>
+                        </Card>
+                    </Col>
+                </div>
+            );
+        }else{
+            return (
+                <div className="post" key={post._id}>
+                    <Col lg={4}>
+                        <Card style={{ width: '18rem' }} className="postCard">
+                            <Card.Header className="cardTitle">{post.title}</Card.Header>
+                            <Card.Body>
+                                <Card.Text>
+                                    {postDetails}
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => { handleShow(post) }} >
+                                    Post Details
+                                </Button>
+                            </Card.Body>
+                            <Card.Footer className="username">
+                                Posted by: {post.username}
+                            </Card.Footer>
+                        </Card>
+                    </Col>
+                </div>
+            );
+        }
     }
 
     if (postList) {

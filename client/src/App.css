@@ -53,4 +53,6 @@
   font-weight: bold;
 }
 
-
+.deletePostButton{
+  margin: 10px;
+}
