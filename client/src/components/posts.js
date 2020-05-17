@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col} from 'react-bootstrap';
 import PostModal from './modal';
-import NavigationBar from './navigation';
 import { AuthContext } from '../firebase/Auth';
 
 /**
@@ -15,14 +14,15 @@ function PostsList(props) {
     let card = null;
     const [postList, setPostList] = useState(props.allPosts);
     const [postUserID, setUserID] = useState(undefined);
+    const [postUserEmail, setUserEmail] = useState(undefined);
 
     useEffect(() => {
         setPostList(props.allPosts);
         async function fetchPostData() {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                console.log(data);
                 setUserID(data._id);
+                setUserEmail(data.userEmail);
             } catch (error) {
                 console.log(error);
             }
@@ -60,11 +60,8 @@ function PostsList(props) {
         });
     }
 
-    let navigationBar = NavigationBar();
-
     return (
         <div className="postPage">
-            {navigationBar}
             <Container>
                 <Row>
                     {card}
