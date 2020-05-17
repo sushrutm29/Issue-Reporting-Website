@@ -48,6 +48,21 @@ router.get('/name/:username', async (req, res) => {
     }
 });
 
+router.get('/email/:email', async (req, res) => {
+    try {
+        if (!req.params || !req.params.email) {
+            throw "Email was not provided for get method!";
+        }
+
+        let email = req.params.email;
+        currentUser = await userData.getUserByEmail(email);
+        
+        return res.status(200).json(currentUser);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific user! ${error}` });
+    }
+});
+
 router.post('/', async (req, res) => {
     if (!req.body) {
         throw "No request body was provided for createUser function!";

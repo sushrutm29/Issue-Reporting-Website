@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import PostsList from './posts';
 import Error404 from './Error404';
+import NavigationBar from './navigation';
 
 /**
  * @author Lun-Wei Chang
@@ -68,8 +69,11 @@ const Department = (props) => {
         nextLink = <Link onClick={incrementPage} className="next" to={`/dept/${currentDeptName}/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
+    let navigationBar = NavigationBar();
+
     return (
         <div className="deptPostList">
+            {navigationBar}
             <PostsList allPosts={postList} />
             {prevLink}
             {nextLink}

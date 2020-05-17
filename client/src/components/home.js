@@ -3,6 +3,7 @@ import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Error404 from './Error404';
+import NavigationBar from './navigation';
 
 /**
  * @author Lun-Wei Chang
@@ -36,7 +37,7 @@ function Home(props) {
     );
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <=0) {
+    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
     }
 
@@ -69,8 +70,11 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
+    let navigationBar = NavigationBar();
+
     return (
         <div className="homePage">
+            {navigationBar}
             <PostsList allPosts={postList} />
             {prevLink}
             {nextLink}
