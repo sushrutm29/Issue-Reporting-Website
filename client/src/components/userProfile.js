@@ -6,6 +6,7 @@ import axios from 'axios';
 import { doChangePassword } from '../firebase/FirebaseFunctions';
 import * as firebase from 'firebase';
 import ModalHeader from "react-bootstrap/ModalHeader";
+import '../App.css';
 
 /**
  * @author Sri Vallabhaneni
@@ -20,6 +21,7 @@ class userProfile extends Component {
         this.state = { userData: undefined, posts: undefined };
         this.state = { postsData: '' };
         this.state = { userState: null }
+        this.state = { imageName: null }
 
     }
 
@@ -37,7 +39,6 @@ class userProfile extends Component {
             title,
             body
         }
-        console.log(postDetails)
         try {
             await axios({
                 method: 'patch',
@@ -98,14 +99,16 @@ class userProfile extends Component {
             let user = await this.currentUser();
             if (user != null) {
                 let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
+                const userId = data._id;
+                const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
+                console.log(window.location.origin);
                 let postIds = data.posts;
                 let posts = [];
                 for (const id of postIds) {
-                    console.log(id);
                     let post = await axios.get(`http://localhost:3001/data/post/${id}`);
                     posts.push(post.data)
                 }
-                this.setState({ userData: data, posts: posts });
+                this.setState({ userData: data, posts: posts, imageName: imageDetails.data.path });
             }
             else {
                 window.location.href = "/login";
@@ -129,6 +132,9 @@ class userProfile extends Component {
             <div>
                 <br></br>
                 <br></br>
+                <div className="profile-img-div">
+                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="not found" />
+                </div>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
 
                     <h1>{(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h1>
@@ -140,8 +146,9 @@ class userProfile extends Component {
 
                     <br></br>
                     <div>
-                        <h4>Change Password</h4>
+                        <h6>Change Password</h6>
                     </div>
+                    <hr></hr>
                     <br></br>
                     <form onSubmit={this.changePassword}>
                         <div className="form-group">
@@ -159,40 +166,48 @@ class userProfile extends Component {
                         </div>
                     </form>
                 </div>
-                {this.state.posts && this.state.posts.map((post, index) => (
-                    <Modal.Dialog key={index}>
-                        <br></br>
-                        <form onSubmit={this.handleSubmit}>
-                            <div className={index + "-edit edit-post-div"} style={{ display: "none" }}>
-                                <br></br>
-                                <label>Post Title  :  </label>
-                                <input type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
-                                <br></br>
-                                <input type='text' name='postID' hidden value={post._id} readOnly />
-                                <br></br>
-                                <label>Post Body  : </label>
-                                <input type='text' placeholder='post-body' name='postBody' defaultValue={post.body} onChange={this.handleInputChange} />
-                                <br></br>
-                                <br></br>
-                                <Modal.Footer>
-                                    <Button type="submit" variant="primary"> Save changes</Button>
-                                </Modal.Footer>
-                            </div>
-                            <div className={index + "-show"}>
-                                <ModalHeader>
-                                    <div>Post Title : {post.title}</div>
-                                </ModalHeader>
-                                <br></br>
-                                <div>Post Body  : {post.body}</div>
-                                <br></br>
+                <div>
+                    <h4>Posts</h4>
+                    <hr></hr>
+                </div>
+                <div className="post-wrapper row">
+                    {this.state.posts && this.state.posts.map((post, index) => (
+                        <Modal.Dialog key={index} className="col-md-6 col-sm-6 col-lg-6 col-xs-6">
+                            <br></br>
+                            <form onSubmit={this.handleSubmit}>
+                                <div className={index + "-edit edit-post-div"} style={{ display: "none" }}>
+                                    <br></br>
+                                    <label>Post Title  :  </label>
+                                    <input type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
+                                    <br></br>
+                                    <input type='text' name='postID' hidden value={post._id} readOnly />
+                                    <br></br>
+                                    <label>Post Body  : </label>
+                                    <input type='text' placeholder='post-body' name='postBody' defaultValue={post.body} onChange={this.handleInputChange} />
+                                    <br></br>
+                                    <br></br>
+                                    <Modal.Footer>
+                                        <Button type="submit" variant="primary"> Save changes</Button>
+                                    </Modal.Footer>
+                                </div>
+                                <div className={index + "-show"}>
+                                    <ModalHeader>
+                                        <div>Post Title : {post.title}</div>
+                                    </ModalHeader>
+                                    <br></br>
+                                    <div>Post Body  : {post.body}</div>
+                                    <br></br>
 
-                                <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index + "-edit", index + "-show")} > Edit</Button>
+                                    <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index + "-edit", index + "-show")} > Edit</Button>
 
-                            </div>
-                        </form >
-                        <br></br>
-                    </Modal.Dialog>
-                ))}
+                                </div>
+                            </form >
+                            <br></br>
+                        </Modal.Dialog>
+                    ))}
+
+                </div>
+
             </div>
         );
         return html_body;
