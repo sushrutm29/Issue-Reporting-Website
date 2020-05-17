@@ -29,6 +29,7 @@ function Home(props) {
             try {
                 let { data } = await axios.get('http://localhost:3001/data/post/');
                 setDonePostList(data.filter((post) => post['resolvedStatus']));
+                
                 setPage(props.match.params.pageNo);
                 data = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`);
                 setPostList(data.data.filter((post) => !post['resolvedStatus']));
