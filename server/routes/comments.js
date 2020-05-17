@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: newPostID, 
+            id: cInfo.postID, 
             body: dataBody
         }).then(function(resp) {
             console.log(`addCommentToPost elasticsearch response = ${resp}`);
