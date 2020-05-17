@@ -60,14 +60,21 @@ async function getUserByName(userName) {
 /**
  * Returns a user with matching user email as the provided one; throws error if wrong type/number of
  * arguments were provided. 
+<<<<<<< HEAD
  * @param userEmail the email of the user to be retrieved.
  */
 async function getUserByEmail(userEmail) {
+=======
+ * @param email the email of the user to be retrieved.
+ */
+async function getUserByEmail(email) {
+>>>>>>> c9e7d68ce92253a82768e6c7b2004c9cc00094f5
     //validates number of arguments
     if (arguments.length != 1) {
         throw new Error("Wrong number of arguments");
     }
     //validates arguments type
+<<<<<<< HEAD
     if (!userEmail || typeof userEmail != "string" || userEmail.length == 0) {
         throw "Invalid user email is provided for getUserByEmail function";
     }
@@ -75,11 +82,24 @@ async function getUserByEmail(userEmail) {
     const user = await usersCollection.findOne({ userEmail: userEmail });
     if (!user) {
         throw `User not found with name ${userEmail}`;
+=======
+    if (!email || typeof email != "string" || email.length == 0) {
+        throw "Invalid email is provided for getUserByName function";
+    }
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ userEmail: email });
+    if (!user) {
+        throw `User not found with email ${email}`;
+>>>>>>> c9e7d68ce92253a82768e6c7b2004c9cc00094f5
     }
     
     return user;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c9e7d68ce92253a82768e6c7b2004c9cc00094f5
 /**
  * Creates a new user with the provided information; throws error if wrong type/number of
  * arguments were provided. 

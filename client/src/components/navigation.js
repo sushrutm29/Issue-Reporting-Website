@@ -52,7 +52,7 @@ function NavigationBar(props) {
                         <Button variant="outline-success">Search</Button>
                     </Form>
                 </Nav>
-                <Button variant="outline-success" href="doSignOut">Signout</Button>
+                <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
             </Navbar.Collapse>
         </Navbar>
     )
