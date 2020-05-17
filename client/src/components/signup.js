@@ -12,7 +12,7 @@ function SignUp() {
   const [file, setFile] = useState('');
 
   if (currentUser) {
-    return <Redirect to="/home" />;
+    return <Redirect to="/home/page/1" />;
   }
   
   const handleUpload = e => {

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import NavigationBar from './navigation';
+import { AuthContext } from '../firebase/Auth';
 
 /**
  * @author Shiwani Deo, Lun-Wei Chang
@@ -10,6 +11,7 @@ import NavigationBar from './navigation';
  */
 function PostsList(props) {
     let card = null;
+    const { currentUser } = useContext(AuthContext);
     const [postList, setPostList] = useState(props.allPosts);
     const [modalTitle, setModalTitle] = useState(undefined);
     const [modalBody, setModalBody] = useState(undefined);
@@ -18,6 +20,7 @@ function PostsList(props) {
     const [postUserID, setUserID] = useState(undefined);
     const [comment, setComment] = useState("");
     const [commentList, setCommentList] = useState("");
+    const [adminStatus, setAdminStatus] = useState(false);
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
@@ -54,11 +57,18 @@ function PostsList(props) {
     }
 
     useEffect(() => {
-
+        async function getAdminStatus() {
+            try {
+                let userEmail = await currentUser.email;
+                const { data } = await axios.get(`http://localhost:3001/data/user/email/${userEmail}`);
+                setAdminStatus(data.admin);
+            } catch (error) {
+                console.log(error);
+            }
+        }
         setPostList(props.allPosts);
-    },
-        [props.allPosts]
-    );
+        getAdminStatus();
+    }, [props.allPosts]);
 
     const buildListItem = (post) => {
         var postDetails = post.body.slice(0, 140) + '...';
@@ -74,6 +84,7 @@ function PostsList(props) {
                             <Button variant="primary" onClick={() => { handleShow(post) }} >
                                 Post Details
                             </Button>
+                            {edit_button}
                         </Card.Body>
                         <Card.Footer className="username">
                             Posted by: {post.username}
@@ -84,14 +95,21 @@ function PostsList(props) {
         );
     }
 
+    let edit_button = null;
+    if (adminStatus) {
+        edit_button = <Button variant="primary" onClick={() => {}} >
+        Edit Post
+        </Button>;
+    }
+
+
     if (postList) {
         card = postList && postList.map((post) => {
             return buildListItem(post);
         });
     }
-
+    // console.log(`currentUser name = ${currentUser.displayName}`);
     let navigationBar = NavigationBar();
-
     return (
         <div className="postPage">
             {navigationBar}

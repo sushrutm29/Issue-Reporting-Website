@@ -34,7 +34,7 @@ function SignIn() {
     }
   };
   if (currentUser) {
-    return <Redirect to="/home" />;
+    return <Redirect to="/home/page/1" />;
   }
   return (
     <div>
