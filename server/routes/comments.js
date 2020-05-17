@@ -5,6 +5,7 @@ const postData = require("./../data/posts");
 const bluebird = require("bluebird");
 const redis = require("redis");
 const client = redis.createClient();
+const elasticClient = require("../config/elasticConnection");
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
@@ -29,11 +30,30 @@ router.post('/', async (req, res) => {
     if (!cInfo.userID || typeof cInfo.userID != "string" || cInfo.userID.length == 0) {
         return res.status(400).json({ error: "Invalid comment user ID was provided" });
     }
+    if (!cInfo.postID || typeof cInfo.postID != "string" || cInfo.postID.length == 0) {
+        return res.status(400).json({ error: "Invalid post ID was provided" });
+    }
 
     try {
         const newComment = await commentData.addComment(cInfo.commentBody, cInfo.userID);
         await client.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
-        await postData.addCommentToPost(cInfo.postID, newComment._id.toString()); //Add comment to posts collection
+        let newPost = await postData.addCommentToPost(cInfo.postID, newComment._id.toString()); //Add comment to posts collection
+        let newPostID = newPost._id.toString();
+        await client.hsetAsync("posts", newPostID, JSON.stringify(newPost));
+        //updates post document in elasticsearch server
+        let dataBody = newPost;
+        dataBody.id = dataBody._id;
+        delete dataBody._id;
+        await elasticClient.index({
+            index: "issues",
+            type: "posts",
+            id: newPostID, 
+            body: dataBody
+        }).then(function(resp) {
+            console.log(`addCommentToPost elasticsearch response = ${resp}`);
+        }, function(err) {
+            console.trace(err.message);
+        });
         return res.status(200).json(newComment);
     } catch (error) {
         return res.status(400).json({ error: `Could not create new comment! ${error}` });
