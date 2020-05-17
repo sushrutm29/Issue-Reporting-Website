@@ -2,33 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function CommentList(props) {
-    const [commentList, setCommentList] = useState(props.allComments);
     let listItem = null;
-    const [commentDetails, setCommentDetails] = useState([]);
+    const [commentDetails, setCommentDetails] = useState(props.allComments);
 
     useEffect(() => {
-        setCommentList(props.allComments);
-        async function fetchCommentData() {
-            try {
-                for (let index in commentList) {
-                    let { data } = await axios.get(`http://localhost:3001/data/comment/${commentList[index]}`);
-                    let commentID = data._id;
-                    let commentbody = data.body;
-                    data = await axios.get(`http://localhost:3001/data/user/${data.userID}`);
-                    let commentObject = {
-                        "id": commentID,
-                        "name": data.data.userName,
-                        "commentBody": commentbody
-                    };
-                    setCommentDetails(commentDetails => commentDetails.concat(commentObject));
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchCommentData();
+        console.log(props.allComments);
+        setCommentDetails(props.allComments);
     },
-        [commentList]);
+        [props.allComments]
+    );
 
     const buildListItem = (comment) => {
         return (
@@ -43,7 +25,6 @@ function CommentList(props) {
             return buildListItem(comment);
         });
     }
-
 
     return (
         <div className="comments">
