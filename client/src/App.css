@@ -25,6 +25,19 @@
   margin: 10px;
 }
 
+.donePostCard {
+  margin: 10px;
+}
+
+.donePostListing{
+  width: 20%;
+  float: left;
+}
+
+.postListing{
+  width: 75%;
+  float: left;
+}
 .next, .prev {
   margin: 15px;
   padding: 8px;

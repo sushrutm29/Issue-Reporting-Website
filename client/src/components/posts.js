@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
-import NavigationBar from './navigation';
 
 /**
  * @author Shiwani Deo, Lun-Wei Chang
@@ -90,11 +89,8 @@ function PostsList(props) {
         });
     }
 
-    let navigationBar = NavigationBar();
-
     return (
         <div className="postPage">
-            {navigationBar}
             <Container>
                 <Row>
                     {card}

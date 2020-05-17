@@ -14,20 +14,20 @@ const App = () => {
 	return (
 		<AuthProvider>
 			<Router>
-			<div className='App'>
-				<header className='App-header'>
-					<h1 className='App-title'>Stevens Issue Reporter</h1>
-				</header>
-				<div className='App-body'>
-					<Switch>
-						<PrivateRoute exact path='/home/page/:pageNo' component={Home} />
-						<PrivateRoute exact path='/dept/:deptName/page/:pageNo' component={Department} />
-						<Route path='/login' component={Login} />
-						<Route path='/signup' component={SignUp} />
-						<Route component={Error404} />
-					</Switch>
+				<div className='App'>
+					<header className='App-header'>
+						<h1 className='App-title'>Stevens Issue Reporter</h1>
+					</header>
+					<div className='App-body'>
+						<Switch>
+							<PrivateRoute path='/home/page/:pageNo' component={Home} />
+							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department} />
+							<Route path='/login' component={Login} />
+							<Route path='/signup' component={SignUp} />
+							<Route component={Error404} />
+						</Switch>
+					</div>
 				</div>
-			</div>
 			</Router>
 		</AuthProvider>
 	);

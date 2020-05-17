@@ -4,7 +4,7 @@ import { AuthContext } from '../firebase/Auth';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 
-function CreatePost(){
+function CreatePost(props){
     let departmentDropdown = null;
     const [deptList, setDeptList] = useState([]);
     const { currentUser } = useContext(AuthContext);
@@ -37,7 +37,8 @@ function CreatePost(){
                     username: currentUser.displayName
                 },
             });
-    
+            handleClose();
+            props.action();
             console.log(res);
         } catch (error) {
             alert(error);

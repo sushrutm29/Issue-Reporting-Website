@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import DonePostsList from './donePosts';
 import Error404 from './Error404';
+import NavigationBar from './navigation';
+import { Toast } from 'react-bootstrap';
 
 /**
  * @author Lun-Wei Chang
@@ -10,17 +13,49 @@ import Error404 from './Error404';
  * @date 05/06/2020
  */
 function Home(props) {
+    let toast = null;
     const [postList, setPostList] = useState(undefined);
+    const [donePostList, setDonePostList] = useState(undefined);
+    const [statusChanged, setStatusChanged] = useState(false);
     const [currentPageNum, setPage] = useState(props.match.params.pageNo);
     const [lastPage, setLastpage] = useState(undefined);
+    const [deptList, setDeptList] = useState(undefined);
 
+    function handleStatus(){
+        setStatusChanged(!statusChanged);
+    }
+
+    function handlePostCreation(){
+        handleStatus();
+        buildToast("Issue Posted Successfully!");
+        console.log(toast);
+    }
+
+    function hideToast(){
+        toast = <Toast show={false}></Toast>   
+    }
+
+    function buildToast(message){
+        toast = 
+            <Toast show={true} onClose={hideToast}>
+                <Toast.Header>{message}</Toast.Header>
+                <Toast.Body>Random</Toast.Body>
+            </Toast>
+    }
+    
     useEffect(() => {
         setLastpage(false); //Assume user is initially not on the last page
         async function fetchPostData() {
             try {
+                let { data } = await axios.get('http://localhost:3001/data/post/');
+                setDonePostList(data.filter((post) => post['resolvedStatus']));
+
+                data = await axios.get('http://localhost:3001/data/dept/');
+                setDeptList(data.data);
+                
                 setPage(props.match.params.pageNo);
-                let { data } = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`);
-                setPostList(data);
+                data = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`);
+                setPostList(data.data.filter((post) => !post['resolvedStatus']));
                 let nextPageNo = parseInt(currentPageNum) + 1;
                 data = await axios.get(`http://localhost:3001/data/post/page/${nextPageNo}`); //Check if next page has any data
                 if (data.data.length === 0) {
@@ -31,7 +66,8 @@ function Home(props) {
             }
         }
         fetchPostData()
-    }, [currentPageNum, props.match.params.pageNo]
+    
+    }, [currentPageNum, props.match.params.pageNo, statusChanged]
     );
 
     //If no post listing or incorrect URL display 404
@@ -68,9 +104,14 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
+    // let navigationBar = NavigationBar();
+
     return (
         <div className="homePage">
-            <PostsList allPosts={postList} />
+            {toast}
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
+            <DonePostsList donePosts={donePostList} action={handleStatus}/>
+            <PostsList allPosts={postList} action={handleStatus}/>
             {prevLink}
             {nextLink}
         </div>
