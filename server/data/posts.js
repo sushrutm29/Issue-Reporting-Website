@@ -26,9 +26,9 @@ bluebird.promisifyAll(redis.Multi.prototype);
  * @param body description of the post.
  * @param username user who created the post.
 */
-async function createPost(deptID, title, body, username) {
+async function createPost(deptID, title, body, username, email) {
     //validates number of arguments
-    if (arguments.length != 4) {
+    if (arguments.length != 5) {
         throw new Error("Wrong number of arguments");
     }
     //validates arguments type
@@ -44,6 +44,9 @@ async function createPost(deptID, title, body, username) {
     if (!username || typeof (username) != "string" || username.length == 0) {
         throw new Error("Invalid post username was provided");
     }
+    if (!email || typeof email != "string" || email.length == 0) {
+        throw new Error("Invalid post email was provided");
+    }
     var currentdate = new Date();
     let creationTime = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) 
     + '-' + currentdate.getDate() + " " + currentdate.getHours() + ":" 
@@ -57,6 +60,7 @@ async function createPost(deptID, title, body, username) {
         title: title,
         body: body,
         username: username,
+        useremail: email,
         resolvedStatus: false,
         CreationTime: creationTime,
         comments: []

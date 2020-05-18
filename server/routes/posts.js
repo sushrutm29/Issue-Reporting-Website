@@ -250,9 +250,12 @@ router.post('/', async (req, res) => {
     if (!postInfo.username || typeof postInfo.username != "string" || postInfo.username.length == 0) {
         return res.status(400).json({ error: "Invalid post creator was provided" });
     }
+    if (!postInfo.useremail || typeof postInfo.useremail != "string" || postInfo.useremail.length == 0) {
+        return res.status(400).json({ error: "Invalid post useremail was provided" });
+    }
 
     try {
-        const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username);
+        const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username, postInfo.useremail);
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
         //creates post document in elasticsearch server
         let newPostID = newPost._id.toString();
