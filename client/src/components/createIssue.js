@@ -34,7 +34,8 @@ function CreatePost(props){
                     deptID: department.value,
                     title: postTitle.value,
                     body: postBody.value,
-                    username: currentUser.displayName
+                    username: currentUser.displayName,
+                    useremail: currentUser.email
                 },
             });
             handleClose();

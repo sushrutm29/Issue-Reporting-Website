@@ -105,7 +105,7 @@ function Home(props) {
 
     return (
         <div className="homePage">
-            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide>
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
             <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
