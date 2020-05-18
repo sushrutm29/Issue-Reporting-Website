@@ -20,7 +20,8 @@ function PostModal(props) {
         async function fetchPostData() {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(data.admin);
+                // setAdminStatus(data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
@@ -63,9 +64,11 @@ function PostModal(props) {
 
     let edit_button = null;
     if (adminStatus) {
-        edit_button = <Button variant="primary" onClick={() => {}} >
+        edit_button = <div><Button variant="primary" onClick={() => {}} >
         Edit Post
-        </Button>;
+        </Button><Button variant="primary" onClick={() => {}} >
+        Resolve Post
+        </Button></div>;
     }
 
     return (
