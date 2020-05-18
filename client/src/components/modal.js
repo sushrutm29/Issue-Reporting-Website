@@ -21,6 +21,7 @@ function PostModal(props) {
 
     const handleShow = async () => { //Set current post data to display in the modal
         let { data } = await axios.get(`http://localhost:3001/data/post/${props.post._id}`);
+        console.log(data.comments);
         let commentsArray = [];
 
         for (let index in data.comments) {
@@ -30,8 +31,10 @@ function PostModal(props) {
             let userData = await axios.get(`http://localhost:3001/data/user/${commentData.data.userID}`);
             let commentObject = {
                 "id": commentID,
+                "userID": commentData.data.userID,
                 "name": userData.data.userName,
-                "commentBody": commentbody
+                "commentBody": commentbody,
+                "postID": props.post._id
             };
             commentsArray.push(commentObject);
         }
@@ -53,7 +56,7 @@ function PostModal(props) {
                     <br></br>
                     <br></br>
                     <SubmitComment post={props.post} userID = {props.userID} action={handleShow} allComments = {commentDetails}/>
-                    <CommentList allComments={commentDetails} />
+                    <CommentList allComments={commentDetails} currentUserID = {props.userID} action={handleShow} />
                     <br></br>
                 </Modal.Body>
                 <Modal.Footer>
