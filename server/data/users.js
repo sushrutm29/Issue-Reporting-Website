@@ -8,7 +8,7 @@ const mongodb = require('mongodb');
 const assert = require('assert');
 
 /**
- * @author Sushrut Madhavi, Lun-Wei Chang
+ * @author Sushrut Madhavi, Lun-Wei Chang, Sri Vallabhaneni
  * @version 1.0
  * @date 04/08/2020
  */
@@ -236,11 +236,8 @@ async function removePostFromUser(userID, postID) {
 
 async function uploadProfilePicture(userID) {
     try {
-        console.log("coming here");
         const insertedUser = await getUserById(userID + '');
-        console.log(insertedUser);
         const uploadPath = __dirname + '/../../client/public/uploads';
-        console.log(uploadPath);
         const connection = await mongoConnection();
         let bucket = new mongodb.GridFSBucket(connection, {
             bucketName: 'profilePics'

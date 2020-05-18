@@ -104,7 +104,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.post(':/id', async (req, res) => {
+router.post('/:id', async (req, res) => {
     try {
         userID = req.params.id;
         await userData.uploadProfilePicture(userID);

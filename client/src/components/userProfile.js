@@ -22,11 +22,28 @@ class userProfile extends Component {
         this.state = { postsData: '' };
         this.state = { userState: null }
         this.state = { imageName: null }
+        this.state = { imageFile: null }
+        this.state = { idofuser: '' }
     }
 
     signUp = (event) => {
         const user = this.context;
         console.log(this.context)
+    }
+
+    handleUpload = async (event) => {
+        if (event.target.files[0] !== '') {
+            let formData = new FormData();
+            formData.append('image', event.target.files[0]);
+            console.log(formData)
+            await axios.post('http://localhost:3001/data/profilepic', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+        }
+
     }
 
     handleSubmit = async (event) => {
@@ -51,6 +68,10 @@ class userProfile extends Component {
         }
     }
 
+    handleReload = () => {
+        window.location.reload();
+    }
+
     handleInputChange = (event) => {
         event.preventDefault();
         this.setState({
@@ -63,7 +84,9 @@ class userProfile extends Component {
         const oldpwd = event.target.oldpassword.value;
         const newpwd = event.target.newpassword.value;
         const email = this.state.userData.userEmail;
-        await doChangePassword(email, oldpwd, newpwd);
+        if ( newpwd.length != 0 && oldpwd.length != 0){
+            await doChangePassword(email, oldpwd, newpwd);
+        }
         alert("Password Successfully Changed! Please Login back! ");
         window.location.href = "/login";
     }
@@ -80,33 +103,6 @@ class userProfile extends Component {
         });
     }
 
-    changeProfilePicture = async (event) => {
-
-        let formData = new FormData();
-        console.log("hereeee 1");
-        this.setState({ imageName: event.target.files[0] });
-        formData.append('image', this.state.imageName);
-        console.log("form data ", formData)
-        console.log(event.target.files[0])
-        console.log("hereeee 3");
-        let user = await this.currentUser();
-        if (user != null) {
-            let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
-            const userId = data._id;
-            const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-            console.log(imageDetails)
-            console.log(userId)
-            // await axios.delete(`http://localhost:3001/data/profilepic/${userId}`);
-            await axios.post('http://localhost:3001/data/profilepic', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-                
-            });
-            await axios.post(`http://localhost:3001/data/profilepic/${userId}`);
-            await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-        }
-    }
     openEditForm = (openClassName, closeClassName) => {
         var divToOpen = document.getElementsByClassName(openClassName);
         var divToClose = document.getElementsByClassName(closeClassName);
@@ -126,6 +122,8 @@ class userProfile extends Component {
             if (user != null) {
                 let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
                 const userId = data._id;
+                this.setState({ idofuser: userId })
+                console.log(this.state.idofuser);
                 const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
                 let postIds = data.posts;
                 let posts = [];
@@ -133,8 +131,10 @@ class userProfile extends Component {
                     let post = await axios.get(`http://localhost:3001/data/post/${id}`);
                     posts.push(post.data)
                 }
-                this.setState({ userData: data, posts: posts, imageName: imageDetails.data.path });
-
+                this.setState({ userData: data, posts: posts });
+                if (imageDetails) {
+                    this.setState({ imageName: imageDetails.data.path })
+                }
             }
             else {
                 window.location.href = "/login";
@@ -163,11 +163,11 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                <form onSubmit={this.changeProfilePicture}>
+                <form onSubmit={this.handleUpload}>
                     <h6> Change Profile Picture : </h6>
                     <br></br>
-                    <input type="file" variant="primary" onChange={this.changeProfilePicture} />
-                    <Button type="submit" variant="primary"> Change Profile Picture </Button>
+                    <input type="file" variant="primary" onChange={this.handleUpload} />
+                    <Button type="submit" variant="primary" > Change Profile Picture </Button>
                 </form>
                 <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
@@ -248,7 +248,5 @@ class userProfile extends Component {
         return html_body;
     }
 }
-
-
 
 export default userProfile;
