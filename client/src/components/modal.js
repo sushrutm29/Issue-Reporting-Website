@@ -33,7 +33,6 @@ function PostModal(props) {
 
     const handleShow = async () => { //Set current post data to display in the modal
         let { data } = await axios.get(`http://localhost:3001/data/post/${props.post._id}`);
-        console.log(data.comments);
         let commentsArray = [];
 
         for (let index in data.comments) {

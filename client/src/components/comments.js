@@ -6,7 +6,6 @@ function CommentList(props) {
     const [commentDetails, setCommentDetails] = useState(props.allComments);
 
     useEffect(() => {
-        console.log(props.allComments);
         setCommentDetails(props.allComments);
     },
         [props.allComments]
