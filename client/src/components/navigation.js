@@ -15,22 +15,16 @@ function NavigationBar(props) {
             try {
                 const { data } = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(data);
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        async function fetchUserData() {
-            try {
-                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(data.admin);
+
+                const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                setAdminStatus(userData.admin);
             } catch (error) {
                 console.log(error);
             }
         }
-        fetchUserData();
         fetchData();
     },
-        [deptList]
+        [deptList, currentUser.email]
     );
 
     const buildNavDropDownItem = (dept) => {

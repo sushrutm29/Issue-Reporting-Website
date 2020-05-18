@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import SubmitComment from './submitComment';
 import CommentList from './comments';
@@ -11,11 +11,21 @@ function PostModal(props) {
     const [modalBody, setModalBody] = useState(undefined);
     const [show, setShow] = useState(false);
     const [commentDetails, setCommentDetails] = useState([]);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     useEffect(() => {
         setModalTitle(props.post.title);
         setModalBody(props.post.body);
-    }, [props.post.title, props.post.body]);
+        async function fetchPostData() {
+            try {
+                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                setAdminStatus(data.admin);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchPostData();
+    }, [props.post.title, props.post.body, currentUser.email]);
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
