@@ -159,6 +159,19 @@ router.get('/name/:name', async (req, res) => {
     }
 });
 
+router.get('/email/:email', async (req, res) => {
+    try {
+        if (!req.params || !req.params.email) {
+            throw "User email was not provided for getPostsByUseremail method!";
+        }
+        let userEmail = req.params.email;
+        currentPost = await postData.getPostsByUseremail(userEmail);
+        return res.status(200).json(currentPost);
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post! ${error}` });
+    }
+});
+
 router.get('/dept/:id', async (req, res) => {
     try {
         if (!req.params || !req.params.id) {
@@ -250,9 +263,12 @@ router.post('/', async (req, res) => {
     if (!postInfo.username || typeof postInfo.username != "string" || postInfo.username.length == 0) {
         return res.status(400).json({ error: "Invalid post creator was provided" });
     }
+    if (!postInfo.useremail || typeof postInfo.useremail != "string" || postInfo.useremail.length == 0) {
+        return res.status(400).json({ error: "Invalid post useremail was provided" });
+    }
 
     try {
-        const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username);
+        const newPost = await postData.createPost(postInfo.deptID, postInfo.title, postInfo.body, postInfo.username, postInfo.useremail);
         await client.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
         //creates post document in elasticsearch server
         let newPostID = newPost._id.toString();

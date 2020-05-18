@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import DonePostsList from './donePosts';
 import Error404 from './Error404';
 import NavigationBar from './navigation';
+import { Toast } from 'react-bootstrap';
 
 /**
  * @author Lun-Wei Chang
@@ -12,15 +13,36 @@ import NavigationBar from './navigation';
  * @date 05/06/2020
  */
 function Home(props) {
-
     const [postList, setPostList] = useState(undefined);
     const [donePostList, setDonePostList] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
     const [currentPageNum, setPage] = useState(props.match.params.pageNo);
     const [lastPage, setLastpage] = useState(undefined);
+    const [deptList, setDeptList] = useState(undefined);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     function handleStatus(){
         setStatusChanged(!statusChanged);
+    }
+
+    function handlePostCreation(){
+        handleStatus();
+        buildToast("Issue Posted Successfully!");
+    }
+
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
+    function hideToast(){
+        setShowToast(false);
+    }
+
+    function buildToast(message){
+        setToastMessage(message);
+        setShowToast(true);
     }
     
     useEffect(() => {
@@ -29,6 +51,9 @@ function Home(props) {
             try {
                 let { data } = await axios.get('http://localhost:3001/data/post/');
                 setDonePostList(data.filter((post) => post['resolvedStatus']));
+
+                data = await axios.get('http://localhost:3001/data/dept/');
+                setDeptList(data.data);
                 
                 setPage(props.match.params.pageNo);
                 data = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`);
@@ -48,7 +73,7 @@ function Home(props) {
     );
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <=0) {
+    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
     }
 
@@ -81,13 +106,16 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
-    let navigationBar = NavigationBar();
+    // let navigationBar = NavigationBar();
 
     return (
         <div className="homePage">
-            {navigationBar}
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
+                <Toast.Header>{toastMessage}</Toast.Header>
+            </Toast>
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
             <DonePostsList donePosts={donePostList} action={handleStatus}/>
-            <PostsList allPosts={postList} action={handleStatus}/>
+            <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>
             {prevLink}
             {nextLink}
         </div>

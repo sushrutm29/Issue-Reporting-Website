@@ -5,6 +5,7 @@ import PostsList from './posts';
 import Error404 from './Error404';
 import NavigationBar from './navigation';
 import DonePostsList from './donePosts';
+import { Toast } from 'react-bootstrap';
 
 /**
  * @author Lun-Wei Chang
@@ -18,6 +19,8 @@ const Department = (props) => {
     const [lastPage, setLastpage] = useState(undefined);
     const [donePostList, setDonePostList] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         setDept(props.match.params.deptName);
@@ -47,6 +50,20 @@ const Department = (props) => {
         // calTotalNumPages(props.match.params.pageNum);
         fetchPostData();    //the posts within the current department
     }, [currentDeptName, props.match.params.deptName, postList, currentPageNum, props.match.params.pageNo, statusChanged, donePostList]);
+
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
+    function hideToast(){
+        setShowToast(false);
+    }
+
+    function buildToast(message){
+        setToastMessage(message);
+        setShowToast(true);
+    }
 
     function handleStatus(){
         setStatusChanged(!statusChanged);
@@ -81,12 +98,14 @@ const Department = (props) => {
         nextLink = <Link onClick={incrementPage} className="next" to={`/dept/${currentDeptName}/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
-    let navigationBar = NavigationBar();
     return (
         <div className="deptPostList">
-            {navigationBar}
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
+                <Toast.Header>{toastMessage}</Toast.Header>
+            </Toast>
+            <NavigationBar creationAction={false}/>
             <DonePostsList donePosts={donePostList} action={handleStatus}/>
-            <PostsList allPosts={postList} action={handleStatus}/>
+            <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>
             {prevLink}
             {nextLink}
         </div>
