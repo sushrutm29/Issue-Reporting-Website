@@ -37,27 +37,48 @@ function NavigationBar(props) {
         });
     }
 
-
-    return (
-        <Navbar bg="light" expand="lg" className="navBar">
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    <Nav.Link href="/home/page/1">Home</Nav.Link>
-                    <Nav.Link href="#">Profile</Nav.Link>
-                    <NavDropdown title="Department" id="basic-nav-dropdown">
-                        {departmentDropdown}
-                    </NavDropdown>
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-success">Search</Button>
-                    </Form>
-                    <CreatePost action={props.creationAction}/>
-                </Nav>
-                <Button variant="outline-success" href="#" onClick={doSignOut}>Signout</Button>
-            </Navbar.Collapse>
-        </Navbar>
-    )
+    if(props.creationAction){
+        return (
+            <Navbar bg="light" expand="lg" className="navBar">
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link href="#">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                            {departmentDropdown}
+                        </NavDropdown>
+                        <Form inline>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                            <Button variant="outline-success">Search</Button>
+                        </Form>
+                        <CreatePost action={props.creationAction}/>
+                    </Nav>
+                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
+                </Navbar.Collapse>
+            </Navbar>
+        )
+    }else{
+        return (
+            <Navbar bg="light" expand="lg" className="navBar">
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link href="#">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                            {departmentDropdown}
+                        </NavDropdown>
+                        <Form inline>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                            <Button variant="outline-success">Search</Button>
+                        </Form>
+                    </Nav>
+                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
+                </Navbar.Collapse>
+            </Navbar>
+        )
+    }    
 }
 
 export default NavigationBar;

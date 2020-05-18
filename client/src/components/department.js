@@ -81,10 +81,9 @@ const Department = (props) => {
         nextLink = <Link onClick={incrementPage} className="next" to={`/dept/${currentDeptName}/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
-    let navigationBar = NavigationBar();
     return (
         <div className="deptPostList">
-            {navigationBar}
+            <NavigationBar creationAction={false}/>
             <DonePostsList donePosts={donePostList} action={handleStatus}/>
             <PostsList allPosts={postList} action={handleStatus}/>
             {prevLink}

@@ -13,13 +13,14 @@ import { Toast } from 'react-bootstrap';
  * @date 05/06/2020
  */
 function Home(props) {
-    let toast = null;
     const [postList, setPostList] = useState(undefined);
     const [donePostList, setDonePostList] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
     const [currentPageNum, setPage] = useState(props.match.params.pageNo);
     const [lastPage, setLastpage] = useState(undefined);
     const [deptList, setDeptList] = useState(undefined);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     function handleStatus(){
         setStatusChanged(!statusChanged);
@@ -28,19 +29,15 @@ function Home(props) {
     function handlePostCreation(){
         handleStatus();
         buildToast("Issue Posted Successfully!");
-        console.log(toast);
     }
 
     function hideToast(){
-        toast = <Toast show={false}></Toast>   
+        setShowToast(false);
     }
 
     function buildToast(message){
-        toast = 
-            <Toast show={true} onClose={hideToast}>
-                <Toast.Header>{message}</Toast.Header>
-                <Toast.Body>Random</Toast.Body>
-            </Toast>
+        setToastMessage(message);
+        setShowToast(true);
     }
     
     useEffect(() => {
@@ -71,7 +68,7 @@ function Home(props) {
     );
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <=0) {
+    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
     }
 
@@ -108,7 +105,9 @@ function Home(props) {
 
     return (
         <div className="homePage">
-            {toast}
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide>
+                <Toast.Header>{toastMessage}</Toast.Header>
+            </Toast>
             <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
             <DonePostsList donePosts={donePostList} action={handleStatus}/>
             <PostsList allPosts={postList} action={handleStatus}/>

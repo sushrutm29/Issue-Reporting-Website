@@ -1,17 +1,37 @@
-import React, { Component } from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 
-class comments extends Component {
-	render() {
-        let html_body = (
-            <div>
-                <Switch>
-                    {/* <Route path="" exact component={} /> */}
-                </Switch>
-            </div> 
+function CommentList(props) {
+    let listItem = null;
+    const [commentDetails, setCommentDetails] = useState(props.allComments);
+
+    useEffect(() => {
+        console.log(props.allComments);
+        setCommentDetails(props.allComments);
+    },
+        [props.allComments]
+    );
+
+    const buildListItem = (comment) => {
+        return (
+            <li className="comment" key={comment.id}>
+                <p>{comment.name} {comment.commentBody}</p>
+            </li>
         );
-        return html_body;
     }
+
+    if (commentDetails) {
+        listItem = commentDetails && commentDetails.map((comment) => {
+            return buildListItem(comment);
+        });
+    }
+
+    return (
+        <div className="comments">
+            <ul className="list-unstyled">{listItem}</ul>
+        </div>
+    );
+
+
 }
 
-export default comments;
+export default CommentList;

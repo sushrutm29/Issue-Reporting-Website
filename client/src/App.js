@@ -4,11 +4,11 @@ import Home from './components/home';
 import Department from './components/department';
 import Error404 from './components/Error404';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './firebase/Auth';
 import PrivateRoute from './components/privateRoute';
 import Login from './components/login';
 import SignUp from './components/signup'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
 	return (
