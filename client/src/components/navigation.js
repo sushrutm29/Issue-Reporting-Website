@@ -1,25 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 import CreatePost from './createIssue'
 import {doSignOut} from '../firebase/FirebaseFunctions';
+import { AuthContext } from '../firebase/Auth';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
     const [deptList, setDeptList] = useState(props.deptList);
+    const { currentUser } = useContext(AuthContext);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             try {
                 const { data } = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(data);
+
+                const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                setAdminStatus(userData.data.admin);
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
         }
         fetchData();
     },
-        [deptList]
+        [deptList, currentUser.email]
     );
 
     const buildNavDropDownItem = (dept) => {
@@ -35,6 +41,17 @@ function NavigationBar(props) {
         departmentDropdown = deptList && deptList.map((dept) => {
             return buildNavDropDownItem(dept);
         });
+    }
+ 
+    let edit_button = null;
+    if (adminStatus) {
+        edit_button = 
+        <div><Button variant="outline-success" onClick={() => {}} >
+        Add Dept
+        </Button>
+        <Button variant="outline-success" onClick={() => {}} >
+        Delete Dept
+        </Button></div>;
     }
 
     if(props.creationAction){
@@ -53,6 +70,7 @@ function NavigationBar(props) {
                             <Button variant="outline-success">Search</Button>
                         </Form>
                         <CreatePost action={props.creationAction}/>
+                        {edit_button}
                     </Nav>
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
@@ -73,12 +91,13 @@ function NavigationBar(props) {
                             <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                             <Button variant="outline-success">Search</Button>
                         </Form>
+                        {edit_button}
                     </Nav>
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
         )
-    }    
+    }   
 }
 
 export default NavigationBar;

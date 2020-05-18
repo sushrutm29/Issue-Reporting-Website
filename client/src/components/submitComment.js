@@ -27,7 +27,7 @@ function SubmitComment(props) {
 
     return (
         <div className="submitForm">
-            <Form>
+            <Form onSubmit={e => e.preventDefault()}>
                 <Form.Group controlId={props.post._id}>
                     <Form.Control postid={props.post._id} className="commentPlaceholder" type="text" name="commentBody" onChange={e => { setCommentDetails(e.target.value) }} placeholder="Enter comment" />
                 </Form.Group>
