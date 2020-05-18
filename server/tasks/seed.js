@@ -30,7 +30,7 @@ function getDepartmentId(depts, deptName) {
 
 (async () => {
     try {
-        let userIDs = [];
+        let userIDs = [];   //array used to store all users' IDs
         let index;
         //cleas redis cache
         await redisClient.delAsync("users", "depts", "posts", "comments");
@@ -123,21 +123,19 @@ function getDepartmentId(depts, deptName) {
         }
 
         const allDepartments = await deptFunctions.getAllDept();
-        //Set two users as post authors
-        const user1 = "sdeo";
-        const user2 = "sushrutm";
         //inserts posts from posts.json into the database 
         for (index in posts) {
             try {
-                let user;
                 let post = posts[index];
                 let departmentID = getDepartmentId(allDepartments, post.dept); //Get department ID for post department
-                if (index % 2 == 0) {
-                    user = user1;
-                } else {
-                    user = user2;
-                }
-                let newPost = await postFunctions.createPost(departmentID, post.title, post.body, user)
+                //randomly selected a user as post's creator
+                let randomNum = Math.floor(Math.random() * Math.floor(6));
+                console.log(`randomNum = ${randomNum}`);
+                let uID = userIDs[randomNum];
+                console.log(`uID = ${uID}`);
+                let currentUser = await userFunctions.getUserById(uID);
+                console.log(`currentUser = ${JSON.stringify(currentUser)}`);
+                let newPost = await postFunctions.createPost(departmentID, post.title, post.body, currentUser.userName.toString(), currentUser.userEmail.toString());
                 //adds the new post into the Redis cache
                 await redisClient.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
                 console.log("!!!!creates post document in elasticsearch server");
@@ -158,9 +156,10 @@ function getDepartmentId(depts, deptName) {
                 });
                 index++;
             } catch (error) {
-                if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
-                    index++; //Skip duplicate entry and continue
-                }
+                // if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
+                //     index++; //Skip duplicate entry and continue
+                // }
+                console.log(`error = ${error}`)
             }
         }
 
@@ -169,7 +168,7 @@ function getDepartmentId(depts, deptName) {
             try {
                 let currentComment = comments[index];
                 let cBody = currentComment.commentBody;
-                let randomNum = Math.floor(Math.random() * Math.floor(2));
+                let randomNum = Math.floor(Math.random() * Math.floor(6));
                 let uID = userIDs[randomNum];
                 let newComment = await comFunctions.addComment(cBody, uID);
                 await redisClient.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
