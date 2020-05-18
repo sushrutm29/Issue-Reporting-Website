@@ -80,7 +80,6 @@ async function getUserByEmail(email) {
     return user;
 }
 
-
 /**
  * Creates a new user with the provided information; throws error if wrong type/number of
  * arguments were provided. 

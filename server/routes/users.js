@@ -36,7 +36,7 @@ router.get('/:id', async (req, res) => {
 router.get('/name/:username', async (req, res) => {
     try {
         if (!req.params || !req.params.username) {
-            throw "Username was not provided for get method!";
+            throw "Username was not provided for getUserByName method!";
         }
 
         let username = req.params.username;
