@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import React, { useState, useEffect, useContext } from 'react';
+import { Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
 import SubmitComment from './submitComment';
 import CommentList from './comments';
+import { AuthContext } from '../firebase/Auth';
 
 function PostModal(props) {
+    const { currentUser } = useContext(AuthContext);
     const [modalTitle, setModalTitle] = useState(undefined);
     const [modalBody, setModalBody] = useState(undefined);
     const [show, setShow] = useState(false);
@@ -39,11 +41,21 @@ function PostModal(props) {
         setShow(true);
     }
 
+    let edit_button = null;
+    if (adminStatus) {
+        edit_button = <div><Button variant="primary" onClick={() => {}} >
+        Edit Post
+        </Button><Button variant="primary" onClick={() => {}} >
+        Resolve Post
+        </Button></div>;
+    }
+
     return (
         <div>
             <Button variant="primary" onClick={() => { handleShow(props.post) }} >
                 Post Details
             </Button>
+            {edit_button}
             <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalTitle}</Modal.Title>
