@@ -7,15 +7,15 @@ import { AuthContext } from '../firebase/Auth';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
-    const [deptList, setDeptList] = useState(props.deptList);
+    const [deptList, setDeptList] = useState(undefined);
     const { currentUser } = useContext(AuthContext);
     const [adminStatus, setAdminStatus] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const { data } = await axios.get(`http://localhost:3001/data/dept/`);
-                setDeptList(data);
+                const deptListing = await axios.get(`http://localhost:3001/data/dept/`);
+                setDeptList(deptListing.data);
 
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setAdminStatus(userData.data.admin);
