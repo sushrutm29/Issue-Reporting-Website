@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
+import SubmitComment from './submitComment';
 import CommentList from './comments';
 import { AuthContext } from '../firebase/Auth';
 
@@ -8,57 +9,36 @@ function PostModal(props) {
     const { currentUser } = useContext(AuthContext);
     const [modalTitle, setModalTitle] = useState(undefined);
     const [modalBody, setModalBody] = useState(undefined);
-    const [postID, setPostID] = useState(undefined);
-    const [postUserID, setUserID] = useState(undefined);
     const [show, setShow] = useState(false);
-    const [comment, setComment] = useState("");
-    const [commentList, setCommentList] = useState([]);
-    const [adminStatus, setAdminStatus] = useState(false);
+    const [commentDetails, setCommentDetails] = useState([]);
 
     useEffect(() => {
-        setUserID(props.userID);
-        async function fetchPostData() {
-            try {
-                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(data.admin);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchPostData();
-    }, [commentList, currentUser.email]);
+        setModalTitle(props.post.title);
+        setModalBody(props.post.body);
+    }, [props.post.title, props.post.body]);
 
     const handleClose = () => { //Set modal show state to false
         setShow(false);
     }
 
-    const handleShow = async (post) => { //Set current post data to display in the modal
-        setModalTitle(post.title);
-        setModalBody(post.body);
-        setPostID(post._id);
-        await updateCommentList(post._id);
+    const handleShow = async () => { //Set current post data to display in the modal
+        let { data } = await axios.get(`http://localhost:3001/data/post/${props.post._id}`);
+        let commentsArray = [];
+
+        for (let index in data.comments) {
+            let commentData  = await axios.get(`http://localhost:3001/data/comment/${data.comments[index]}`);
+            let commentID = commentData.data._id;
+            let commentbody = commentData.data.body;
+            let userData = await axios.get(`http://localhost:3001/data/user/${commentData.data.userID}`);
+            let commentObject = {
+                "id": commentID,
+                "name": userData.data.userName,
+                "commentBody": commentbody
+            };
+            commentsArray.push(commentObject);
+        }
+        setCommentDetails(commentsArray);
         setShow(true);
-    }
-
-    async function updateCommentList(post_id) {
-        const { data } = await axios.get(`http://localhost:3001/data/post/${post_id}`);
-        setCommentList(data.comments);
-    }
-
-    const setCommentDetails = (commentBody) => { //Link comment to Post ID
-        setComment(commentBody);
-    }
-
-    async function submitComment() {
-        console.log(postUserID);
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ commentBody: comment, userID: postUserID, postID: postID })
-        };
-        const response = await fetch('http://localhost:3001/data/comment/', requestOptions);
-        const data = await response.json();
-       setCommentList(commentList => commentList.concat(data._id));
     }
 
     let edit_button = null;
@@ -84,14 +64,9 @@ function PostModal(props) {
                     {modalBody}
                     <br></br>
                     <br></br>
-                    <Form>
-                        <Form.Group controlId={postID}>
-                            <Form.Control postid={postID} className="commentPlaceholder" type="text" name="commentBody" onChange={e => { setCommentDetails(e.target.value) }} placeholder="Enter comment" />
-                        </Form.Group>
-                    </Form>
-                    <Button variant="secondary" size="sm" type="submit" onClick={submitComment}> Submit </Button>
+                    <SubmitComment post={props.post} userID = {props.userID} action={handleShow} allComments = {commentDetails}/>
+                    <CommentList allComments={commentDetails} />
                     <br></br>
-                    <CommentList allComments={commentList} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
