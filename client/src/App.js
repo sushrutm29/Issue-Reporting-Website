@@ -26,7 +26,7 @@ const App = () => {
 							<Route path='/login' component={Login} />
 							<Route path='/signup' component={SignUp} />
 							<Route path='/profile' component={userProfile} /> 
-							<Route component={Error404} />
+							<Route component={Error404}/>
 						</Switch>
 					</div>
 				</div>

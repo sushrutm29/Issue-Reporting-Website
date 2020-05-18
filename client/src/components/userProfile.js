@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Container, Row, Col, Modal, Button, Image, ModalFooter } from 'react-bootstrap';
+import { Card, Modal, Button } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { AuthContext } from '../firebase/Auth';
 import axios from 'axios';
@@ -22,7 +22,6 @@ class userProfile extends Component {
         this.state = { postsData: '' };
         this.state = { userState: null }
         this.state = { imageName: null }
-
     }
 
     signUp = (event) => {
@@ -81,6 +80,33 @@ class userProfile extends Component {
         });
     }
 
+    changeProfilePicture = async (event) => {
+
+        let formData = new FormData();
+        console.log("hereeee 1");
+        this.setState({ imageName: event.target.files[0] });
+        formData.append('image', this.state.imageName);
+        console.log("form data ", formData)
+        console.log(event.target.files[0])
+        console.log("hereeee 3");
+        let user = await this.currentUser();
+        if (user != null) {
+            let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
+            const userId = data._id;
+            const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
+            console.log(imageDetails)
+            console.log(userId)
+            // await axios.delete(`http://localhost:3001/data/profilepic/${userId}`);
+            await axios.post('http://localhost:3001/data/profilepic', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+                
+            });
+            await axios.post(`http://localhost:3001/data/profilepic/${userId}`);
+            await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
+        }
+    }
     openEditForm = (openClassName, closeClassName) => {
         var divToOpen = document.getElementsByClassName(openClassName);
         var divToClose = document.getElementsByClassName(closeClassName);
@@ -101,7 +127,6 @@ class userProfile extends Component {
                 let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
                 const userId = data._id;
                 const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-                console.log(window.location.origin);
                 let postIds = data.posts;
                 let posts = [];
                 for (const id of postIds) {
@@ -109,6 +134,7 @@ class userProfile extends Component {
                     posts.push(post.data)
                 }
                 this.setState({ userData: data, posts: posts, imageName: imageDetails.data.path });
+
             }
             else {
                 window.location.href = "/login";
@@ -133,8 +159,17 @@ class userProfile extends Component {
                 <br></br>
                 <br></br>
                 <div className="profile-img-div">
-                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="not found" />
+                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="image not found" />
                 </div>
+                <br></br>
+                <br></br>
+                <form onSubmit={this.changeProfilePicture}>
+                    <h6> Change Profile Picture : </h6>
+                    <br></br>
+                    <input type="file" variant="primary" onChange={this.changeProfilePicture} />
+                    <Button type="submit" variant="primary"> Change Profile Picture </Button>
+                </form>
+                <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
 
                     <h1>{(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h1>

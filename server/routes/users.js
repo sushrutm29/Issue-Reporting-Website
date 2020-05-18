@@ -115,6 +115,7 @@ router.patch('/addpost/:id', async (req, res) => {
         return res.status(200).json(updatedUser);
     } catch (error) {
         return res.status(400).json({ error: `Could not add post to user! ${error}` });
+        
     }
 });
 
