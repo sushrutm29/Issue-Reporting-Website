@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import CreatePost from './createIssue'
 import {doSignOut} from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
-    const [deptList, setDeptList] = useState(props);
+    const [deptList, setDeptList] = useState(props.deptList);
     const { currentUser } = useContext(AuthContext);
     const [adminStatus, setAdminStatus] = useState(false);
 
@@ -41,7 +42,7 @@ function NavigationBar(props) {
             return buildNavDropDownItem(dept);
         });
     }
-
+ 
     let edit_button = null;
     if (adminStatus) {
         edit_button = 
@@ -53,27 +54,50 @@ function NavigationBar(props) {
         </Button></div>;
     }
 
-
-    return (
-        <Navbar bg="light" expand="lg" className="navBar">
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    <Nav.Link href="/home/page/1">Home</Nav.Link>
-                    <Nav.Link href="#">Profile</Nav.Link>
-                    <NavDropdown title="Department" id="basic-nav-dropdown">
-                        {departmentDropdown}
-                    </NavDropdown>
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-success">Search</Button>
-                    </Form>
-                    {edit_button}
-                </Nav>
-                <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
-            </Navbar.Collapse>
-        </Navbar>
-    )
+    if(props.creationAction){
+        return (
+            <Navbar bg="light" expand="lg" className="navBar">
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link href="#">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                            {departmentDropdown}
+                        </NavDropdown>
+                        <Form inline>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                            <Button variant="outline-success">Search</Button>
+                        </Form>
+                        <CreatePost action={props.creationAction}/>
+                        {edit_button}
+                    </Nav>
+                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
+                </Navbar.Collapse>
+            </Navbar>
+        )
+    }else{
+        return (
+            <Navbar bg="light" expand="lg" className="navBar">
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link href="#">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                            {departmentDropdown}
+                        </NavDropdown>
+                        <Form inline>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                            <Button variant="outline-success">Search</Button>
+                        </Form>
+                        {edit_button}
+                    </Nav>
+                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
+                </Navbar.Collapse>
+            </Navbar>
+        )
+    }   
 }
 
 export default NavigationBar;
