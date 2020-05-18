@@ -14,11 +14,13 @@ function PostsList(props) {
     let card = null;
     const [postList, setPostList] = useState(props.allPosts);
     const [postUserID, setUserID] = useState(undefined);
-    const [postUserEmail, setUserEmail] = useState(undefined);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     const handleDelete = async (post) => {
         const res = await axios.delete(`http://localhost:3001/data/post/${post._id}`);
-        props.deletionAction();
+        
+        if(res.status === 200) props.deletionAction();
+        else alert('Deletion Failed!');   
     }
 
     useEffect(() => {
@@ -27,7 +29,7 @@ function PostsList(props) {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
-                setUserEmail(data.userEmail);
+                setAdminStatus(data.admin);
             } catch (error) {
                 console.log(error);
             }
@@ -39,7 +41,7 @@ function PostsList(props) {
 
     const buildListItem = (post) => {
         var postDetails = post.body.slice(0, 140) + '...';
-        if(post.username === currentUser.displayName){
+        if(post.useremail === currentUser.email || adminStatus){
             return (
                 <div className="post" key={post._id}>
                     <Col lg={4}>
