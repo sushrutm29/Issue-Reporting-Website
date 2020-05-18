@@ -43,7 +43,7 @@ function PostsList(props) {
                             <Card.Text>
                                 {postDetails}
                             </Card.Text>
-                            <PostModal post={post} userID = {postUserID}/>
+                            <PostModal post={post} userID = {postUserID} action = {props.action}/>
                         </Card.Body>
                         <Card.Footer className="username">
                             Posted by: {post.username}
