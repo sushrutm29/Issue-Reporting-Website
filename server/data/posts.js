@@ -231,26 +231,26 @@ async function getPostByUsername(userName) {
 }
 
 /** 
- * Retrieves a specific post with the matching user email; throws error if wrong type/number of
+ * Retrieves all the posts post with the matching user email; throws error if wrong type/number of
  * arguments were provided or no post found with matching ID.
  * 
  * @param userEmail the user email of the post to be retrieved.
 */
-async function getPostByUseremail(userEmail) {
+async function getPostsByUseremail(userEmail) {
     //validates number of arguments
     if (arguments.length != 1) {
         throw new Error("Wrong number of arguments");
     }
     //validates arguments type
     if (!userEmail || typeof userEmail != "string" || userEmail.length == 0) {
-        throw "Invalid user email is provided for getPostByUseremail function";
+        throw "Invalid user email is provided for getPostsByUseremail function";
     }
     const postsCollection = await posts();
-    const post = await postsCollection.findOne({ useremail: userEmail });
-    if (!post) {
-        throw `Post not found with user email ${userEmail}`;
+    const allPosts = await postsCollection.find({ useremail: userEmail }).toArray();
+    if (!allPosts) {
+        throw new Error(`Couldn't retrieve any post with user email: ${userEmail}`);
     }
-    return post;
+    return allPosts;
 }
 
 /** 
@@ -354,7 +354,7 @@ module.exports = {
     resolvePost,
     getPostById,
     getPostByUsername,
-    getPostByUseremail,
+    getPostsByUseremail,
     getAllPostsByDeptID,
     getAllPosts,
     addCommentToPost,

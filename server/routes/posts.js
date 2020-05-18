@@ -162,10 +162,10 @@ router.get('/name/:name', async (req, res) => {
 router.get('/email/:email', async (req, res) => {
     try {
         if (!req.params || !req.params.email) {
-            throw "User email was not provided for getPostByUseremail method!";
+            throw "User email was not provided for getPostsByUseremail method!";
         }
         let userEmail = req.params.email;
-        currentPost = await postData.getPostByUseremail(userEmail);
+        currentPost = await postData.getPostsByUseremail(userEmail);
         return res.status(200).json(currentPost);
     } catch (error) {
         return res.status(400).json({ error: `Could not get a specific post! ${error}` });
