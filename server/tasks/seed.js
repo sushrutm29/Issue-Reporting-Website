@@ -38,7 +38,7 @@ function getDepartmentId(depts, deptName) {
         await elasticClient.indices.delete({
             index: "issues"
         }).then(function(resp) {
-            console.log(`Deleted Elasticsearch index = ${JSON.stringify(resp)}`);
+            // console.log(`Deleted Elasticsearch index = ${JSON.stringify(resp)}`);
         }, function(err) {
             console.trace(err.message);
         });
@@ -50,7 +50,7 @@ function getDepartmentId(depts, deptName) {
                 console.log(err);
             }
             else {
-                console.log("create",resp);
+                // console.log("create",resp);
             }
         });
         //specify the elasticsearch posts type document fields' types
@@ -89,9 +89,10 @@ function getDepartmentId(depts, deptName) {
             if (err) {
                 console.log(err);
             } else {
-                console.log(resp);
+                // console.log(resp);
             }
         });
+        
         //inserts initial user(s) from users.json into the database
         for (index in users) {
             try {
@@ -130,15 +131,11 @@ function getDepartmentId(depts, deptName) {
                 let departmentID = getDepartmentId(allDepartments, post.dept); //Get department ID for post department
                 //randomly selected a user as post's creator
                 let randomNum = Math.floor(Math.random() * Math.floor(6));
-                console.log(`randomNum = ${randomNum}`);
                 let uID = userIDs[randomNum];
-                console.log(`uID = ${uID}`);
                 let currentUser = await userFunctions.getUserById(uID);
-                console.log(`currentUser = ${JSON.stringify(currentUser)}`);
                 let newPost = await postFunctions.createPost(departmentID, post.title, post.body, currentUser.userName.toString(), currentUser.userEmail.toString());
                 //adds the new post into the Redis cache
                 await redisClient.hsetAsync("posts", `${newPost._id}`, JSON.stringify(newPost));
-                console.log("!!!!creates post document in elasticsearch server");
                 //creates post document in elasticsearch server
                 let newPostID = newPost._id.toString();
                 let dataBody = newPost;
@@ -150,51 +147,11 @@ function getDepartmentId(depts, deptName) {
                     type: "posts",
                     body: dataBody
                 }).then(function(resp) {
-                    console.log(`creates post elasticsearch document = ${JSON.stringify(resp)}`);
+                    // console.log(`creates post elasticsearch document = ${JSON.stringify(resp)}`);
                 }, function(err) {
                     console.trace(err.message);
                 });
                 index++;
-            } catch (error) {
-                // if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
-                //     index++; //Skip duplicate entry and continue
-                // }
-                console.log(`error = ${error}`)
-            }
-        }
-
-        //inserts comments from comments.json
-        for (index in comments) {
-            try {
-                let currentComment = comments[index];
-                let cBody = currentComment.commentBody;
-                let randomNum = Math.floor(Math.random() * Math.floor(6));
-                let uID = userIDs[randomNum];
-                let newComment = await comFunctions.addComment(cBody, uID);
-                await redisClient.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
-                //gets the current user name
-                let currentuser = await userFunctions.getUserById(uID);
-                let currentUserName = currentuser.userName;
-                //gets the post via user name
-                let currentPost = await postFunctions.getPostByUsername(currentUserName);
-                //adds the comment to post
-                let updatedPost = await postFunctions.addCommentToPost(currentPost._id.toString(), newComment._id.toString());
-                //adds the updated post into the Redis cache
-                await redisClient.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
-                //updates post document in elasticsearch server
-                let dataBody = updatedPost;
-                dataBody.id = dataBody._id;
-                delete dataBody._id;
-                await elasticClient.index({
-                    index: "issues",
-                    id: currentPost._id.toString(),
-                    type: "posts",
-                    body: dataBody
-                }).then(function(resp) {
-                    console.log(`####updates post elasticsearch document = ${JSON.stringify(resp)}`);
-                }, function(err) {
-                    console.trace(err.message);
-                });
             } catch (error) {
                 if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
                     index++; //Skip duplicate entry and continue
@@ -202,20 +159,46 @@ function getDepartmentId(depts, deptName) {
             }
         }
 
-        //displays all the posts elasticsearch documents
-        await elasticClient.search({
-            index: "issues",
-            type: "posts",
-            body: {
-                query: {
-                    match_all: {}
+        let allPosts = await postFunctions.getAllPosts();
+        console.log(`allPosts isArray = ${Array.isArray(allPosts)}`);
+        console.log(`allPosts length = ${allPosts.length}`)
+        let counter = 0;  //comment array index
+        // inserts comments from comments.json
+        var BreakException = {};
+        // while (counter < comments.length) {
+        for (let i = 0; i < comments.length; i++) {
+            try {
+                let post = allPosts[i];
+                let currentComment = comments[i];
+                let cBody = currentComment.commentBody;
+                let currentUser = await userFunctions.getUserByName(post.username);
+                //adds the comment to mongoDB
+                let newComment = await comFunctions.addComment(cBody, currentUser._id.toString());
+                //adds the comment into the Redis cache
+                await redisClient.hsetAsync("comments", `${newComment._id}`, JSON.stringify(newComment));
+                //adds the comment to post
+                let updatedPost = await postFunctions.addCommentToPost(post._id.toString(), newComment._id.toString());
+                //adds the updated post into the Redis cache
+                await redisClient.hsetAsync("posts", `${updatedPost._id}`, JSON.stringify(updatedPost));
+                
+                //updates post document in elasticsearch server
+                let dataBody = updatedPost;
+                dataBody.id = dataBody._id;
+                delete dataBody._id;
+                await elasticClient.index({
+                    index: "issues",
+                    id: updatedPost.id.toString(),
+                    type: "posts",
+                    body: dataBody
+                });
+            } catch (error) {
+                if (error.name == "MongoError" && error.code == 11000) { //Error message and code in case of duplicate insertion
+                    index++; //Skip duplicate entry and continue
                 }
             }
-        }).then(function(resp) {
-            console.log(`getAllElasticIssues = ${JSON.stringify(resp)}`);
-        }, function(err) {
-            console.trace(err.message);
-        });
+            // counter += 1;
+        }
+        
     } catch (error) {
         console.log(error.message);
     }

@@ -77,7 +77,8 @@ router.get('/page/:pageNo', async (req, res) => {
 
 router.get('/elasticsearch/home/', async (req, res) => {
     try {
-        let keyWord = `*${req.query.keyword.toLowerCase()}*`;
+        console.log(`req.body.keyword = ${req.body.keyword}`);
+        let keyWord = `*${req.body.keyword.toLowerCase()}*`;
         if (!keyWord || keyWord == "") {
             throw "No keyword was provided for elasticsearch function!";
         }
