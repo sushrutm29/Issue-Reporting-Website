@@ -53,6 +53,16 @@
   font-weight: bold;
 }
 
+.profile-img-div {
+  width: 150px;
+  height: 150px;
+  margin: 0px auto;
+}
+
+.profile-img-div img {
+  max-width: 100%;
+  height: auto;
+}
 .createPostButton{
   margin: 10px;
 }

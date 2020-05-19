@@ -8,6 +8,7 @@ import { AuthProvider } from './firebase/Auth';
 import PrivateRoute from './components/privateRoute';
 import Login from './components/login';
 import SignUp from './components/signup'
+import userProfile from './components/userProfile';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
@@ -24,7 +25,8 @@ const App = () => {
 							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department} />
 							<Route path='/login' component={Login} />
 							<Route path='/signup' component={SignUp} />
-							<Route component={Error404} />
+							<Route path='/profile' component={userProfile} /> 
+							<Route component={Error404}/>
 						</Switch>
 					</div>
 				</div>

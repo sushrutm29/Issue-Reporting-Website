@@ -32,6 +32,7 @@ async function doPasswordReset(email) {
 
 async function doSignOut() {
 	await firebase.auth().signOut();
+	alert("Signed out");
 }
 
 export {
