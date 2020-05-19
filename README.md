@@ -30,7 +30,7 @@
 
 ### Redis Cache
 
-We will use Redis mainly for caching search history with the goal of making result retrieval faster
+We will use Redis mainly for caching search history with the goal of making result retrieval faster.
 
 > Installation:
 
@@ -61,6 +61,9 @@ HVALS hash_name
 
 ### React
 
+We will use React to create components in order to update the status of issues in real time on the dashboard.
+
+> [Official Guide](https://reactjs.org/)
 
 ### Google Firebase
 
