@@ -91,3 +91,15 @@ Download the latest [elasticsearch] (https://www.elastic.co/downloads/elasticsea
 
 Go to http://localhost:9200/ and you should be able to see your elasticsearch service information
 ### Imagemagick
+Since our website is an interactive application, we would offer users the option to upload a profile picture of his/her choice. ImageMagick would be used as it has an extensive range of options for image processing. In the near future, we could also use the same once we add the functionality of attachments on issue posts.
+
+> Installation
+- iOS: run the following command
+```
+brew install imagemagick
+```
+- Windows: just need to run the npm command to install Imagemagick module
+```
+npm install imagemagick
+```
+> [Official Guide](https://www.npmjs.com/package/imagemagick)
