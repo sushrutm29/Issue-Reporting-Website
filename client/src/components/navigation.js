@@ -4,6 +4,7 @@ import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-boots
 import CreatePost from './createIssue'
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
+import DeptAdminButtons from './deptAdminButtons';
 import SearchResults from './searchResults';
 
 function NavigationBar(props) {
@@ -13,6 +14,7 @@ function NavigationBar(props) {
     const [adminStatus, setAdminStatus] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState(undefined);
+    const [statusChanged, setStatusChanged] = useState(false);
     const [resetState, setReset] = useState(undefined);
     const [postsFound, setPostsFound] = useState(false);
 
@@ -21,17 +23,19 @@ function NavigationBar(props) {
             try {
                 const deptListing = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(deptListing.data);
-
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(userData.data.admin);
+                // setAdminStatus(userData.data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
         }
         fetchData();
-    },
-        [currentUser.email]
-    );
+    }, [currentUser.email, statusChanged]);
+
+    const handleStatus = () => {
+        setStatusChanged(!statusChanged);
+    }
 
     const buildNavDropDownItem = (dept) => {
         let url = "/dept/" + dept.deptName + "/page/1";
@@ -46,18 +50,6 @@ function NavigationBar(props) {
         departmentDropdown = deptList && deptList.map((dept) => {
             return buildNavDropDownItem(dept);
         });
-    }
-
-    let edit_button = null;
-    if (adminStatus) {
-        edit_button =
-            <div><Button variant="outline-success" onClick={() => { }} >
-                Add Dept
-                 </Button>
-                <Button variant="outline-success" onClick={() => { }} >
-                    Delete Dept
-                </Button>
-            </div>;
     }
 
     function setResetState(status) {
@@ -106,6 +98,15 @@ function NavigationBar(props) {
         }
     }
 
+    //props to be passed to deptAdminButtons component
+    let adminProps = {
+        deptList: deptList,
+        adminStatus: adminStatus,
+        action: handleStatus,
+        createDeptAction: props.createDeptAction,
+        deleteDeptAction: props.deleteDeptAction
+    }
+
     return (
         <div>
             <Navbar bg="light" expand="lg" className="navBar">
@@ -122,7 +123,7 @@ function NavigationBar(props) {
                             <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
                         </Form>
                         {props.creationAction && <CreatePost action={props.creationAction} />}
-                        {edit_button}
+                        {adminStatus && <DeptAdminButtons {...adminProps} />}
                     </Nav>
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>

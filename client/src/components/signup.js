@@ -38,7 +38,7 @@ function SignUp() {
       if(file !== ''){
         let formData = new FormData();
         formData.append('image', file);
-
+        console.log(formData);
         await axios.post('http://localhost:3001/data/profilepic', formData, {
           headers: { 
             'Content-Type': 'multipart/form-data' 
