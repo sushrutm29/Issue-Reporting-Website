@@ -5,6 +5,7 @@ import PostsList from './posts';
 import Error404 from './Error404';
 import NavigationBar from './navigation';
 import DonePostsList from './donePosts';
+import { Toast } from 'react-bootstrap';
 
 /**
  * @author Lun-Wei Chang
@@ -17,6 +18,8 @@ const Department = (props) => {
     const [lastPage, setLastpage] = useState(undefined);
     const [donePostList, setDonePostList] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [deptList, setDeptList] = useState(undefined);
     const [receivedResults, setReceivedResults] = useState(false);
 
@@ -47,7 +50,21 @@ const Department = (props) => {
         fetchPostData();
     }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults]);
 
-    function handleStatus() {
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
+    function hideToast(){
+        setShowToast(false);
+    }
+
+    function buildToast(message){
+        setToastMessage(message);
+        setShowToast(true);
+    }
+
+    function handleStatus(){
         setStatusChanged(!statusChanged);
     }
 
@@ -86,9 +103,12 @@ const Department = (props) => {
 
     return (
         <div className="deptPostList">
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
+                <Toast.Header>{toastMessage}</Toast.Header>
+            </Toast>
             <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults}/>
             {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
-            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} />}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>}
             {prevLink}
             {nextLink}
         </div>
