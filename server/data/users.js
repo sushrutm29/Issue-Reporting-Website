@@ -51,7 +51,6 @@ async function getUserByName(userName) {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ userName: userName });
     if (!user) {
-        console.log(`User not found with name ${userName}`);
         throw `User not found with name ${userName}`;
     }
     return user;

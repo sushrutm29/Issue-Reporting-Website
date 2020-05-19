@@ -38,7 +38,7 @@ function getDepartmentId(depts, deptName) {
         await elasticClient.indices.delete({
             index: "issues"
         }).then(function(resp) {
-            // console.log(`Deleted Elasticsearch index = ${JSON.stringify(resp)}`);
+            console.log(`Deleted Elasticsearch index = ${JSON.stringify(resp)}`);
         }, function(err) {
             console.trace(err.message);
         });
@@ -50,7 +50,7 @@ function getDepartmentId(depts, deptName) {
                 console.log(err);
             }
             else {
-                // console.log("create",resp);
+                console.log("create",resp);
             }
         });
         //specify the elasticsearch posts type document fields' types
@@ -89,7 +89,7 @@ function getDepartmentId(depts, deptName) {
             if (err) {
                 console.log(err);
             } else {
-                // console.log(resp);
+                console.log(resp);
             }
         });
         
@@ -147,7 +147,7 @@ function getDepartmentId(depts, deptName) {
                     type: "posts",
                     body: dataBody
                 }).then(function(resp) {
-                    // console.log(`creates post elasticsearch document = ${JSON.stringify(resp)}`);
+                    console.log(`creates post elasticsearch document = ${JSON.stringify(resp)}`);
                 }, function(err) {
                     console.trace(err.message);
                 });
@@ -160,8 +160,6 @@ function getDepartmentId(depts, deptName) {
         }
 
         let allPosts = await postFunctions.getAllPosts();
-        console.log(`allPosts isArray = ${Array.isArray(allPosts)}`);
-        console.log(`allPosts length = ${allPosts.length}`)
         let counter = 0;  //comment array index
         // inserts comments from comments.json
         var BreakException = {};
@@ -196,7 +194,6 @@ function getDepartmentId(depts, deptName) {
                     index++; //Skip duplicate entry and continue
                 }
             }
-            // counter += 1;
         }
         
     } catch (error) {
