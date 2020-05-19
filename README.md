@@ -67,6 +67,23 @@ We will use React to create components in order to update the status of issues i
 
 ### Google Firebase
 
+We will use Firebase to allow users to login with their choice of social media accounts like Facebook or Gmail.
+
+> [Official Guide](https://firebase.google.com/docs/guides)
+
 ### Elasticsearch
 
+Elasticsearch will be used for enabling users to search issues by keywords. This search engine will fetch issues with titles matching user entered keywords. It may be further extended to search for keyword matches in the issue body itself.
+
+> Installation
+
+Download the latest [elasticsearch] (https://www.elastic.co/downloads/elasticsearch)
+> Start elasticsearch service
+
+- Unzip the downloaded file
+- Go into your "~/elasticsearch-version/bin" directory and type the following command
+```
+./elasticsearch
+```
+> 
 ### Imagemagick
