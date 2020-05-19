@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import axios from 'axios';
 
 async function doCreateUserWithEmailAndPassword(email, password, displayName){
     await firebase.auth().createUserWithEmailAndPassword(email, password);
@@ -18,12 +19,29 @@ async function doSignInWithEmailAndPassword(email, password) {
 
 async function doSocialSignIn(provider) {
 	let socialProvider = null;
+	let newUserName = undefined;
+	let newEmail = undefined;
 	if (provider === 'google') {
 		socialProvider = new firebase.auth.GoogleAuthProvider();
 	} else if (provider === 'facebook') {
 		socialProvider = new firebase.auth.FacebookAuthProvider();
 	}
-	await firebase.auth().signInWithPopup(socialProvider);
+	await firebase.auth().signInWithPopup(socialProvider).then(async function(result) {
+		newUserName = result.user.displayName;
+		newEmail = result.user.email;
+		await axios({
+			method: 'post',
+			url: 'http://localhost:3001/data/user',
+			data: {
+				userName: newUserName,
+				userEmail: newEmail,
+				admin: false,
+				profilePic: false
+			},
+			});
+	  }).catch(function(error) {
+		console.log(error);
+	  });
 }
 
 async function doPasswordReset(email) {
