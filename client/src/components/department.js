@@ -6,6 +6,7 @@ import Error404 from './Error404';
 import NavigationBar from './navigation';
 import DonePostsList from './donePosts';
 import { Button } from 'react-bootstrap';
+import { Toast } from 'react-bootstrap';
 
 /**
  * @author Lun-Wei Chang
@@ -20,6 +21,10 @@ const Department = (props) => {
     const [statusChanged, setStatusChanged] = useState(false);
     const [resolvedLastPage, setResolvedLastpage] = useState(false);
     const [currentResolvedPageNum, setResolvedPage] = useState(1);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
+    const [deptList, setDeptList] = useState(undefined);
+    const [receivedResults, setReceivedResults] = useState(false);
 
     useEffect(() => {
         async function fetchPostData() {
@@ -54,10 +59,28 @@ const Department = (props) => {
             }
         }
         fetchPostData();
-    }, [statusChanged, props.match.params.deptName, currentPageNum, currentResolvedPageNum]);
+    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults, currentResolvedPageNum]);
 
-    function handleStatus() {
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
+    function hideToast(){
+        setShowToast(false);
+    }
+
+    function buildToast(message){
+        setToastMessage(message);
+        setShowToast(true);
+    }
+
+    function handleStatus(){
         setStatusChanged(!statusChanged);
+    }
+
+    function receivedSearchResults(status) {
+        setReceivedResults(status);
     }
 
     //If no post listing or incorrect URL display 404
@@ -117,11 +140,14 @@ const Department = (props) => {
 
     return (
         <div className="deptPostList">
-            <NavigationBar creationAction={false} currentDept={props.match.params.deptName}/>
-            <DonePostsList donePosts={donePostList} action={handleStatus}/>
-            {prevResolvedLink}
-            {nextResolvedLink}
-            <PostsList allPosts={postList} action={handleStatus} />
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
+                <Toast.Header>{toastMessage}</Toast.Header>
+            </Toast>
+            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults}/>
+            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+            {!receivedResults && prevResolvedLink}
+            {!receivedResults && nextResolvedLink}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>}
             {prevLink}
             {nextLink}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -23,10 +23,32 @@ function Home(props) {
     const [deptList, setDeptList] = useState(undefined);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
+    const [receivedResults, setReceivedResults] = useState(false);
 
+    function handleStatus(){
+        setStatusChanged(!statusChanged);
+    }
+
+    function handlePostCreation(){
+        handleStatus();
+        buildToast("Issue Posted Successfully!");
+    }
+
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
+    function hideToast(){
+        setShowToast(false);
+    }
+
+    function buildToast(message){
+        setToastMessage(message);
+        setShowToast(true);
+    }
     
     useEffect(() => {
-        console.log("Home.js called");
         setLastpage(false); //Assume user is initially not on the last page
         async function fetchPostData() {
             try {
@@ -57,7 +79,7 @@ function Home(props) {
         }
         fetchPostData()
     
-    }, [currentPageNum, props.match.params.pageNo, statusChanged, currentResolvedPageNum]
+    }, [currentPageNum, props.match.params.pageNo, statusChanged, receivedResults, currentResolvedPageNum]
     );
     
     function handleStatus(){
@@ -76,6 +98,10 @@ function Home(props) {
     function buildToast(message){
         setToastMessage(message);
         setShowToast(true);
+    }
+
+    function receivedSearchResults(status) {
+        setReceivedResults(status);
     }
 
     //If no post listing or incorrect URL display 404
@@ -140,14 +166,14 @@ function Home(props) {
 
     return (
         <div className="homePage">
-            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
-            <DonePostsList donePosts={donePostList} action={handleStatus}/>
-            {prevResolvedLink}
-            {nextResolvedLink}
-            <PostsList allPosts={postList} action={handleStatus}/>
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults}/>
+            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus}/>}
+            {!receivedResults && prevResolvedLink}
+            {!receivedResults && nextResolvedLink}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>}
             {prevLink}
             {nextLink}
         </div>
