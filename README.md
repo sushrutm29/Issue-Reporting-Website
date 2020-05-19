@@ -3,14 +3,14 @@
 ## Table of Contents
 
 - [Team](#team)
-- [Project Info](#information)
+- [Project-Info](#information)
 - [Technology](#technology)
-- [Quick Start](#quick start)
+- [Quick-Start](#quick-start)
 
 ## Team
 
-## Project Info
+## Project-Info
 
 ## Technology
 
-## Quick Start
+## Quick-Start
