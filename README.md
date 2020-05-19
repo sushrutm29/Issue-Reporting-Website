@@ -27,8 +27,20 @@
 ## Technology
 
 ### Redis Cache
-#### Quick Start Guide
-> Quick Start Guide
+> Installation:
+Download directly from [redis.io] (https://redis.io/download)
+> Start Redis:
+Open a new terminal and type the following command
+```
+redis-server
+```
+> Enter Redis Console:
+
+> Check Redis Keys:
+
+> Check Redis hash values:
+
+
 ### React
 
 ### Google Firebase
