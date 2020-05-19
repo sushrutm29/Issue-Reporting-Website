@@ -1,22 +1,16 @@
-***INSERT GRAPHIC HERE (include hyperlink in image)***
+# Issue Reporting Website
 
-# Repository Title Goes Here
+## Table of Contents
 
-> Subtitle or Short Description Goes Here
+- [Team](#team)
+- [Project Info](#information)
+- [Technology](#technology)
+- [Quick Start](#quick start)
 
-> ideally one sentence
+## Team
 
-> include terms/tags that can be searched
+## Project Info
 
-**Badges will go here**
+## Technology
 
-- build status
-- issues (waffle.io maybe)
-- devDependencies
-- npm package
-- coverage
-- slack
-- downloads
-- gitter chat
-- license
-- etc.
+## Quick Start
