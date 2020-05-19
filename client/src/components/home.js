@@ -32,6 +32,11 @@ function Home(props) {
         buildToast("Issue Posted Successfully!");
     }
 
+    function handlePostDeletion(){
+        handleStatus();
+        buildToast("Issue Deleted Successfully!");
+    }
+
     function hideToast(){
         setShowToast(false);
     }
@@ -108,12 +113,12 @@ function Home(props) {
 
     return (
         <div className="homePage">
-            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
+            <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
             <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults}/>
             {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus}/>}
-            {!receivedResults && <PostsList allPosts={postList} action={handleStatus}/>}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>}
             {prevLink}
             {nextLink}
         </div>

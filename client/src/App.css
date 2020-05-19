@@ -86,6 +86,13 @@ input::placeholder{
 }
 
 .deleteButton, .google, .facebook {
+  margin: 10px;
+}
+
+.createPostButton{
+  margin: 10px;
+}
+.deleteButton {
   margin: 5px;
 }
 
