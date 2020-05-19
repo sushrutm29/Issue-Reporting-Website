@@ -30,18 +30,29 @@
 > Installation:
 
 Download directly from [redis.io] (https://redis.io/download)
-> Start Redis:
+> Start Redis server:
 
 Open a new terminal and type the following command
 ```
 redis-server
 ```
-> Enter Redis Console:
+> Enter Redis console:
 
+Open a new terminal and type the following command
+```
+redis-cli
+```
 > Check Redis Keys:
 
+Use the following command to display all the keys stored in Redis cache
+```
+KEYS *
+```
 > Check Redis hash values:
-
+Use following command to display all the values stored in Redis hash
+```
+HVALS hash_name
+```
 
 ### React
 
