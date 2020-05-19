@@ -108,14 +108,14 @@ function NavigationBar(props) {
     }
 
     return (
-        <div>
-            <Navbar bg="light" expand="lg" className="navBar">
+        <div className="navbarComponent">
+            <Navbar expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link href="/home/page/1">Home</Nav.Link>
-                        <Nav.Link href="#">Profile</Nav.Link>
-                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                        <Nav.Link className="navLinks" href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link className="navLinks" href="/profile">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="departmentDropdown">
                             {departmentDropdown}
                         </NavDropdown>
                         <Form inline>

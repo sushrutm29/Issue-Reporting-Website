@@ -18,9 +18,9 @@ function PostsList(props) {
 
     const handleDelete = async (post) => {
         const res = await axios.delete(`http://localhost:3001/data/post/${post._id}`);
-        
-        if(res.status === 200) props.deletionAction();
-        else alert('Deletion Failed!');   
+
+        if (res.status === 200) props.deletionAction();
+        else alert('Deletion Failed!');
     }
 
     useEffect(() => {
@@ -28,7 +28,7 @@ function PostsList(props) {
         async function fetchPostData() {
             try {
                 console.log(currentUser.email);
-                const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
+                const { data } = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
                 setAdminStatus(data.admin);
             } catch (error) {
@@ -44,18 +44,16 @@ function PostsList(props) {
         var postDetails = post.body.slice(0, 140) + '...';
 
         return (
-            <div className="post" key={post._id}>
-                <Col lg={4}>
-                    <Card style={{ width: '18rem' }} className="postCard">
+            <div className="post d-flex align-items-center" key={post._id}>
+                <Col xl={3} lg={4} md={6} sm={6} class="cardColumn">
+                    <Card className="postCard">
                         <Card.Header className="cardTitle">{post.title}</Card.Header>
                         <Card.Body>
-                            <Card.Text>
+                            <Card.Text className="d-flex justify-content-center">
                                 {postDetails}
                             </Card.Text>
-                            <PostModal post={post} userID = {postUserID} action = {props.action}/>
-                            {(post.useremail === currentUser.email || adminStatus) && <Button variant="danger" className="deletePostButton" onClick={() => { handleDelete(post) }} >
-                                Delete
-                            </Button>}
+                            <PostModal post={post} userID={postUserID} action={props.action} />
+                            {(post.useremail === currentUser.email || adminStatus) && <Button variant="danger" className="deletePostButton" onClick={() => { handleDelete(post) }}>Delete</Button>}
                         </Card.Body>
                         <Card.Footer className="username">
                             Posted by: {post.username}
