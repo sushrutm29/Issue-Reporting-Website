@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import PostsList from './posts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -21,6 +21,7 @@ function Home(props) {
     const [deptList, setDeptList] = useState(undefined);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
+    const [receivedResults, setReceivedResults] = useState(false);
 
     function handleStatus(){
         setStatusChanged(!statusChanged);
@@ -41,7 +42,6 @@ function Home(props) {
     }
     
     useEffect(() => {
-        console.log("Home.js called");
         setLastpage(false); //Assume user is initially not on the last page
         async function fetchPostData() {
             try {
@@ -65,8 +65,12 @@ function Home(props) {
         }
         fetchPostData()
     
-    }, [currentPageNum, props.match.params.pageNo, statusChanged]
+    }, [currentPageNum, props.match.params.pageNo, statusChanged, receivedResults]
     );
+
+    function receivedSearchResults(status) {
+        setReceivedResults(status);
+    }
 
     //If no post listing or incorrect URL display 404
     if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
@@ -109,9 +113,9 @@ function Home(props) {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
-            <DonePostsList donePosts={donePostList} action={handleStatus}/>
-            <PostsList allPosts={postList} action={handleStatus}/>
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults}/>
+            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus}/>}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus}/>}
             {prevLink}
             {nextLink}
         </div>

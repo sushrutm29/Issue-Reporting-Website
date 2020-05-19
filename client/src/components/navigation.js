@@ -4,6 +4,7 @@ import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-boots
 import CreatePost from './createIssue'
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
+import SearchResults from './searchResults';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
@@ -11,6 +12,9 @@ function NavigationBar(props) {
     const { currentUser } = useContext(AuthContext);
     const [adminStatus, setAdminStatus] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState(undefined);
+    const [resetState, setReset] = useState(undefined);
+    const [postsFound, setPostsFound] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -49,17 +53,36 @@ function NavigationBar(props) {
         edit_button =
             <div><Button variant="outline-success" onClick={() => { }} >
                 Add Dept
-        </Button>
+                 </Button>
                 <Button variant="outline-success" onClick={() => { }} >
                     Delete Dept
-        </Button></div>;
+                </Button>
+            </div>;
+    }
+
+    function setResetState(status) {
+        setReset(status);
+    }
+
+    function setPostFoundState(status) {
+        setPostsFound(status);
+    }
+
+    function setPostVariables (postsArray) {
+        if (postsArray.length !== 0) {
+            setPostsFound(true);
+            props.getReceivedStatus(true);
+        } else {
+            setPostsFound(false);
+        }
     }
 
     async function submitSearchQuery() {
+        console.log(searchQuery);
+        setReset(false);
         let currentDepartmentID;
         if (props.currentDept !== undefined) {
             currentDepartmentID = (await axios.get(`http://localhost:3001/data/dept/getDeptByName/${props.currentDept}`)).data._id;
-            console.log(currentDepartmentID);
             const response = await axios.get("http://localhost:3001/data/post/elasticsearch/dept/",
                 {
                     params: {
@@ -68,6 +91,8 @@ function NavigationBar(props) {
                     }
                 }
             );
+            setSearchResults(response.data);
+            setPostVariables (response.data);
         } else {
             const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home/",
                 {
@@ -76,11 +101,13 @@ function NavigationBar(props) {
                     }
                 }
             );
+            setSearchResults(response.data);
+            setPostVariables (response.data);
         }
     }
 
-    if (props.creationAction) {
-        return (
+    return (
+        <div>
             <Navbar bg="light" expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
@@ -94,35 +121,15 @@ function NavigationBar(props) {
                             <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
                             <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
                         </Form>
-                        <CreatePost action={props.creationAction} />
+                        {props.creationAction && <CreatePost action={props.creationAction} />}
                         {edit_button}
                     </Nav>
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
-        )
-    } else {
-        return (
-            <Navbar bg="light" expand="lg" className="navBar">
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Nav.Link href="/home/page/1">Home</Nav.Link>
-                        <Nav.Link href="#">Profile</Nav.Link>
-                        <NavDropdown title="Department" id="basic-nav-dropdown">
-                            {departmentDropdown}
-                        </NavDropdown>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }}/>
-                            <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
-                        </Form>
-                        {edit_button}
-                    </Nav>
-                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
-                </Navbar.Collapse>
-            </Navbar>
-        )
-    }
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState}/>}
+        </div>
+    )
 }
 
 export default NavigationBar;
