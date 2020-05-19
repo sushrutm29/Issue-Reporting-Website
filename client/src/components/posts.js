@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Card, Container, Row, Col} from 'react-bootstrap';
+import { Card, Container, Row, Col, Button } from 'react-bootstrap';
 import PostModal from './modal';
 import { AuthContext } from '../firebase/Auth';
 import EditPostModal from './editPost';
@@ -15,7 +15,14 @@ function PostsList(props) {
     let card = null;
     const [postList, setPostList] = useState(props.allPosts);
     const [postUserID, setUserID] = useState(undefined);
-    const [postUserEmail, setUserEmail] = useState(undefined);
+    const [adminStatus, setAdminStatus] = useState(false);
+
+    const handleDelete = async (post) => {
+        const res = await axios.delete(`http://localhost:3001/data/post/${post._id}`);
+        
+        if(res.status === 200) props.deletionAction();
+        else alert('Deletion Failed!');   
+    }
 
     useEffect(() => {
         setPostList(props.allPosts);
@@ -23,7 +30,7 @@ function PostsList(props) {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
-                setUserEmail(data.userEmail);
+                setAdminStatus(data.admin);
             } catch (error) {
                 console.log(error);
             }
@@ -35,6 +42,7 @@ function PostsList(props) {
 
     const buildListItem = (post) => {
         var postDetails = post.body.slice(0, 140) + '...';
+
         return (
             <div className="post" key={post._id}>
                 <Col lg={4}>
@@ -46,6 +54,9 @@ function PostsList(props) {
                             </Card.Text>
                             <PostModal post={post} userID = {postUserID} action = {props.action}/>
                             <EditPostModal post = {post} action={props.action}/>
+                            {(post.useremail === currentUser.email || adminStatus) && <Button variant="danger" className="deletePostButton" onClick={() => { handleDelete(post) }} >
+                                Delete
+                            </Button>}
                         </Card.Body>
                         <Card.Footer className="username">
                             Posted by: {post.username}
@@ -60,6 +71,8 @@ function PostsList(props) {
         card = postList && postList.map((post) => {
             return buildListItem(post);
         });
+    } else {
+        return <p>No posts found!</p>
     }
 
     return (

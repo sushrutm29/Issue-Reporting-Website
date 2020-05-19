@@ -55,7 +55,7 @@ function PostModal(props) {
     }
 
     const handleResolve = async () => {
-        const res = await axios.patch(`http://localhost:3001/data/post/resolve/${props.post._id}`);
+        await axios.patch(`http://localhost:3001/data/post/resolve/${props.post._id}`);
         props.action();
     }
 
