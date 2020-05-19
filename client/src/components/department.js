@@ -80,7 +80,7 @@ const Department = (props) => {
 
     return (
         <div className="deptPostList">
-            <NavigationBar creationAction={false} />
+            <NavigationBar creationAction={false} currentDept={props.match.params.deptName}/>
             <DonePostsList donePosts={donePostList} action={handleStatus} />
             <PostsList allPosts={postList} action={handleStatus} />
             {prevLink}

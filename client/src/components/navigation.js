@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 import CreatePost from './createIssue'
-import {doSignOut} from '../firebase/FirebaseFunctions';
+import { doSignOut } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 
 function NavigationBar(props) {
@@ -10,6 +10,7 @@ function NavigationBar(props) {
     const [deptList, setDeptList] = useState(undefined);
     const { currentUser } = useContext(AuthContext);
     const [adminStatus, setAdminStatus] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         async function fetchData() {
@@ -25,11 +26,11 @@ function NavigationBar(props) {
         }
         fetchData();
     },
-        [deptList, currentUser.email]
+        [currentUser.email]
     );
 
     const buildNavDropDownItem = (dept) => {
-        let url = "/dept/" + dept.deptName +"/page/1";
+        let url = "/dept/" + dept.deptName + "/page/1";
         let deptName = dept.deptName.charAt(0).toUpperCase() + dept.deptName.slice(1);
         return (
             <NavDropdown.Item key={dept._id} href={url}>{deptName}</NavDropdown.Item>
@@ -42,19 +43,45 @@ function NavigationBar(props) {
             return buildNavDropDownItem(dept);
         });
     }
- 
+
     let edit_button = null;
     if (adminStatus) {
-        edit_button = 
-        <div><Button variant="outline-success" onClick={() => {}} >
-        Add Dept
+        edit_button =
+            <div><Button variant="outline-success" onClick={() => { }} >
+                Add Dept
         </Button>
-        <Button variant="outline-success" onClick={() => {}} >
-        Delete Dept
+                <Button variant="outline-success" onClick={() => { }} >
+                    Delete Dept
         </Button></div>;
     }
 
-    if(props.creationAction){
+    async function submitSearchQuery() {
+        let currentDepartmentID;
+        if (props.currentDept !== undefined) {
+            currentDepartmentID = (await axios.get(`http://localhost:3001/data/dept/getDeptByName/${props.currentDept}`)).data._id;
+            console.log(currentDepartmentID);
+            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/dept",
+                {
+                    params: {
+                        keyword: searchQuery,
+                        departmentID: currentDepartmentID
+                    }
+                }
+            );
+            console.log(response);
+        } else {
+            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home",
+                {
+                    params: {
+                        keyword: searchQuery
+                    }
+                }
+            );
+            console.log(response);
+        }
+    }
+
+    if (props.creationAction) {
         return (
             <Navbar bg="light" expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -66,17 +93,17 @@ function NavigationBar(props) {
                             {departmentDropdown}
                         </NavDropdown>
                         <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                            <Button variant="outline-success">Search</Button>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
+                            <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
                         </Form>
-                        <CreatePost action={props.creationAction}/>
+                        <CreatePost action={props.creationAction} />
                         {edit_button}
                     </Nav>
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
         )
-    }else{
+    } else {
         return (
             <Navbar bg="light" expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -88,8 +115,8 @@ function NavigationBar(props) {
                             {departmentDropdown}
                         </NavDropdown>
                         <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                            <Button variant="outline-success">Search</Button>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }}/>
+                            <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
                         </Form>
                         {edit_button}
                     </Nav>
@@ -97,7 +124,7 @@ function NavigationBar(props) {
                 </Navbar.Collapse>
             </Navbar>
         )
-    }   
+    }
 }
 
 export default NavigationBar;
