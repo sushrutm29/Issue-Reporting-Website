@@ -109,7 +109,7 @@ function Home(props) {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation}/>
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation} action={handleStatus}/>
             <DonePostsList donePosts={donePostList} action={handleStatus}/>
             <PostsList allPosts={postList} action={handleStatus}/>
             {prevLink}

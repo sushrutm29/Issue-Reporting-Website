@@ -14,6 +14,7 @@ function NavigationBar(props) {
     const [adminStatus, setAdminStatus] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState(undefined);
+    const [statusChanged, setStatusChanged] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -29,7 +30,11 @@ function NavigationBar(props) {
             }
         }
         fetchData();
-    }, [currentUser.email]);
+    }, [currentUser.email, statusChanged]);
+
+    const handleStatus = () => {
+        setStatusChanged(!statusChanged);
+    }
 
     const buildNavDropDownItem = (dept) => {
         let url = "/dept/" + dept.deptName + "/page/1";
@@ -74,7 +79,9 @@ function NavigationBar(props) {
     //props to be passed to deptAdminButtons component
     let adminProps = {
         deptList: deptList,
-        adminStatus: adminStatus
+        adminStatus: adminStatus,
+        action: handleStatus,
+        deletionAction: props.action
     }
 
     return (
