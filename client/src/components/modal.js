@@ -33,6 +33,7 @@ function PostModal(props) {
 
     const handleShow = async () => { //Set current post data to display in the modal
         let { data } = await axios.get(`http://localhost:3001/data/post/${props.post._id}`);
+        console.log(data.comments);
         let commentsArray = [];
 
         for (let index in data.comments) {
@@ -58,11 +59,9 @@ function PostModal(props) {
         props.action();
     }
 
-    let edit_button = null;
+    let resolve_button = null;
     if (adminStatus) {
-        edit_button = <div><Button variant="primary" onClick={() => {}} >
-        Edit Post
-        </Button><Button variant="primary" onClick={handleResolve} >
+        resolve_button = <div><Button variant="primary" onClick={handleResolve} >
         Resolve Post
         </Button></div>;
     }
@@ -72,7 +71,7 @@ function PostModal(props) {
             <Button variant="primary" onClick={() => { handleShow(props.post) }} >
                 Post Details
             </Button>
-            {edit_button}
+            {resolve_button}
             <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalTitle}</Modal.Title>

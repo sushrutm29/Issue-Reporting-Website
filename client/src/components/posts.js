@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Card, Container, Row, Col} from 'react-bootstrap';
 import PostModal from './modal';
 import { AuthContext } from '../firebase/Auth';
+import EditPostModal from './editPost';
 
 /**
  * @author Shiwani Deo, Lun-Wei Chang
@@ -44,6 +45,7 @@ function PostsList(props) {
                                 {postDetails}
                             </Card.Text>
                             <PostModal post={post} userID = {postUserID} action = {props.action}/>
+                            <EditPostModal post = {post} action={props.action}/>
                         </Card.Body>
                         <Card.Footer className="username">
                             Posted by: {post.username}
