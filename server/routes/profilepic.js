@@ -84,6 +84,7 @@ router.delete('/:id', async (req, res) => {
     try {
         console.log("coming here")
         const filename = req.params.id;
+        // console.log(filename);
         const connection = await mongoConnection();
         let bucket = new mongodb.GridFSBucket(connection, {
             bucketName: 'profilePics'
@@ -94,11 +95,12 @@ router.delete('/:id', async (req, res) => {
         } else if (!ObjectId.isValid) {
             throw new Error(errorMessages.userIDInvalid);
         }
-        console.log("coming here");
+        console.log("finding in db");
         const file = await bucket.find({ filename: filename }).toArray();
         if (file.length != 0) {
             bucket.delete(file[0]._id);
         }
+        console.log("deleted from db")
     } catch (error) {
         return res.status(400).json({ error: error.message })
     }
