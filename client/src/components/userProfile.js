@@ -63,6 +63,7 @@ class userProfile extends Component {
                 }
             });
             await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+            window.location.reload();
         }
     }
 
@@ -157,6 +158,9 @@ class userProfile extends Component {
                 this.setState({ userData: data, posts: posts });
                 if (imageDetails) {
                     this.setState({ imageName: imageDetails.data.path })
+                }
+                else{
+                    this.setState({ imageName: '../default.jpg' })
                 }
                 console.log(imageDetails);
             }
