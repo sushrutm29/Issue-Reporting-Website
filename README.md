@@ -9,12 +9,12 @@
 
 ## Team
 
-Team Name: Virus Free <br />
-Team Members: Lun-Wei Chang, Saumya Shastri, Shiwani Deo
+**Team Name**: Virus Free <br />
+**Team Members**: Lun-Wei Chang, Saumya Shastri, Shiwani Deo
 ## Project-Info
 
 ### GitHub Repository
-> Link: https://github.com/sdeo73/cs554project
+**Link**: https://github.com/sdeo73/cs554project
 
 ### Project Description
 
