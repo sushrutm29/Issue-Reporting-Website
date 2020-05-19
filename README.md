@@ -4,8 +4,8 @@
 
 - [Team](#team)
 - [Project-Info](#project-info)
-- [Technology](#technology)
 - [Quick-Start](#quick-start)
+- [Technology](#technology)
 
 ## **Team**
 
@@ -24,9 +24,14 @@
   
   Lastly, we would have an administrator panel that would have the clearance to delete or change the state of any issue post. The administrator can also create a new issue board or delete an existing one. 
 
+## **Quick-Start**
+
 ## **Technology**
 
 ### Redis Cache
+
+We will use Redis mainly for caching search history with the goal of making result retrieval faster
+
 > Installation:
 
 Download directly from [redis.io] (https://redis.io/download)
@@ -56,10 +61,9 @@ HVALS hash_name
 
 ### React
 
+
 ### Google Firebase
 
 ### Elasticsearch
 
 ### Imagemagick
-
-## **Quick-Start**
