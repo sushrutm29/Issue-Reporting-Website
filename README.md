@@ -28,8 +28,10 @@
 
 ### Redis Cache
 > Installation:
+
 Download directly from [redis.io] (https://redis.io/download)
 > Start Redis:
+
 Open a new terminal and type the following command
 ```
 redis-server
