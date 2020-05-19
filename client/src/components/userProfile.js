@@ -22,54 +22,28 @@ class userProfile extends Component {
         this.state = { postsData: '' };
         this.state = { userState: null }
         this.state = { imageName: null }
-        this.state = { imageFile: {} }
+        this.state = { imageFile: null }
         this.state = { idofuser: '' }
     }
 
-    handleFile = async (event) => {
-        console.log(event);
-        this.setState({ imageFile: event.target.files[0] });
-        console.log(event.target.files[0]);
-        // console.log(this.state.imageFile);
+    signUp = (event) => {
+        const user = this.context;
+        console.log(this.context)
     }
 
-    // onImageChange = (event) => {
-    //     console.log("onImageChange")
-    //     if (event.target.files && event.target.files[0]) {
-    //       let reader = new FileReader();
-    //       reader.onload = (e) => {
-    //         this.setState({imageFile : e.target.result});
-    //       };
-    //       console.log(this.state.imageFile);
-    //       reader.readAsDataURL(event.target.files[0]);
-    //     }
-    //   }
-
     handleUpload = async (event) => {
-        event.preventDefault();
-        try {
-            if (this.state.imageFile !== null) {
-                console.log(this.state.imageFile)
-                try {
-                    await axios.delete(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
-                } catch (error) {
-                    console.log(error);
+        if (event.target.files[0] !== '') {
+            let formData = new FormData();
+            formData.append('image', event.target.files[0]);
+            console.log(formData)
+            // await axios.delete(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+            await axios.post('http://localhost:3001/data/profilepic', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
-                let formData = new FormData();
-                formData.append('image', this.state.imageFile);
-                await axios.post('http://localhost:3001/data/profilepic', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-                await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
-                await this.getImageDetails();
-            }
+            });
+            await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
         }
-        catch (error) {
-            console.log(error)
-        }
-
     }
 
     handleSubmit = async (event) => {
@@ -87,11 +61,15 @@ class userProfile extends Component {
                 url: `http://localhost:3001/data/post/update/${id}`,
                 data: postDetails
             });
-            // window.location.reload();
+            window.location.reload();
 
         } catch (error) {
             console.log(error);
         }
+    }
+
+    handleReload = () => {
+        window.location.reload();
     }
 
     handleInputChange = (event) => {
@@ -107,6 +85,7 @@ class userProfile extends Component {
         const newpwd = event.target.newpassword.value;
         const email = this.state.userData.userEmail;
         if (newpwd.length != 0 && oldpwd.length != 0) {
+
             await doChangePassword(email, oldpwd, newpwd);
         }
         alert("Password Successfully Changed! Please Login back! ");
@@ -145,7 +124,14 @@ class userProfile extends Component {
                 let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
                 const userId = data._id;
                 this.setState({ idofuser: userId })
-                // console.log(this.state.idofuser);
+                console.log(this.state.idofuser);
+                let imageDetails;
+                try {
+                    imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
+                    console.log(imageDetails);
+                } catch (error) {
+                    imageDetails = undefined;
+                }
                 let postIds = data.posts;
                 let posts = [];
                 for (const id of postIds) {
@@ -153,7 +139,10 @@ class userProfile extends Component {
                     posts.push(post.data)
                 }
                 this.setState({ userData: data, posts: posts });
-
+                if (imageDetails) {
+                    this.setState({ imageName: imageDetails.data.path })
+                }
+                console.log(imageDetails);
             }
             else {
                 window.location.href = "/login";
@@ -163,28 +152,8 @@ class userProfile extends Component {
         }
     }
 
-
-    async getImageDetails() {
-        try {
-            const userId = this.state.idofuser;
-            const imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-            if (imageDetails) {
-                this.setState({ imageName: imageDetails.data.path })
-                alert(this.state.imageName);
-            }
-            else {
-                this.setState({ imageName: '../image-not-found.png' })
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
     async componentDidMount() {
         try {
-            await this.getImageDetails();
             await this.getUserPostDetails();
         } catch (error) {
             console.log("error : ", error);
@@ -201,11 +170,11 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                <form onSubmit={this.handleUpload}>
+                <form onSubmit={this.changeProfilePicture}>
                     <h6> Change Profile Picture : </h6>
                     <br></br>
-                    <input type="file" variant="primary" onChange={(event) => { this.handleFile(event) }} />
-                    <Button type="submit" variant="primary"> Change Profile Picture </Button>
+                    <input type="file" variant="primary" onChange={this.handleUpload} />
+                    {/* <Button type="submit" variant="primary"> Change Profile Picture </Button> */}
                 </form>
                 <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
