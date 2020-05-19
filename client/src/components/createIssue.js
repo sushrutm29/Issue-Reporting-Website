@@ -40,7 +40,6 @@ function CreatePost(props){
             });
             handleClose();
             props.action();
-            console.log(res);
         } catch (error) {
             alert(error);
         }

@@ -24,7 +24,7 @@ const DeptAdminButtons = (props) => {
                 },
             });
             props.action();
-            props.createDeptAction();
+            props.deleteDeptAction();
         } catch (error) {
             alert(error);
         }
@@ -51,6 +51,7 @@ const DeptAdminButtons = (props) => {
         }
         //deletes the specific department
         await axios.delete(`http://localhost:3001/data/dept/${currentDeptID}`);
+        props.action();
         props.deleteDeptAction();
     }
     
