@@ -29,16 +29,18 @@ async function doSocialSignIn(provider) {
 	await firebase.auth().signInWithPopup(socialProvider).then(async function(result) {
 		newUserName = result.user.displayName;
 		newEmail = result.user.email;
-		await axios({
-			method: 'post',
-			url: 'http://localhost:3001/data/user',
-			data: {
-				userName: newUserName,
-				userEmail: newEmail,
-				admin: false,
-				profilePic: false
-			},
+		try {
+			await axios({
+				method: 'post',
+				url: 'http://localhost:3001/data/user',
+				data: {
+					userName: newUserName,
+					userEmail: newEmail,
+					admin: false,
+					profilePic: false
+				},
 			});
+		} catch (error) {}
 	  }).catch(function(error) {
 		console.log(error);
 	  });
