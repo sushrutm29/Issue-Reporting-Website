@@ -53,11 +53,16 @@ function PostModal(props) {
         setShow(true);
     }
 
+    const handleResolve = async () => {
+        await axios.patch(`http://localhost:3001/data/post/resolve/${props.post._id}`);
+        props.action();
+    }
+
     let edit_button = null;
     if (adminStatus) {
         edit_button = <div><Button variant="primary" onClick={() => {}} >
         Edit Post
-        </Button><Button variant="primary" onClick={() => {}} >
+        </Button><Button variant="primary" onClick={handleResolve} >
         Resolve Post
         </Button></div>;
     }
