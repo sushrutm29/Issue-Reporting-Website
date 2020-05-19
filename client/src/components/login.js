@@ -6,7 +6,8 @@ import {
   doSignInWithEmailAndPassword,
   doPasswordReset
 } from '../firebase/FirebaseFunctions';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Button} from 'react-bootstrap';
 
 function SignIn() {
   const { currentUser } = useContext(AuthContext);
@@ -37,45 +38,33 @@ function SignIn() {
     return <Redirect to="/home/page/1" />;
   }
   return (
-    <div>
-      <h1>Log in</h1>
-      <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label>
-            Email:
-            <input
-              className="form-control"
-              name="email"
-              id="email"
-              type="email"
-              placeholder="Email"
-              required
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Password:
-            <input
-              className="form-control"
-              name="password"
-              type="password"
-              placeholder="Password"
-              required
-            />
-          </label>
-        </div>
-        <button type="submit" className="loginButton">Log in</button>
-        
-        <button className="forgotPassword" onClick={passwordReset}>
-          Forgot Password
-        </button>
-      </form>
-
-      <br />
-      <SocialSignIn />
-      <br />
-      <Link className="App-link" to="/signup">Don't have an account? Create one now!</Link>
+    <div className="loginComponent d-flex justify-content-center align-items-center">
+      <h1 className="login">STEVENS ISSUE REPORTER<br></br><br></br>LOGIN</h1>
+      <div class="verticalLine"></div>
+      <div className="align-items-center">
+        <form onSubmit={handleLogin}>
+          <div className="form-group">
+            <label className="loginLabel">
+              Email:
+                 <input className="form-control" name="email" id="email" type="email" placeholder="Enter Email" required />
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="loginLabel">
+              Password:
+              <input className="form-control" name="password" type="password" placeholder="Enter Password" required />
+            </label>
+          </div>
+          <Button variant="success" type="submit" className="loginButton">Login</Button>
+          <br></br>
+          <br></br>
+          <Button variant="success" className="forgotPassword" onClick={passwordReset}> Forgot Password </Button>
+        </form>
+        <br></br>
+        <SocialSignIn />
+        <br></br>
+        <Link className="App-link" to="/signup">Don't have an account? Create one now!</Link>
+      </div>
     </div>
   );
 }

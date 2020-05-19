@@ -106,8 +106,6 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
-    // let navigationBar = NavigationBar();
-
     return (
         <div className="homePage">
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>

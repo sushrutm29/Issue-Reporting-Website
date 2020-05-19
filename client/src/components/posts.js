@@ -20,6 +20,7 @@ function PostsList(props) {
         setPostList(props.allPosts);
         async function fetchPostData() {
             try {
+                console.log(currentUser.email);
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
                 setUserEmail(data.userEmail);

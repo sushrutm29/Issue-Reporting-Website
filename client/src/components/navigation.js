@@ -23,7 +23,8 @@ function NavigationBar(props) {
                 setDeptList(deptListing.data);
 
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(userData.data.admin);
+                // setAdminStatus(userData.data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
