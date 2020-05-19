@@ -35,14 +35,14 @@ router.get('/', async (req, res) => {
             }
         }
         //sorts the outputs by time
-        allPosts.sort(function(a, b){ 
+        allPosts.sort(function (a, b) {
             if (sortOrder === "asce") {
-                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
             } else {
-                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+                return new Date(b.CreationTime) - new Date(a.CreationTime);
             }
         });
-        
+
         return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
@@ -58,7 +58,7 @@ router.get('/page/:pageNo', async (req, res) => {
         let allPosts = await client.hvalsAsync("posts");
         if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //Post exists in Redis cache
             let results = [];
-            for (let i = 0; i < allPosts.length; i++) { 
+            for (let i = 0; i < allPosts.length; i++) {
                 results.push(JSON.parse(allPosts[i]));
             }
             allPosts = results;
@@ -75,32 +75,62 @@ router.get('/page/:pageNo', async (req, res) => {
     }
 });
 
-router.get('/elasticsearch', async (req, res) => {
+router.get('/elasticsearch/home/', async (req, res) => {
     try {
-        if (!req.body) {
-            throw "No request body was provided for elasticsearch function!";
-        }
-        let keyWord = "";   //keyword to be searched among post's title and body
-        let departmentID = ".*";
-        const postInfo = req.body;
-        if (!postInfo.keyword) {    //empty keyword will cause error as well
+        let keyWord = `*${req.query.keyword.toLowerCase()}*`;
+        if (!keyWord || keyWord == "") {
             throw "No keyword was provided for elasticsearch function!";
-        } else {
-            keyWord = `*${postInfo.keyword.toLowerCase()}*`;
-        }
-        if (postInfo.deptID) {
-            departmentID = postInfo.deptID;
         }
         await elasticClient.search({
             index: "issues",
             type: "posts",
             body: {
-                query: {    //match_phrase + wildcard???
-                    bool: { 
+                query: {
+                    bool: {
                         must: {
-                            query_string : {
-                                query : keyWord,
-                                // default_field : "title",
+                            query_string: {
+                                query: keyWord,
+                                default_operator: "AND",
+                                fields: [
+                                    "title",
+                                    "body"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }).then(function (resp) {
+            return res.status(200).json(resp.hits.hits);
+        }, function (error) {
+            return res.status(400).json({ error: `Could not get a specific post via elastic search! ${error}` });
+        });
+    } catch (error) {
+        return res.status(400).json({ error: `Could not get a specific post via elastic search! ${error}` });
+    }
+});
+
+
+router.get('/elasticsearch/dept/', async (req, res) => {
+    try {
+        console.log(req.url);
+        let keyWord = `*${req.query.keyword.toLowerCase()}*`;
+        if (!keyWord || keyWord == "") {
+            throw "No keyword was provided for elasticsearch function!";
+        }
+        let departmentID = req.query.departmentID;
+        if (!departmentID) {
+            throw "No department was provided for elasticsearch function!";
+        }
+        await elasticClient.search({
+            index: "issues",
+            type: "posts",
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            query_string: {
+                                query: keyWord,
                                 default_operator: "AND",
                                 fields: [
                                     "title",
@@ -109,16 +139,16 @@ router.get('/elasticsearch', async (req, res) => {
                             }
                         },
                         filter: {
-                            regexp:  {
-                                deptID: departmentID 
+                            term: {
+                                deptID: departmentID
                             }
                         }
                     }
                 }
             }
-        }).then(function(resp) {
+        }).then(function (resp) {
             return res.status(200).json(resp.hits.hits);
-        }, function(error) {
+        }, function (error) {
             return res.status(400).json({ error: `Could not get a specific post via elastic search! ${error}` });
         });
     } catch (error) {
@@ -133,7 +163,7 @@ router.get('/:id', async (req, res) => {
         }
         let postID = req.params.id;
         let currentPost = await client.hgetAsync("posts", postID);
-        
+
         if (currentPost) {  //found the post in Redis cache
             currentPost = JSON.parse(currentPost);
         } else {    //did not find the post in Redis cache
@@ -198,11 +228,11 @@ router.get('/dept/:id', async (req, res) => {
             }
         }
         //sorts the outputs by time
-        allPosts.sort(function(a, b){ 
+        allPosts.sort(function (a, b) {
             if (sortOrder === "asce") {
-                return new Date(a.CreationTime) - new Date(b.CreationTime); 
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
             } else {
-                return new Date(b.CreationTime) - new Date(a.CreationTime); 
+                return new Date(b.CreationTime) - new Date(a.CreationTime);
             }
         });
         return res.status(200).json(currentPosts);
@@ -278,11 +308,11 @@ router.post('/', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: newPostID, 
+            id: newPostID,
             body: dataBody
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`createPost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(err.message);
         });
         return res.status(200).json(newPost);
@@ -311,11 +341,11 @@ router.patch('/update/:id', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: newPostID, 
+            id: newPostID,
             body: dataBody
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`updatePost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(err.message);
         });
         return res.status(200).json(newPost);
@@ -340,11 +370,11 @@ router.patch('/resolve/:id', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: newPostID, 
+            id: newPostID,
             body: dataBody
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`resolvePost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(err.message);
         });
         return res.status(200).json(newPost);
@@ -372,11 +402,11 @@ router.patch('/addcom/:id', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: newPostID, 
+            id: newPostID,
             body: dataBody
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`addCommentToPost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(err.message);
         });
         return res.status(200).json(newPost);
@@ -404,11 +434,11 @@ router.patch('/deletecom/:id', async (req, res) => {
         await elasticClient.index({
             index: "issues",
             type: "posts",
-            id: deletedPostID, 
+            id: deletedPostID,
             body: dataBody
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`removeCommentFromPost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(err.message);
         });
         return res.status(200).json(deletedPost);
@@ -430,9 +460,9 @@ router.delete('/:id', async (req, res) => {
             index: "issues",
             id: postID,
             type: "posts"
-        }).then(function(resp) {
+        }).then(function (resp) {
             console.log(`deletePost elasticsearch response = ${resp}`);
-        }, function(err) {
+        }, function (err) {
             console.trace(`Deleted Elasticsearch document error = ${err.message}`);
         });
         return res.status(200).json(removedPost);

@@ -41,6 +41,7 @@ function Home(props) {
     }
     
     useEffect(() => {
+        console.log("Home.js called");
         setLastpage(false); //Assume user is initially not on the last page
         async function fetchPostData() {
             try {
