@@ -1,13 +1,13 @@
 # Issue Reporting Website
 
-## Table of Contents
+## **Table of Contents**
 
 - [Team](#team)
 - [Project-Info](#project-info)
 - [Technology](#technology)
 - [Quick-Start](#quick-start)
 
-## Team
+## **Team**
 
 **Team Name**: Virus Free <br />
 **Team Members**: Lun-Wei Chang, Saumya Shastri, Shiwani Deo
@@ -24,7 +24,7 @@
   
   Lastly, we would have an administrator panel that would have the clearance to delete or change the state of any issue post. The administrator can also create a new issue board or delete an existing one. 
 
-## Technology
+## **Technology**
 
 ### Redis Cache
 > Installation:
@@ -62,4 +62,4 @@ HVALS hash_name
 
 ### Imagemagick
 
-## Quick-Start
+## **Quick-Start**
