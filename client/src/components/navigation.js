@@ -25,7 +25,7 @@ function NavigationBar(props) {
         }
         fetchData();
     },
-        [deptList, currentUser.email]
+        [currentUser.email]
     );
 
     const buildNavDropDownItem = (dept) => {
