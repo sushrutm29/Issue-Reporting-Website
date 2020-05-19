@@ -3,14 +3,12 @@ import { NavDropdown, Form, FormControl, Button, Nav } from 'react-bootstrap';
 import axios from 'axios';
 
 /**
- * @author Shiwani Deo, Lun-Wei Chang
+ * @author Lun-Wei Chang
  * @version 1.0
  * @date 05/18/2020 
  */
 const DeptAdminButtons = (props) => {
     const [newDeptName, setNewDeptName] = useState("");
-    const [currentDeptName, setDeptName] = useState("");
-    const [deptList, setDeptList] = useState(props.deptList);
 
     let departmentDropdown = null;
 
@@ -65,8 +63,8 @@ const DeptAdminButtons = (props) => {
     }
 
     //Use Map function to loop over department array
-    if (deptList) {
-        departmentDropdown = deptList && deptList.map((dept) => {
+    if (props.deptList) {
+        departmentDropdown = props.deptList && props.deptList.map((dept) => {
             return buildNavDropDownItem(dept);
         });
     }
