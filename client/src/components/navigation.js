@@ -8,6 +8,7 @@ function NavigationBar(props) {
     const [deptList, setDeptList] = useState(props);
 
     useEffect(() => {
+        alert("navigation effected!");
         async function fetchData() {
             try {
                 const { data } = await axios.get(`http://localhost:3001/data/dept/`);
@@ -18,7 +19,7 @@ function NavigationBar(props) {
         }
         fetchData();
     },
-        [deptList]
+        []
     );
 
     const buildNavDropDownItem = (dept) => {

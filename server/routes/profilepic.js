@@ -21,7 +21,6 @@ router.use(fileUpload());
 
 router.post('/', async (req, res) => {
     try {
-        console.log("post route")
         if (req.files === null || req.files === undefined) {
             throw new Error("No file uploaded!");
         }
@@ -60,10 +59,21 @@ router.get('/:id', async (req, res) => {
             bucketName: 'profilePics'
         });
 
+        const uploadPath = __dirname + '/../../client/public/uploads';
+
+        let files = fs.readdirSync(__dirname + '/../../client/public/uploads');
+
+        files.forEach(function (file) {
+            fs.unlink(path.join(uploadPath, file), err => {
+                if (err) throw err;
+            });
+        })
+
         //Fetch pdf from database
         let file = await bucket.find({ filename: filename }).toArray();
-        let imgName = randomstring.generate();
-        const imagePath = __dirname + '/../../client/public/uploads/' + imgName + '.png';
+        console.log(file);
+      
+        const imagePath = __dirname + '/../../client/public/uploads/profilePic.png';
         if (file.length !== 0) {
             await bucket.openDownloadStreamByName(filename).pipe(fs.createWriteStream(imagePath)).on("error", function (error) {
                 assert.ifError(error);
@@ -73,7 +83,7 @@ router.get('/:id', async (req, res) => {
         } else {
             throw "File not found";
         }
-        return res.status(200).json({ "path": imgName + '.png' });
+        return res.status(200).json({ "Success": "File fetch successful!" });
 
     } catch (error) {
         return res.status(400).json({ error: error })

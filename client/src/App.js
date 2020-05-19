@@ -10,6 +10,7 @@ import PrivateRoute from './components/privateRoute';
 import Login from './components/login';
 import SignUp from './components/signup'
 import userProfile from './components/userProfile';
+import UserProfile from './components/userProfileFunc';
 
 const App = () => {
 	return (
@@ -25,7 +26,7 @@ const App = () => {
 							<Route path='/dept/:deptName/page/:pageNo' component={Department} />
 							<Route path='/login' component={Login} />
 							<Route path='/signup' component={SignUp} />
-							<Route path='/profile' component={userProfile} /> 
+							<Route path='/profile' component={UserProfile} /> 
 							<Route component={Error404}/>
 						</Switch>
 					</div>
