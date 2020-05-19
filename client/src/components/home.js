@@ -25,27 +25,19 @@ function Home(props) {
     const [showToast, setShowToast] = useState(false);
     const [receivedResults, setReceivedResults] = useState(false);
 
-    function handleStatus(){
-        setStatusChanged(!statusChanged);
-    }
-
-    function handlePostCreation(){
+    function handleDeptCreation() {
         handleStatus();
-        buildToast("Issue Posted Successfully!");
+        buildToast(`Successfully created department!`);
     }
 
-    function handlePostDeletion(){
+    function handleDeptDeletion() {
+        handleStatus();
+        buildToast(`Successfully deleted department!`);
+    }
+
+    function handlePostDeletion() {
         handleStatus();
         buildToast("Issue Deleted Successfully!");
-    }
-
-    function hideToast(){
-        setShowToast(false);
-    }
-
-    function buildToast(message){
-        setToastMessage(message);
-        setShowToast(true);
     }
     
     useEffect(() => {
@@ -82,20 +74,20 @@ function Home(props) {
     }, [currentPageNum, props.match.params.pageNo, statusChanged, receivedResults, currentResolvedPageNum]
     );
     
-    function handleStatus(){
+    function handleStatus() {
         setStatusChanged(!statusChanged);
     }
 
-    function handlePostCreation(){
+    function handlePostCreation() {
         handleStatus();
         buildToast("Issue Posted Successfully!");
     }
 
-    function hideToast(){
+    function hideToast() {
         setShowToast(false);
     }
 
-    function buildToast(message){
+    function buildToast(message) {
         setToastMessage(message);
         setShowToast(true);
     }
@@ -154,6 +146,7 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
+    
     //Display next button only if user is NOT on the last resolved page
     let nextResolvedLink;
     if (!resolvedLastPage) {
@@ -164,12 +157,20 @@ function Home(props) {
         }   
     }
 
+    //navigation component props
+    let navProps = {
+        creationAction: handlePostCreation,
+        getReceivedStatus: receivedSearchResults,
+        createDeptAction: handleDeptCreation,
+        deleteDeptAction: handleDeptDeletion
+    }
+
     return (
         <div className="homePage">
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults}/>
+            <NavigationBar deptList={deptList} {...navProps}/>
             {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus}/>}
             {!receivedResults && prevResolvedLink}
             {!receivedResults && nextResolvedLink}
