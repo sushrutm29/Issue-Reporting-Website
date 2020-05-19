@@ -60,7 +60,7 @@ function NavigationBar(props) {
         if (props.currentDept !== undefined) {
             currentDepartmentID = (await axios.get(`http://localhost:3001/data/dept/getDeptByName/${props.currentDept}`)).data._id;
             console.log(currentDepartmentID);
-            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/dept",
+            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/dept/",
                 {
                     params: {
                         keyword: searchQuery,
@@ -68,16 +68,14 @@ function NavigationBar(props) {
                     }
                 }
             );
-            console.log(response);
         } else {
-            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home",
+            const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home/",
                 {
                     params: {
                         keyword: searchQuery
                     }
                 }
             );
-            console.log(response);
         }
     }
 
