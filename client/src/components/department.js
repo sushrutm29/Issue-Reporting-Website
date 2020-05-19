@@ -17,6 +17,8 @@ const Department = (props) => {
     const [lastPage, setLastpage] = useState(undefined);
     const [donePostList, setDonePostList] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
+    const [deptList, setDeptList] = useState(undefined);
+    const [receivedResults, setReceivedResults] = useState(false);
 
     useEffect(() => {
         async function fetchPostData() {
@@ -43,10 +45,14 @@ const Department = (props) => {
             }
         }
         fetchPostData();
-    }, [statusChanged, props.match.params.deptName, currentPageNum]);
+    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults]);
 
     function handleStatus() {
         setStatusChanged(!statusChanged);
+    }
+
+    function receivedSearchResults(status) {
+        setReceivedResults(status);
     }
 
     //If no post listing or incorrect URL display 404
@@ -80,9 +86,9 @@ const Department = (props) => {
 
     return (
         <div className="deptPostList">
-            <NavigationBar creationAction={false} currentDept={props.match.params.deptName}/>
-            <DonePostsList donePosts={donePostList} action={handleStatus} />
-            <PostsList allPosts={postList} action={handleStatus} />
+            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults}/>
+            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} />}
             {prevLink}
             {nextLink}
         </div>
