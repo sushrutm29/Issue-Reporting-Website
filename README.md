@@ -2,8 +2,8 @@
 
 ## Table of Contents
 - [Project Info] (#project_info)
-- [Technology Used] (#technology_used)
+- [Technology Used] (#technology)
 
-# project_info
+## Project Info
 
-# technology_used
+## Technology
