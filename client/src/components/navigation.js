@@ -24,7 +24,8 @@ function NavigationBar(props) {
                 const deptListing = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(deptListing.data);
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(userData.data.admin);
+                // setAdminStatus(userData.data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
@@ -102,7 +103,8 @@ function NavigationBar(props) {
         deptList: deptList,
         adminStatus: adminStatus,
         action: handleStatus,
-        deletionAction: props.action
+        createDeptAction: props.createDeptAction,
+        deleteDeptAction: props.deleteDeptAction
     }
 
     return (

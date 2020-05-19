@@ -32,6 +32,16 @@ function Home(props) {
         buildToast("Issue Posted Successfully!");
     }
 
+    function handleDeptCreation() {
+        handleStatus();
+        buildToast(`Successfully created department!`);
+    }
+
+    function handleDeptDeletion() {
+        handleStatus();
+        buildToast(`Successfully deleted department!`);
+    }
+
     function hideToast(){
         setShowToast(false);
     }
@@ -106,14 +116,20 @@ function Home(props) {
         nextLink = <Link onClick={incrementPage} className="next" to={`/home/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`}>Next</Link>;
     }
 
-    // let navigationBar = NavigationBar();
+    //navigation component props
+    let navProps = {
+        creationAction: handlePostCreation,
+        getReceivedStatus: receivedSearchResults,
+        createDeptAction: handleDeptCreation,
+        deleteDeptAction: handleDeptDeletion
+    }
 
     return (
         <div className="homePage">
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults}/>
+            <NavigationBar deptList={deptList} {...navProps}/>
             {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus}/>}
             {!receivedResults && <PostsList allPosts={postList} action={handleStatus}/>}
             {prevLink}
