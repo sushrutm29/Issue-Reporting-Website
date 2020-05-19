@@ -58,6 +58,8 @@ function PostsList(props) {
         card = postList && postList.map((post) => {
             return buildListItem(post);
         });
+    } else {
+        return <p>No posts found!</p>
     }
 
     return (

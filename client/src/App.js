@@ -21,7 +21,7 @@ const App = () => {
 					<div className='App-body'>
 						<Switch>
 							<PrivateRoute path='/home/page/:pageNo' component={Home} />
-							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department} />
+							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department}/>
 							<Route path='/login' component={Login} />
 							<Route path='/signup' component={SignUp} />
 							<Route component={Error404} />

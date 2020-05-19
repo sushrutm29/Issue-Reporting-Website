@@ -4,8 +4,8 @@ import { NavDropdown, Navbar, Nav, Form, FormControl, Button } from 'react-boots
 import CreatePost from './createIssue'
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
-// import SearchResults from './searchResults';
 import DeptAdminButtons from './deptAdminButtons';
+import SearchResults from './searchResults';
 
 function NavigationBar(props) {
     let departmentDropdown = null;
@@ -15,6 +15,8 @@ function NavigationBar(props) {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState(undefined);
     const [statusChanged, setStatusChanged] = useState(false);
+    const [resetState, setReset] = useState(undefined);
+    const [postsFound, setPostsFound] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -51,7 +53,26 @@ function NavigationBar(props) {
         });
     }
 
+    function setResetState(status) {
+        setReset(status);
+    }
+
+    function setPostFoundState(status) {
+        setPostsFound(status);
+    }
+
+    function setPostVariables (postsArray) {
+        if (postsArray.length !== 0) {
+            setPostsFound(true);
+            props.getReceivedStatus(true);
+        } else {
+            setPostsFound(false);
+        }
+    }
+
     async function submitSearchQuery() {
+        console.log(searchQuery);
+        setReset(false);
         let currentDepartmentID;
         if (props.currentDept !== undefined) {
             currentDepartmentID = (await axios.get(`http://localhost:3001/data/dept/getDeptByName/${props.currentDept}`)).data._id;
@@ -64,6 +85,7 @@ function NavigationBar(props) {
                 }
             );
             setSearchResults(response.data);
+            setPostVariables (response.data);
         } else {
             const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home/",
                 {
@@ -73,6 +95,7 @@ function NavigationBar(props) {
                 }
             );
             setSearchResults(response.data);
+            setPostVariables (response.data);
         }
     }
 
@@ -105,7 +128,7 @@ function NavigationBar(props) {
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
-            {/* {searchResults && <SearchResults results={searchResults}/>} */}
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState}/>}
         </div>
     )
 }
