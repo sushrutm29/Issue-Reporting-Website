@@ -19,24 +19,44 @@ class userProfile extends Component {
     constructor(props) {
         super(props);
         this.state = { userData: undefined, posts: undefined };
-        this.state = { postsData: '' };
         this.state = { userState: null }
         this.state = { imageName: null }
         this.state = { imageFile: null }
         this.state = { idofuser: '' }
+        this.state = { imageFile: {} }
     }
 
-    signUp = (event) => {
-        const user = this.context;
-        console.log(this.context)
+    // handleFile = (event) => {
+    //     this.setState({ imageFile: event.target.files[0] })
+    //     console.log("this is handleFIle:" + JSON.stringify(this.state.imageFile))
+    // }
+
+    onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            this.setState({ imageFile : event.target.files[0] })
+            console.log("this is on Image Chnage :" + this.state.imageFile);
+        }
     }
 
-    handleUpload = async (event) => {
+    handleUpload = async () => {
+        console.log("this is inside hanldeupload"+this.state.imageFile);
+        if (this.state.imageFile !== '') {
+            let formData = new FormData();
+            formData.append('image', this.state.imageFile);
+            await axios.post('http://localhost:3001/data/profilepic', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+        }
+    }
+
+    onhandleUpload = async (event) => {
+        console.log("this is inside hanldeupload"+event.target.files[0]);
         if (event.target.files[0] !== '') {
             let formData = new FormData();
             formData.append('image', event.target.files[0]);
-            console.log(formData)
-            // await axios.delete(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
             await axios.post('http://localhost:3001/data/profilepic', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -66,10 +86,6 @@ class userProfile extends Component {
         } catch (error) {
             console.log(error);
         }
-    }
-
-    handleReload = () => {
-        window.location.reload();
     }
 
     handleInputChange = (event) => {
@@ -170,11 +186,12 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                <form onSubmit={this.changeProfilePicture}>
+                <form onSubmit={this.onhandleUpload}>
                     <h6> Change Profile Picture : </h6>
                     <br></br>
-                    <input type="file" variant="primary" onChange={this.handleUpload} />
-                    {/* <Button type="submit" variant="primary"> Change Profile Picture </Button> */}
+                    {/* <input type="file" variant="primary" onChange={(e) => { this.onhandleUpload(e) }} /> */}
+                    <input type="file" variant="primary" onChange={this.onhandleUpload} />
+                    {/* <Button type="submit" variant="primary" > Change Profile Picture </Button> */}
                 </form>
                 <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>

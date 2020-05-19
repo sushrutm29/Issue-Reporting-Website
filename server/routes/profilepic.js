@@ -26,6 +26,7 @@ router.post('/', async (req, res) => {
             throw new Error("No file uploaded!");
         }
 
+
         const uploadPath = __dirname + '/../../client/public/uploads';
 
         let files = fs.readdirSync(__dirname + '/../../client/public/uploads');
@@ -109,11 +110,15 @@ router.delete('/:id', async (req, res) => {
 router.post('/:id', async (req, res) => {
     try {
         userID = req.params.id;
+        await userData.deleteProfliePicture(userID);
+        console.log("deleted and now performing post")
         await userData.uploadProfilePicture(userID);
     } catch (error) {
         console.log(error);
         return res.status(400).json({ error: error.message });
     }
 });
+
+
 
 module.exports = router;

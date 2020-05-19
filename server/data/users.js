@@ -266,6 +266,30 @@ async function uploadProfilePicture(userID) {
     return "OK";
 }
 
+async function deleteProfliePicture(userID){
+    try {
+        console.log("coming here")
+        const filename = userID;
+        const connection = await mongoConnection();
+        let bucket = new mongodb.GridFSBucket(connection, {
+            bucketName: 'profilePics'
+        });
+
+        if (!filename) {
+            throw new Error(errorMessages.userIDMissing);
+        } else if (!ObjectId.isValid) {
+            throw new Error(errorMessages.userIDInvalid);
+        }
+        const file = await bucket.find({ filename: filename }).toArray();
+        if (file.length != 0) {
+            bucket.delete(file[0]._id);
+        }
+        console.log("deleted from db")
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 module.exports = {
     getUserById,
@@ -274,5 +298,6 @@ module.exports = {
     addPostToUser,
     removePostFromUser,
     getUserByName,
-    uploadProfilePicture
+    uploadProfilePicture,
+    deleteProfliePicture
 };
