@@ -43,6 +43,26 @@
   padding: 8px;
 }
 
+.nextResolved{
+  margin: 15px;
+  padding: 8px;
+  float: left;
+}
+
+.prevResolved{
+  margin: 15px;
+  padding: 8px;
+  float: left;
+  clear: left;
+}
+
+.nextResolvedNoPrev{
+  margin: 15px;
+  padding: 8px;
+  float: left;
+  clear: left;
+}
+
 .username {
   font-size: 12px;
   font-weight: bold;

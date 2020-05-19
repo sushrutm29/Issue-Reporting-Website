@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { AuthProvider } from './firebase/Auth';
 import PrivateRoute from './components/privateRoute';
 import Login from './components/login';
-import SignUp from './components/signup'
+import SignUp from './components/signup';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
