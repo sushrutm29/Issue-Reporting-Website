@@ -16,8 +16,8 @@ function DonePostsList(props){
             <div key={`post_${post._id}`} className="post">
                 <Col key={post._id} lg={4}>
                     <Card style={{ width: '18rem' }} className="donePostCard">
-                        <Card.Header className="cardTitle">{post.title}</Card.Header>
-                        <Card.Footer className="username">Posted by: {post.username}</Card.Footer>
+                        <Card.Header className="resolvedCards">{post.title}</Card.Header>
+                        <Card.Footer className="resolvedUsername">Posted by: {post.username}</Card.Footer>
                     </Card>
                 </Col>
             </div>
@@ -32,7 +32,7 @@ function DonePostsList(props){
 
     return(
         <div className="donePostListing">
-            <h2>Resolved Posts</h2>
+            <h1 className="resolvePost">Resolved Posts</h1>
             <Container>
                 <Row>
                     {card}

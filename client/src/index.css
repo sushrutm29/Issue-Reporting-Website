@@ -22,3 +22,12 @@ code {
   src: url(./fonts/Lora-VariableFont_wght.ttf) format('truetype');
 }
 
+@font-face {
+  font-family:'Titillium-Regular';
+  src: url(./fonts/TitilliumWeb-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family:'Titillium-Light';
+  src: url(./fonts/TitilliumWeb-Light.ttf) format('truetype');
+}

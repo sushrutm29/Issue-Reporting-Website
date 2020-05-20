@@ -23,13 +23,13 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
 }
 
-.navLinks, #departmentDropdown {
+.navLinks, #departmentDropdown, #deleteDept {
   font-size: 20px;
   margin:5px;
 }
@@ -50,10 +50,21 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-size: 18px;
 }
 
-.loginButton, .forgotPassword, .signupButton{
+.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton{
   color: black!important;
   font-family: Poiret;
   background-color: #AACCFF!important;
+}
+
+.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover {
+  background-color: white!important;
+}
+
+.postDetailsButton {
+  color: black!important;
+  font-family: Lora;
+  background-color: #AACCFF!important;
+  margin:5px;
 }
 
 .loginComponent, .signupComponent, .homePage {
@@ -65,12 +76,16 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   background-color: #222233;
 }
 
-input::placeholder{
+#createDeptForm::placeholder, .dropdownOptions, #searchForm::placeholder{
+  font-family: Poiret;
+}
+
+input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   color: black!important;
   text-align: center;
 }
 
-.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton{
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton{
   margin: 10px;
 }
 
@@ -113,18 +128,47 @@ input::placeholder{
   clear: left;
 }
 
-.username {
-  font-size: 12px;
+.username, .resolvedUsername{
+  font-size: 13px;
   font-weight: bold;
+  font-family: Lora;
   font-style: italic;
+  color: #222233!important;
 }
 
 .cardTitle{
   font-weight: bold;
+  font-family: Lora;
+  background-color: #AACCFF!important; 
+} 
+
+.resolvedCards {
+  font-family: Lora;
+  font-weight: bold;
+  background-color: #28a745!important; 
 }
+
+.cardBody {
+  font-family: Lora;
+  color: #222233!important;
+}
+
 
 .deleteButton {
   margin: 5px;
+} 
+
+.adminDept {
+  display: inline-block;
+}
+
+#searchFormLabel, #createDeptFormLabel {
+  display: none;
+}
+
+hr {
+  border-color: white;
+  background-color: white;
 }
 
 

@@ -61,7 +61,7 @@ function CreatePost(props){
 
     return(
         <div>
-            <Button variant="outline-success" onClick={handleShow} className="createPostButton">New Post</Button>
+            <Button variant="primary" onClick={handleShow} className="createPostButton">Create Post</Button>
             <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>New Post</Modal.Title>
@@ -69,27 +69,14 @@ function CreatePost(props){
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label>
-                                Title:
-                                <input
-                                className="form-control"
-                                required
-                                name="postTitle"
-                                type="text"
-                                placeholder="Enter Title"
-                                />
+                            <label>Title:
+                                <input className="form-control" required name="postTitle" type="text" placeholder="Enter Title"/>
                             </label>
                         </div>
                         <div className="form-group">
                             <label>
                                 Content:
-                                <input
-                                className="form-control"
-                                required
-                                name="postBody"
-                                type="text"
-                                placeholder="Enter Content"
-                                />
+                                <input className="form-control" required name="postBody" type="text" placeholder="Enter Content"/>
                             </label>
                         </div>
                         <div className="form-group">

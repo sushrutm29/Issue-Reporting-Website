@@ -69,7 +69,7 @@ function PostModal(props) {
 
     return (
         <div>
-            <Button variant="primary" onClick={() => { handleShow(props.post) }} >
+            <Button size="sm" className="postDetailsButton" variant="primary" onClick={() => { handleShow(props.post) }} >
                 Post Details
             </Button>
             {edit_button}

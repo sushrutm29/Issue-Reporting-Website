@@ -30,7 +30,7 @@ function PostsList(props) {
                 console.log(currentUser.email);
                 const { data } = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
-                setAdminStatus(data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
@@ -45,10 +45,10 @@ function PostsList(props) {
 
         return (
             <div className="post d-flex align-items-center" key={post._id}>
-                <Col xl={3} lg={4} md={6} sm={6} class="cardColumn">
+                <Col xl={3} lg={4} md={6} sm={6} className="cardColumn">
                     <Card className="postCard">
                         <Card.Header className="cardTitle">{post.title}</Card.Header>
-                        <Card.Body>
+                        <Card.Body className="cardBody">
                             <Card.Text className="d-flex justify-content-center">
                                 {postDetails}
                             </Card.Text>
@@ -74,6 +74,7 @@ function PostsList(props) {
 
     return (
         <div className="postPage">
+            <h1 className="postsHeader">Posts</h1>
             <Container>
                 <Row>
                     {card}
