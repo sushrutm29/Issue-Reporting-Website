@@ -132,12 +132,18 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
 .next, .prev {
   margin: 15px;
   padding: 8px;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
 .nextResolved{
   margin: 15px;
   padding: 8px;
   float: left;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
 .prevResolved, .nextResolvedNoPrev{
@@ -145,6 +151,9 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   padding: 8px;
   float: left;
   clear: left;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
 .username, .resolvedUsername{

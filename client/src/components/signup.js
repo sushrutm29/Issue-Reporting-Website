@@ -97,7 +97,7 @@ function SignUp() {
           <div className="form-group">
             <label className="signupLabel">
               Profile Picture:
-            <input className="form-control" id="profilePicUpload" name="profilePicUpload" type="file" onChange={handleUpload} />
+            <input className="form-control" id="profilePicUpload" name="profilePicUpload" type="file" accept="image/*" onChange={handleUpload} />
             </label>
           </div>
           <Button variant="success" className="signupButton" id="submitButton" name="submitButton" type="submit">Sign Up </Button>
