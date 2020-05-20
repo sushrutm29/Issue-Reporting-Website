@@ -125,6 +125,7 @@ function SignUp() {
               name="profilePicUpload"
               type="file"
               placeholder=""
+              accept="image/*"
               onChange={handleUpload}
             />
           </label>
