@@ -37,20 +37,24 @@ router.get('/', async (req, res) => {
         //sorts the outputs by time
         allPosts.sort(function (a, b) {
             if (sortOrder === "asce") {
-                return new Date(a.CreationTime) - new Date(b.CreationTime);
-            } else {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
+            } else {
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
             }
         });
-
         return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
     }
 });
 
+//unresolved posts
 router.get('/page/:pageNo', async (req, res) => {
     try {
+        let sortOrder = "desc"; //descending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let pageNo = (parseInt(req.params.pageNo)) - 1;
         let offset = postsPerPage * pageNo;
         let stopIndex = offset + postsPerPage;
@@ -70,6 +74,14 @@ router.get('/page/:pageNo', async (req, res) => {
             }
         }
         allPosts = allPosts.filter((post) => !post.resolvedStatus);
+        //sorts the outputs by time
+        allPosts.sort(function (a, b) {
+            if (sortOrder === "asce") {
+                return new Date(b.CreationTime) - new Date(a.CreationTime);
+            } else {
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
+            }
+        });
         return res.status(200).json(allPosts.slice(offset, stopIndex));
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
@@ -97,6 +109,10 @@ router.get('/resolvedpage/:pageNo', async (req, res) => {
             }
         }
         allPosts = allPosts.filter((post) => post.resolvedStatus);
+        //sorts the outputs by time
+        allPosts.sort(function (a, b) {
+            return new Date(a.CreationTime) - new Date(b.CreationTime);
+        });
         return res.status(200).json(allPosts.slice(offset, stopIndex));
     } catch (error) {
         return res.status(400).json({ error: `Could not get all posts! ${error}` });
@@ -138,10 +154,8 @@ router.get('/elasticsearch/home/', async (req, res) => {
     }
 });
 
-
 router.get('/elasticsearch/dept/', async (req, res) => {
     try {
-        console.log(req.url);
         let keyWord = `*${req.query.keyword.toLowerCase()}*`;
         if (!keyWord || keyWord == "") {
             throw "No keyword was provided for elasticsearch function!";
@@ -258,9 +272,9 @@ router.get('/dept/:id', async (req, res) => {
         //sorts the outputs by time
         allPosts.sort(function (a, b) {
             if (sortOrder === "asce") {
-                return new Date(a.CreationTime) - new Date(b.CreationTime);
-            } else {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
+            } else {
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
             }
         });
         return res.status(200).json(currentPosts);
@@ -274,7 +288,10 @@ router.get('/dept/:id/:pageNo', async (req, res) => {
         if (!req.params || !req.params.id || !req.params.pageNo) {
             throw "Department id or page No. was not provided for getAllPostsByDeptID method!";
         }
-
+        let sortOrder = "desc"; //descending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let deptID = req.params.id;
         let pageNo = (parseInt(req.params.pageNo)) - 1;
         let offset = postsPerPage * pageNo;
@@ -295,6 +312,14 @@ router.get('/dept/:id/:pageNo', async (req, res) => {
             }
         }
         currentPosts = currentPosts.filter((post) => !post.resolvedStatus);
+        //sorts the outputs by time
+        currentPosts.sort(function (a, b) {
+            if (sortOrder === "asce") {
+                return new Date(b.CreationTime) - new Date(a.CreationTime);
+            } else {
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
+            }
+        });
         return res.status(200).json(currentPosts.slice(offset, stopIndex)); //Return posts only for that page
     } catch (error) {
         return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
@@ -306,7 +331,10 @@ router.get('/dept/resolved/:id/:pageNo', async (req, res) => {
         if (!req.params || !req.params.id || !req.params.pageNo) {
             throw "Department id or page No. was not provided for getAllPostsByDeptID method!";
         }
-
+        let sortOrder = "desc"; //descending order as default
+        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.body.sortOrder;
+        }
         let deptID = req.params.id;
         let pageNo = (parseInt(req.params.pageNo)) - 1;
         let offset = postsPerPage * pageNo;
@@ -327,6 +355,14 @@ router.get('/dept/resolved/:id/:pageNo', async (req, res) => {
             }
         }
         currentPosts = currentPosts.filter((post) => post.resolvedStatus);
+        //sorts the outputs by time
+        currentPosts.sort(function (a, b) {
+            if (sortOrder === "asce") {
+                return new Date(b.CreationTime) - new Date(a.CreationTime);
+            } else {
+                return new Date(a.CreationTime) - new Date(b.CreationTime);
+            }
+        });
         return res.status(200).json(currentPosts.slice(offset, stopIndex)); //Return posts only for that page
     } catch (error) {
         return res.status(400).json({ error: `Could not get posts by department ID! ${error}` });
@@ -372,7 +408,7 @@ router.post('/', async (req, res) => {
             id: newPostID,
             body: dataBody
         }).then(function (resp) {
-            console.log(`createPost elasticsearch response = ${resp}`);
+            console.log(`createPost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(err.message);
         });
@@ -405,7 +441,7 @@ router.patch('/update/:id', async (req, res) => {
             id: newPostID,
             body: dataBody
         }).then(function (resp) {
-            console.log(`updatePost elasticsearch response = ${resp}`);
+            console.log(`updatePost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(err.message);
         });
@@ -434,7 +470,7 @@ router.patch('/resolve/:id', async (req, res) => {
             id: newPostID,
             body: dataBody
         }).then(function (resp) {
-            console.log(`resolvePost elasticsearch response = ${resp}`);
+            console.log(`resolvePost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(err.message);
         });
@@ -466,7 +502,7 @@ router.patch('/addcom/:id', async (req, res) => {
             id: newPostID,
             body: dataBody
         }).then(function (resp) {
-            console.log(`addCommentToPost elasticsearch response = ${resp}`);
+            console.log(`addCommentToPost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(err.message);
         });
@@ -498,7 +534,7 @@ router.patch('/deletecom/:id', async (req, res) => {
             id: deletedPostID,
             body: dataBody
         }).then(function (resp) {
-            console.log(`removeCommentFromPost elasticsearch response = ${resp}`);
+            console.log(`removeCommentFromPost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(err.message);
         });
@@ -522,7 +558,7 @@ router.delete('/:id', async (req, res) => {
             id: postID,
             type: "posts"
         }).then(function (resp) {
-            console.log(`deletePost elasticsearch response = ${resp}`);
+            console.log(`deletePost elasticsearch response = ${JSON.stringify(resp)}`);
         }, function (err) {
             console.trace(`Deleted Elasticsearch document error = ${err.message}`);
         });
