@@ -28,7 +28,7 @@ function DonePostsList(props){
         card = donePostList && donePostList.map((post) => {
             return buildListItem(post);
         });
-    }
+    } 
 
     return(
         <div className="donePostListing">

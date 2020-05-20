@@ -35,7 +35,7 @@ function CommentList(props) {
             return (
                 <div className="clearfix commentsDiv" key={comment.id}>
                     <li className="comment">
-                        <p> <span class="commentUsername">{comment.name}:</span> {comment.commentBody} <Button variant="danger" size="sm" className="float-right deleteButton" onClick={() => { deleteComment(comment.id,props.currentUserID,comment.postID)}}>Delete</Button></p>
+                        <p> <span className="commentUsername">{comment.name}:</span> {comment.commentBody} <Button variant="danger" size="sm" className="float-right deleteButton" onClick={() => { deleteComment(comment.id,props.currentUserID,comment.postID)}}>Delete</Button></p>
                         <hr></hr>
                     </li>
                 </div>
@@ -43,7 +43,8 @@ function CommentList(props) {
         } else {
             return (
                 <li className="comment" key={comment.id}>
-                    <p>{comment.name} {comment.commentBody}</p>
+                    <p> <span className="commentUsername">{comment.name}:</span> {comment.commentBody} </p>
+                    <hr></hr>
                 </li>
             )
         }

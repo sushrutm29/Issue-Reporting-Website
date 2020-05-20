@@ -23,10 +23,14 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError  {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
+}
+
+.noPosts, .noResolveError {
+  font-size: 25px;
 }
 
 .navLinks, #departmentDropdown, #deleteDept {
@@ -44,6 +48,11 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   border-right: 2px solid #AACCFF;
   height: 700px;
   margin: 50px;
+}
+
+.verticalLineResolvedPosts {
+  border-right: 2px solid #AACCFF;
+  height: 800px;
 }
 
 .loginLabel, .App-link {
@@ -84,7 +93,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-weight: bold;
 }
 
-.loginComponent, .signupComponent, .homePage {
+.loginComponent, .signupComponent, .homePage, .deptPostList {
   background-color: #222233;
   height: 100vh;
 }
@@ -102,7 +111,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   text-align: center;
 }
 
-.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton, .submitForm, .submitCommentButton {
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton, .submitForm, .submitCommentButton, .resolved, .unresolved {
   margin: 10px;
 }
 
@@ -156,7 +165,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   text-align: center;
 }
 
-.commentsDiv {
+.commentsDiv, .comment {
   text-align: left;
 }
 
@@ -192,6 +201,7 @@ hr {
   border-color: white;
   background-color: white;
 }
+
 
 
 

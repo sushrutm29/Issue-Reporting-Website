@@ -40,7 +40,6 @@ function SignIn() {
   return (
     <div className="loginComponent d-flex justify-content-center align-items-center">
       <h1 className="login">STEVENS ISSUE REPORTER<br></br><br></br>LOGIN</h1>
-      <div className="verticalLine"></div>
       <div className="align-items-center">
         <form onSubmit={handleLogin}>
           <div className="form-group">

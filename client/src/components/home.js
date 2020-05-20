@@ -107,7 +107,7 @@ function Home(props) {
     }
 
     //If no post listing or incorrect URL display 404\
-    if(postList && postList.length === 0) {
+    if (postList && postList.length === 0) {
         noPosts = <NoPosts />;
     } else if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
@@ -173,15 +173,21 @@ function Home(props) {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps}/>
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps} />
             <hr></hr>
             {noPosts}
-            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
-            {!receivedResults && prevResolvedLink}
-            {!receivedResults && nextResolvedLink}
-            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
-            {prevLink}
-            {nextLink}
+            <div>
+                <div className="resolved">
+                    {!(receivedResults && donePostList) && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+                    {!receivedResults && prevResolvedLink}
+                    {!receivedResults && nextResolvedLink}
+                </div>
+                <div className="unresolved">
+                    {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
+                    {prevLink}
+                    {nextLink}
+                </div>
+            </div>
         </div>
     )
 }

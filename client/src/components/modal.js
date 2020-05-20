@@ -19,7 +19,7 @@ function PostModal(props) {
         async function fetchPostData() {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(true);
+                setAdminStatus(data.admin);
             } catch (error) {
                 console.log(error);
             }
@@ -60,7 +60,7 @@ function PostModal(props) {
     }
 
     let resolve_button = null;
-    if (adminStatus) {
+    if (adminStatus && props.post.resolvedStatus==false) {
         resolve_button = <div><Button variant="success" className="resolveButton" size="sm" onClick={handleResolve} > Resolve Post </Button></div>;
     }
 
