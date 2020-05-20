@@ -191,7 +191,7 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                <h6> Upload to change profile picture : </h6>
+                <h5> Upload to change profile picture : </h5>
                 <br></br>
                 <input type="file" variant="primary" onChange={this.onhandleUpload} />
                 <br></br>
