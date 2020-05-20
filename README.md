@@ -17,7 +17,9 @@
   * [Elasticsearch](#elasticsearch)
   * [Imagemagick](#imagemagick)
 
-## **Team**
+<div class="#28a745">
+ ## **Team**
+</div>
 
 **Team Name**: Virus Free <br />
 **Team Members**: Lun-Wei Chang, Saumya Shastri, Shiwani Deo
