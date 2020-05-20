@@ -21,7 +21,7 @@
 ## **Team**
 
 **Team Name**: Virus Free <br />
-**Team Members**: Lun-Wei Chang, Saumya Shastri, Shiwani Deo, Sushrut Mandhvi, Sri Vallabhaneni
+**Team Members**: Lun-Wei Chang, Saumya Shastri, Shiwani Deo, Sushrut Madhavi, Sri Vallabhaneni
 
 ## **Project-Info**
 
