@@ -41,7 +41,7 @@ Please check out the master branch of our repository.
 ### Start-Services
 > Elasticsearch
 
-Go into your "~/Downloads/elasticsearch-version/bin" directory and type the following command
+Go into your "../Downloads/elasticsearch-version/bin" directory and type the following command
 ```
 ./elasticsearch
 ```
@@ -62,14 +62,14 @@ mongod
 ### Install-Modules
 > Client & Server sides:
 
-Open a terminal and run the following command in both "~/client" and "~/server" directories
+Open a terminal and run the following command in both "../client" and "../server" directories
 ```
 npm install
 ```
 
 ### Populate-Default-Data
 > Seed Command
-Open a new terminal and go into "~/server" directory and run
+Open a new terminal and go into "../server" directory and run
 ```
 npm run seed
 ```
@@ -78,8 +78,8 @@ Every time you run the seed file that the data in both the Redis cache and Elast
 
 ### Start-Servers
 > Open two terminals and go into the following directories 
-- Client side: "~/client"
-- Server side: "~/server"
+- Client side: "../client"
+- Server side: "../server"
 - Run the following commands in both terminals to start the servers
 ```
 npm run start
