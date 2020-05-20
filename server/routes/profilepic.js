@@ -60,7 +60,6 @@ router.get('/:id', async (req, res) => {
             bucketName: 'profilePics'
         });
 
-        //Fetch pdf from database
         let file = await bucket.find({ filename: filename }).toArray();
         let imgName = randomstring.generate();
         const imagePath = __dirname + '/../../client/public/uploads/' + imgName + '.png';
