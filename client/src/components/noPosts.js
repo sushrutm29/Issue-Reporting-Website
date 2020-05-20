@@ -3,7 +3,7 @@ import React from 'react';
 
 const NoPosts = () => {
     return (
-        <h1 className="error">No Posts found!</h1>
+        <h1 className="noPosts">No Posts found!</h1>
     )
 }
 

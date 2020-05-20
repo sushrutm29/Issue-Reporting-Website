@@ -23,7 +23,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
@@ -60,11 +60,28 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   background-color: white!important;
 }
 
-.postDetailsButton {
+.postDetailsButton , .editButtonModal{
   color: black!important;
   font-family: Lora;
   background-color: #AACCFF!important;
   margin:5px;
+}
+
+.resolveButton {
+  color: black!important;
+  font-family: Lora;
+  background-color: #28a745!important;
+  margin:5px;
+}
+
+.deletePostButton{
+  color: black!important;
+  font-family: Lora;
+}
+
+.commentUsername {
+  font-family: "Lora-Italic-Bold";
+  font-weight: bold;
 }
 
 .loginComponent, .signupComponent, .homePage {
@@ -85,7 +102,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   text-align: center;
 }
 
-.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton{
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton, .submitForm, .submitCommentButton {
   margin: 10px;
 }
 
@@ -114,14 +131,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   float: left;
 }
 
-.prevResolved{
-  margin: 15px;
-  padding: 8px;
-  float: left;
-  clear: left;
-}
-
-.nextResolvedNoPrev{
+.prevResolved, .nextResolvedNoPrev{
   margin: 15px;
   padding: 8px;
   float: left;
@@ -136,11 +146,23 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   color: #222233!important;
 }
 
-.cardTitle{
+.cardTitle, .modal-header, .modal-footer{
   font-weight: bold;
   font-family: Lora;
   background-color: #AACCFF!important; 
 } 
+
+.modal-title, .modal-body {
+  text-align: center;
+}
+
+.commentsDiv {
+  text-align: left;
+}
+
+.modal-body, .modal-footer {
+  font-family: Lora;
+}
 
 .resolvedCards {
   font-family: Lora;
@@ -154,7 +176,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
 }
 
 
-.deleteButton {
+.deleteButton{
   margin: 5px;
 } 
 

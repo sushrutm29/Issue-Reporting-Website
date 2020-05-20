@@ -23,11 +23,7 @@ code {
 }
 
 @font-face {
-  font-family:'Titillium-Regular';
-  src: url(./fonts/TitilliumWeb-Regular.ttf) format('truetype');
+  font-family:'Lora-Italic-Bold';
+  src: url(./fonts/Lora-Italic-VariableFont_wght.ttf) format('truetype');
 }
 
-@font-face {
-  font-family:'Titillium-Light';
-  src: url(./fonts/TitilliumWeb-Light.ttf) format('truetype');
-}

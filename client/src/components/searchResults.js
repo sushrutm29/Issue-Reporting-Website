@@ -27,7 +27,7 @@ function SearchResults(props) {
         <div className="searchResults">
             {(!props.currentResetState) && <div>
                 {props.postsFound && <PostsList allPosts={searchResults} results={props.postsFound} />}
-                {!(props.postsFound) && <p>No posts found! </p>}
+                {!(props.postsFound) && <p className="noPosts">No posts found! </p>}
                 <Button variant="outline-success" onClick={setStatus}>Reset</Button>
             </div>}
         </div>
