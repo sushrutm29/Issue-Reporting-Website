@@ -42,7 +42,7 @@ async function doSocialSignIn(provider) {
 			});
 		} catch (error) {}
 	  }).catch(function(error) {
-		console.log(error);
+		alert(error.message);
 	  });
 }
 
