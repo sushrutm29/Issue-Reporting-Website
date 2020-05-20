@@ -40,7 +40,7 @@ function NavigationBar(props) {
         let url = "/dept/" + dept.deptName + "/page/1";
         let deptName = dept.deptName.charAt(0).toUpperCase() + dept.deptName.slice(1);
         return (
-            <NavDropdown.Item key={dept._id} href={url}>{deptName}</NavDropdown.Item>
+            <NavDropdown.Item key={dept._id} href={url} className="dropdownOptions">{deptName}</NavDropdown.Item>
         );
     }
 
@@ -59,7 +59,7 @@ function NavigationBar(props) {
         setPostsFound(status);
     }
 
-    function setPostVariables (postsArray) {
+    function setPostVariables(postsArray) {
         if (postsArray.length !== 0) {
             setPostsFound(true);
             props.getReceivedStatus(true);
@@ -69,7 +69,6 @@ function NavigationBar(props) {
     }
 
     async function submitSearchQuery() {
-        console.log(searchQuery);
         setReset(false);
         let currentDepartmentID;
         if (props.currentDept !== undefined) {
@@ -83,7 +82,7 @@ function NavigationBar(props) {
                 }
             );
             setSearchResults(response.data);
-            setPostVariables (response.data);
+            setPostVariables(response.data);
         } else {
             const response = await axios.get("http://localhost:3001/data/post/elasticsearch/home/",
                 {
@@ -93,8 +92,16 @@ function NavigationBar(props) {
                 }
             );
             setSearchResults(response.data);
-            setPostVariables (response.data);
+            setPostVariables(response.data);
         }
+    }
+
+    async function sortNewest() {
+        props.setSortFilter("desc");
+    }
+
+    async function sortOldest() {
+        props.setSortFilter("asce");
     }
 
     //props to be passed to deptAdminButtons component
@@ -107,27 +114,34 @@ function NavigationBar(props) {
     }
 
     return (
-        <div>
-            <Navbar bg="light" expand="lg" className="navBar">
+        <div className="navbarComponent d-flex justify-align-between">
+            <Navbar expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link href="/home/page/1">Home</Nav.Link>
-                        <Nav.Link href="/profile">Profile</Nav.Link>
-                        <NavDropdown title="Department" id="basic-nav-dropdown">
+                        <Nav.Link className="navLinks" href="/home/page/1">Home</Nav.Link>
+                        <Nav.Link className="navLinks" href="/profile">Profile</Nav.Link>
+                        <NavDropdown title="Department" id="departmentDropdown">
                             {departmentDropdown}
                         </NavDropdown>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
-                            <Button variant="outline-success" onClick={submitSearchQuery}>Search</Button>
-                        </Form>
                         {props.creationAction && <CreatePost action={props.creationAction} />}
-                        {adminStatus && <DeptAdminButtons {...adminProps} />}
+                        <NavDropdown title="Date Filter" id="sortFilterDropdown">
+                            <NavDropdown.Item  onClick={sortNewest} className="dropdownOptions">Sort by Newest</NavDropdown.Item>
+                            <NavDropdown.Item  onClick={sortOldest} className="dropdownOptions">Sort by Oldest</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
-                    <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
+                    {adminStatus && <DeptAdminButtons {...adminProps} />}
+                    <Form inline>
+                        <label htmlFor="searchForm" id="searchFormLabel">
+                            Search form!
+                        </label>
+                        <FormControl id="searchForm" type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
+                        <Button id="searchButton" variant="primary" onClick={submitSearchQuery}>Search</Button>
+                    </Form>
+                    <Button id="signoutButton" variant="primary" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
-            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState}/>}
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} />}
         </div>
     )
 }

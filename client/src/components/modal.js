@@ -60,23 +60,21 @@ function PostModal(props) {
     }
 
     let resolve_button = null;
-    if (adminStatus) {
-        resolve_button = <div><Button variant="primary" onClick={handleResolve} >
-        Resolve Post
-        </Button></div>;
+    if (adminStatus && props.post.resolvedStatus==false) {
+        resolve_button = <div><Button variant="success" className="resolveButton" size="sm" onClick={handleResolve} > Resolve Post </Button></div>;
     }
 
     return (
         <div>
-            <Button variant="primary" onClick={() => { handleShow(props.post) }} >
+            <Button size="sm" className="postDetailsButton" variant="primary" onClick={() => { handleShow(props.post) }} >
                 Post Details
             </Button>
             {resolve_button}
             <Modal show={show} onHide={handleClose} animation={false} aria-labelledby="contained-modal-title-vcenter" centered>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton id="modalTitle">
                     <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="modalBody">
                     {modalBody}
                     <br></br>
                     <br></br>

@@ -33,16 +33,18 @@ function CommentList(props) {
     const buildListItem = (comment) => {
         if (comment.userID === props.currentUserID) { //If comment is by currently logged in user, add a delete button
             return (
-                <div className="clearfix" key={comment.id}>
+                <div className="clearfix commentsDiv" key={comment.id}>
                     <li className="comment">
-                        <p>{comment.name} {comment.commentBody} <Button variant="danger" size="sm" className="float-right deleteButton" onClick={() => { deleteComment(comment.id,props.currentUserID,comment.postID)}}>Delete</Button></p>
+                        <p> <span className="commentUsername">{comment.name}:</span> {comment.commentBody} <Button variant="danger" size="sm" className="float-right deleteButton" onClick={() => { deleteComment(comment.id,props.currentUserID,comment.postID)}}>Delete</Button></p>
+                        <hr></hr>
                     </li>
                 </div>
             )
         } else {
             return (
                 <li className="comment" key={comment.id}>
-                    <p>{comment.name} {comment.commentBody}</p>
+                    <p> <span className="commentUsername">{comment.name}:</span> {comment.commentBody} </p>
+                    <hr></hr>
                 </li>
             )
         }

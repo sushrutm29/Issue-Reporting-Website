@@ -11,3 +11,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family:'Poiret';
+  src: url(./fonts/PoiretOne-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family:'Lora';
+  src: url(./fonts/Lora-VariableFont_wght.ttf) format('truetype');
+}
+
+@font-face {
+  font-family:'Lora-Italic-Bold';
+  src: url(./fonts/Lora-Italic-VariableFont_wght.ttf) format('truetype');
+}
+

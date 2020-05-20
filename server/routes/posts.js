@@ -16,9 +16,9 @@ const postsPerPage = 9;
  */
 router.get('/', async (req, res) => {
     try {
-        let sortOrder = "asce"; //ascending order as default
-        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
-            sortOrder = req.body.sortOrder;
+        let sortOrder = "desc"; //ascending order as default
+        if (req.query && req.query.sortOrder && req.query.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.query.sortOrder;
         }
         let allPosts = await client.hvalsAsync("posts");
         if (allPosts !== undefined && allPosts !== null && allPosts.length !== 0) {   //posts exist in Redis cache
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
         }
         //sorts the outputs by time
         allPosts.sort(function (a, b) {
-            if (sortOrder === "asce") {
+            if (sortOrder === "desc") {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
             } else {
                 return new Date(a.CreationTime) - new Date(b.CreationTime);
@@ -52,8 +52,8 @@ router.get('/', async (req, res) => {
 router.get('/page/:pageNo', async (req, res) => {
     try {
         let sortOrder = "desc"; //descending order as default
-        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
-            sortOrder = req.body.sortOrder;
+        if (req.query && req.query.sortOrder && req.query.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.query.sortOrder;
         }
         let pageNo = (parseInt(req.params.pageNo)) - 1;
         let offset = postsPerPage * pageNo;
@@ -76,7 +76,7 @@ router.get('/page/:pageNo', async (req, res) => {
         allPosts = allPosts.filter((post) => !post.resolvedStatus);
         //sorts the outputs by time
         allPosts.sort(function (a, b) {
-            if (sortOrder === "asce") {
+            if (sortOrder === "desc") {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
             } else {
                 return new Date(a.CreationTime) - new Date(b.CreationTime);
@@ -249,9 +249,9 @@ router.get('/dept/:id', async (req, res) => {
         if (!req.params || !req.params.id) {
             throw "Department id was not provided for getAllPostsByDeptID method!";
         }
-        let sortOrder = "asce"; //ascending order as default
-        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
-            sortOrder = req.body.sortOrder;
+        let sortOrder = "desc"; //ascending order as default
+        if (req.query && req.query.sortOrder && req.query.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.query.sortOrder;
         }
         let deptID = req.params.id;
 
@@ -271,7 +271,7 @@ router.get('/dept/:id', async (req, res) => {
         }
         //sorts the outputs by time
         allPosts.sort(function (a, b) {
-            if (sortOrder === "asce") {
+            if (sortOrder === "desc") {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
             } else {
                 return new Date(a.CreationTime) - new Date(b.CreationTime);
@@ -289,8 +289,8 @@ router.get('/dept/:id/:pageNo', async (req, res) => {
             throw "Department id or page No. was not provided for getAllPostsByDeptID method!";
         }
         let sortOrder = "desc"; //descending order as default
-        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
-            sortOrder = req.body.sortOrder;
+        if (req.query && req.query.sortOrder && req.query.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.query.sortOrder;
         }
         let deptID = req.params.id;
         let pageNo = (parseInt(req.params.pageNo)) - 1;
@@ -314,7 +314,7 @@ router.get('/dept/:id/:pageNo', async (req, res) => {
         currentPosts = currentPosts.filter((post) => !post.resolvedStatus);
         //sorts the outputs by time
         currentPosts.sort(function (a, b) {
-            if (sortOrder === "asce") {
+            if (sortOrder === "desc") {
                 return new Date(b.CreationTime) - new Date(a.CreationTime);
             } else {
                 return new Date(a.CreationTime) - new Date(b.CreationTime);
@@ -332,8 +332,8 @@ router.get('/dept/resolved/:id/:pageNo', async (req, res) => {
             throw "Department id or page No. was not provided for getAllPostsByDeptID method!";
         }
         let sortOrder = "desc"; //descending order as default
-        if (req.body && req.body.sortOrder && req.body.sortOrder.length != 0) {   //sort order is provided
-            sortOrder = req.body.sortOrder;
+        if (req.query && req.query.sortOrder && req.query.sortOrder.length != 0) {   //sort order is provided
+            sortOrder = req.query.sortOrder;
         }
         let deptID = req.params.id;
         let pageNo = (parseInt(req.params.pageNo)) - 1;

@@ -2,31 +2,122 @@
   text-align: center;
 }
 
-.App-title {
-  padding: 10px;
+html {
+  background-color: #222233;
+}
+
+html, body, #root, .App, .loginComponent, .signupComponent {
+  height: 100%;
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #B90035 ;
   min-height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  font-weight: bold;
   color: white;
+  font-family: Lora;
 }
 
-.App-link {
-  color: #61dafb;
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown  {
+  font-family: Poiret;
+  font-weight: bold;
+  color: #AACCFF!important;
 }
 
-.postCard {
+.noPosts, .noResolveError {
+  font-size: 25px;
+}
+
+.navLinks, #departmentDropdown, #deleteDept, #sortFilterDropdown {
+  font-size: 20px;
+  margin:5px;
+}
+
+.verticalLine {
+  border-right: 2px solid #AACCFF;
+  height: 500px;
+  margin: 50px;
+}
+
+.verticalLineSignup {
+  border-right: 2px solid #AACCFF;
+  height: 700px;
+  margin: 50px;
+}
+
+.verticalLineResolvedPosts {
+  border-right: 2px solid #AACCFF;
+  height: 800px;
+}
+
+.loginLabel, .App-link {
+  font-size: 18px;
+}
+
+.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton{
+  color: black!important;
+  font-family: Poiret;
+  background-color: #AACCFF!important;
+}
+
+.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover {
+  background-color: white!important;
+}
+
+.postDetailsButton , .editButtonModal{
+  color: black!important;
+  font-family: Lora;
+  background-color: #AACCFF!important;
+  margin:5px;
+}
+
+.resolveButton {
+  color: black!important;
+  font-family: Lora;
+  background-color: #28a745!important;
+  margin:5px;
+}
+
+.deletePostButton{
+  color: black!important;
+  font-family: Lora;
+}
+
+.commentUsername {
+  font-family: "Lora-Italic-Bold";
+  font-weight: bold;
+}
+
+.loginComponent, .signupComponent, .homePage, .deptPostList {
+  background-color: #222233;
+  height: 100vh;
+}
+
+.navbarComponent {
+  background-color: #222233;
+}
+
+#createDeptForm::placeholder, .dropdownOptions, #searchForm::placeholder{
+  font-family: Poiret;
+}
+
+input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
+  color: black!important;
+  text-align: center;
+}
+
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, #signoutButton, .submitForm, .submitCommentButton, .resolved, .unresolved, #sortButton {
   margin: 10px;
 }
 
-.donePostCard {
-  margin: 10px;
+.postCard{
+  margin: 10px 10px 10px 30px ;
+  width: 16rem;
 }
 
 .donePostListing{
@@ -41,36 +132,46 @@
 .next, .prev {
   margin: 15px;
   padding: 8px;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
 .nextResolved{
   margin: 15px;
   padding: 8px;
   float: left;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
-.prevResolved{
+.prevResolved, .nextResolvedNoPrev{
   margin: 15px;
   padding: 8px;
   float: left;
   clear: left;
+  color:  #AACCFF;
+  font-family: Poiret;
+  font-size: 25px;
 }
 
-.nextResolvedNoPrev{
-  margin: 15px;
-  padding: 8px;
-  float: left;
-  clear: left;
-}
-
-.username {
-  font-size: 12px;
+.username, .resolvedUsername{
+  font-size: 13px;
   font-weight: bold;
+  font-family: Lora;
   font-style: italic;
+  color: #222233!important;
 }
 
-.cardTitle{
+.cardTitle, .modal-header, .modal-footer{
   font-weight: bold;
+  font-family: Lora;
+  background-color: #AACCFF!important; 
+} 
+
+.modal-title, .modal-body {
+  text-align: center;
 }
 
 .profile-img-div {
@@ -85,12 +186,45 @@
 }
 .deletePostButton{
   margin: 10px;
+
 }
-.createPostButton{
-  margin: 10px;
+.commentsDiv, .comment {
+  text-align: left;
 }
-.deleteButton {
+
+.modal-body, .modal-footer {
+  font-family: Lora;
+}
+
+.resolvedCards {
+  font-family: Lora;
+  font-weight: bold;
+  background-color: #28a745!important; 
+}
+
+.cardBody {
+  font-family: Lora;
+  color: #222233!important;
+}
+
+
+.deleteButton{
   margin: 5px;
+} 
+
+.adminDept {
+  display: inline-block;
 }
+
+#searchFormLabel, #createDeptFormLabel {
+  display: none;
+}
+
+hr {
+  border-color: white;
+  background-color: white;
+}
+
+
 
 

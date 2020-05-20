@@ -26,13 +26,13 @@ function SubmitComment(props) {
     }
 
     return (
-        <div className="submitForm">
-            <Form onSubmit={e => e.preventDefault()}>
+        <div className="submitForm d-flex justify-align-center">
+            <Form onSubmit={e => e.preventDefault()} inline>
                 <Form.Group controlId={props.post._id}>
                     <Form.Control postid={props.post._id} className="commentPlaceholder" type="text" name="commentBody" onChange={e => { setCommentDetails(e.target.value) }} placeholder="Enter comment" />
                 </Form.Group>
+                <Button className="submitCommentButton text-center" variant="secondary" size="sm" type="submit" onClick={submitComment}> Submit Comment</Button>
             </Form>
-            <Button variant="secondary" size="sm" type="submit" onClick={submitComment}> Submit </Button>
         </div>
     )
 

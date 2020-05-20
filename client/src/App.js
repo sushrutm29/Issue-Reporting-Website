@@ -16,9 +16,9 @@ const App = () => {
 		<AuthProvider>
 			<Router>
 				<div className='App'>
-					<header className='App-header'>
+					{/* <header className='App-header'>
 						<h1 className='App-title'>Stevens Issue Reporter</h1>
-					</header>
+					</header> */}
 					<div className='App-body'>
 						<Switch>
 							<PrivateRoute path='/home/page/:pageNo' component={Home} />
