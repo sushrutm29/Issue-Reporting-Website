@@ -113,7 +113,7 @@ function NavigationBar(props) {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                         <Nav.Link href="/home/page/1">Home</Nav.Link>
-                        <Nav.Link href="#">Profile</Nav.Link>
+                        <Nav.Link href="/profile">Profile</Nav.Link>
                         <NavDropdown title="Department" id="basic-nav-dropdown">
                             {departmentDropdown}
                         </NavDropdown>
