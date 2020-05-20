@@ -16,11 +16,6 @@ const SocialSignIn = () => {
         alt="google signin"
         src="/imgs/btn_google_signin.png"
       />
-      <img
-        onClick={() => socialSignOn('facebook')}
-        alt="google signin"
-        src="/imgs/facebook_signin.png"
-      />
     </div>
   );
 };
