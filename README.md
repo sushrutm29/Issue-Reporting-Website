@@ -169,8 +169,8 @@ npm install imagemagick
 ```
 > [Imagemagick Official Guide](https://www.npmjs.com/package/imagemagick)
 
-## **Login Credentials**
+## **Credentials**
 
-The default login credentials, which has admin privilages, is listed below:
+The default login credentials, which has admin privilages, is listed below:  <br />
 **Default Email ID**: phill@stevens.edu <br />
 **Default Password**: 123456
