@@ -19,7 +19,7 @@ function PostModal(props) {
         async function fetchPostData() {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(true);
+                setAdminStatus(data.admin);
             } catch (error) {
                 console.log(error);
             }
