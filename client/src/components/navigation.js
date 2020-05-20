@@ -127,7 +127,7 @@ function NavigationBar(props) {
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
-            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState}/>}
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} deletionAction={props.deletionAction} action={props.action}/>}
         </div>
     )
 }
