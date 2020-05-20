@@ -5,6 +5,7 @@ import { AuthContext } from '../firebase/Auth';
 import SocialSignIn from './socialSignIn';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { Button} from 'react-bootstrap';
 
 function SignUp() {
   const { currentUser } = useContext(AuthContext);
@@ -14,7 +15,7 @@ function SignUp() {
   if (currentUser) {
     return <Redirect to="/home/page/1" />;
   }
-  
+
   const handleUpload = e => {
     setFile(e.target.files[0]);
   }
@@ -35,13 +36,13 @@ function SignUp() {
         displayName.value
       );
 
-      if(file !== ''){
+      if (file !== '') {
         let formData = new FormData();
         formData.append('image', file);
         console.log(formData);
         await axios.post('http://localhost:3001/data/profilepic', formData, {
-          headers: { 
-            'Content-Type': 'multipart/form-data' 
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
         });
       }
@@ -50,10 +51,10 @@ function SignUp() {
         method: 'post',
         url: 'http://localhost:3001/data/user',
         data: {
-            userName: displayName.value,
-            userEmail: email.value,
-            admin: false,
-            profilePic: (file !== '')
+          userName: displayName.value,
+          userEmail: email.value,
+          admin: false,
+          profilePic: (file !== '')
         },
       });
 
@@ -63,80 +64,49 @@ function SignUp() {
   };
 
   return (
-    <div>
-      <h1>Sign up</h1>
-      {pwMatch && <h4 className="error">{pwMatch}</h4>}
-      <form onSubmit={handleSignUp}>
-        <div className="form-group">
-          <label>
-            Name:
-            <input
-              className="form-control"
-              required
-              name="displayName"
-              type="text"
-              placeholder="Name"
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Email:
-            <input
-              className="form-control"
-              required
-              name="email"
-              type="email"
-              placeholder="Email"
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Password:
-            <input
-              className="form-control"
-              id="passwordOne"
-              name="passwordOne"
-              type="password"
-              placeholder="Password"
-              required
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Confirm Password:
-            <input
-              className="form-control"
-              name="passwordTwo"
-              type="password"
-              placeholder="Confirm Password"
-              required
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Profile Picture:
-            <input
-              className="form-control"
-              id="profilePicUpload"
-              name="profilePicUpload"
-              type="file"
-              placeholder=""
-              onChange={handleUpload}
-            />
-          </label>
-        </div>
-        <button id="submitButton" name="submitButton" type="submit">
-          Sign Up
-        </button>
-      </form>
-      <br />
-      <SocialSignIn />
-      <br />
-      <Link className="App-link" to="/login">Already have an account? Click here to Login</Link>
+    <div className="signupComponent d-flex justify-content-center align-items-center">
+      <h1 className="signup">STEVENS ISSUE REPORTER<br></br><br></br>SIGNUP</h1>
+      <div className="verticalLineSignup"></div>
+      <div className="align-items-center">
+        {pwMatch && <h4 className="error">{pwMatch}</h4>}
+        <form onSubmit={handleSignUp}>
+          <div className="form-group">
+            <label className="signupLabel">
+              Name:
+            <input className="form-control" required name="displayName" type="text" placeholder="Enter Name" />
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="signupLabel">
+              Email:
+            <input className="form-control" required name="email" type="email" placeholder="Enter Email" />
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="signupLabel">
+              Password:
+            <input className="form-control" id="passwordOne" name="passwordOne" type="password" placeholder="Enter Password" required />
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="signupLabel">
+              Confirm Password:
+            <input className="form-control" name="passwordTwo" type="password" placeholder="Confirm Password" required />
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="signupLabel">
+              Profile Picture:
+            <input className="form-control" id="profilePicUpload" name="profilePicUpload" type="file" accept="image/*" onChange={handleUpload} />
+            </label>
+          </div>
+          <Button variant="success" className="signupButton" id="submitButton" name="submitButton" type="submit">Sign Up </Button>
+        </form>
+        <br />
+        <SocialSignIn />
+        <br />
+        <Link className="App-link" to="/login">Already have an account? Click here to Login</Link>
+      </div>
     </div>
   );
 }

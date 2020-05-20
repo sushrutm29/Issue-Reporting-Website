@@ -35,7 +35,7 @@ function EditPostModal(props) {
         if(postTitle.value === props.post.title && postBody.value === props.post.body){
             alert("Please enter a new title and body!");
         }else{
-            const res = await axios({
+            await axios({
                 method: 'patch',
                 url: `http://localhost:3001/data/post/update/${props.post._id}`,
                 data: {
@@ -43,7 +43,6 @@ function EditPostModal(props) {
                     "body": postBody.value
                 }
             });
-    
             handleClose();
             props.action();
         }   
@@ -51,9 +50,7 @@ function EditPostModal(props) {
 
     let edit_button = null;
     if(adminStatus || currentUser.email === props.post.useremail){
-        edit_button = <div><Button variant="primary" onClick={handleEditShow} >
-        Edit Post
-        </Button></div>
+        edit_button = <div><Button variant="primary" className="editButtonModal" size="sm" onClick={handleEditShow} >Edit Post</Button></div>
     }
     
     return (
@@ -89,7 +86,7 @@ function EditPostModal(props) {
                                 />
                             </label>
                         </div>
-                        <button id="submitButton" name="submitButton" type="submit">Edit Post</button>
+                        <Button variant="primary" className="editButtonModal" name="submitButton" type="submit">Edit Post</Button>
                     </form>
                 </Modal.Body>
                 <Modal.Footer>

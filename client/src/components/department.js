@@ -7,6 +7,7 @@ import NavigationBar from './navigation';
 import DonePostsList from './donePosts';
 import { Button } from 'react-bootstrap';
 import { Toast } from 'react-bootstrap';
+import NoPosts from './noPosts';
 
 /**
  * @author Lun-Wei Chang
@@ -14,6 +15,7 @@ import { Toast } from 'react-bootstrap';
  * @date 05/03/2020
  */
 const Department = (props) => {
+    let noPosts = null;
     const [postList, setPostList] = useState(undefined);
     const [currentPageNum, setPage] = useState(props.match.params.pageNo);
     const [lastPage, setLastpage] = useState(undefined);
@@ -25,22 +27,35 @@ const Department = (props) => {
     const [showToast, setShowToast] = useState(false);
     const [deptList, setDeptList] = useState(undefined);
     const [receivedResults, setReceivedResults] = useState(false);
+    const [sortFilter, setSortFilter] = useState("desc");
 
     useEffect(() => {
         async function fetchPostData() {
             try {
                 let currentDept = await axios.get(`http://localhost:3001/data/dept/getDeptByName/${props.match.params.deptName}`);
                 let currentDeptID = currentDept.data._id;
-                
+
                 let { data } = await axios.get(`http://localhost:3001/data/post/dept/resolved/${currentDeptID}/${currentResolvedPageNum}`);
                 setDonePostList(data);
-    
-                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`);
+
+                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                );
                 setPostList(data.data);
-    
+
                 let nextPageNo = parseInt(currentPageNum) + 1;
-                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${nextPageNo}`); //Check if next page has any data
-                
+                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${nextPageNo}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                ); //Check if next page has any data
+
                 if (data.data.length === 0) {
                     setLastpage(true);
                 } else {
@@ -51,31 +66,36 @@ const Department = (props) => {
                 data = await axios.get(`http://localhost:3001/data/post/dept/resolved/${currentDeptID}/${nextResolvedPageNo}`); //Check if next page has any data
                 if (data.data.length === 0) {
                     setResolvedLastpage(true);
-                }else{
+                } else {
                     setResolvedLastpage(false);
                 }
             } catch (err) {
-                console.log(err);
+                console.log(err.message);
             }
         }
         fetchPostData();
-    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults, currentResolvedPageNum]);
+    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults, currentResolvedPageNum, sortFilter]);
 
-    function handlePostDeletion(){
+
+    function handleSortFilter(status) {
+        setSortFilter(status);
+    }
+
+    function handlePostDeletion() {
         handleStatus();
         buildToast("Issue Deleted Successfully!");
     }
 
-    function hideToast(){
+    function hideToast() {
         setShowToast(false);
     }
 
-    function buildToast(message){
+    function buildToast(message) {
         setToastMessage(message);
         setShowToast(true);
     }
 
-    function handleStatus(){
+    function handleStatus() {
         setStatusChanged(!statusChanged);
     }
 
@@ -84,30 +104,32 @@ const Department = (props) => {
     }
 
     //If no post listing or incorrect URL display 404
-    if ((postList && postList.length === 0) || !Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
+    if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
+    } else if (postList && postList.length === 0) {
+        noPosts = <NoPosts />;
     }
 
     //Increment page number
     const incrementPage = () => {
-        setPage(currentPageNum + 1);
+        setPage(parseInt(currentPageNum) + 1);
         props.location.pathname = `/dept/${props.match.params.deptName}/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`;
     }
 
     //Increment resolved page number
     const incrementResolvedPage = () => {
-        setResolvedPage(currentResolvedPageNum + 1);
+        setResolvedPage(parseInt(currentPageNum) + 1);
     }
 
     //Decrement page number
     const decrementPage = () => {
-        setPage(currentPageNum - 1);
+        setPage(parseInt(currentPageNum) - 1);
         props.location.pathname = `/dept/${props.match.params.deptName}/page/${(parseInt(props.match.params.pageNo) - 1).toString()}`;
     }
 
     //Decrement resolved page number
     const decrementResolvedPage = () => {
-        setResolvedPage(currentResolvedPageNum - 1);
+        setResolvedPage(parseInt(currentPageNum) - 1);
     }
 
     //Display previous button only if user is NOT on the first page
@@ -131,11 +153,11 @@ const Department = (props) => {
     //Display next button only if user is NOT on the last resolved page
     let nextResolvedLink;
     if (!resolvedLastPage) {
-        if(prevResolvedLink){
+        if (prevResolvedLink) {
             nextResolvedLink = <Button onClick={incrementResolvedPage} className="nextResolved">Next</Button>;
-        }else{
+        } else {
             nextResolvedLink = <Button onClick={incrementResolvedPage} className="nextResolvedNoPrev">Next</Button>;
-        }   
+        }
     }
 
     return (
@@ -143,13 +165,21 @@ const Department = (props) => {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults}/>
-            {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
-            {!receivedResults && prevResolvedLink}
-            {!receivedResults && nextResolvedLink}
-            {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion}/>}
-            {prevLink}
-            {nextLink}
+            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults} setSortFilter={handleSortFilter} />
+            <hr></hr>
+            <div className="resolved">
+                {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+                {!receivedResults && prevResolvedLink}
+                {!receivedResults && nextResolvedLink}
+            </div>
+            <div className="d-flex justify-content-center">
+                <div className="unresolved">
+                    {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
+                    {noPosts}
+                    {prevLink}
+                    {nextLink}
+                </div>
+            </div>
         </div>
     );
 

@@ -16,16 +16,16 @@ const App = () => {
 		<AuthProvider>
 			<Router>
 				<div className='App'>
-					<header className='App-header'>
+					{/* <header className='App-header'>
 						<h1 className='App-title'>Stevens Issue Reporter</h1>
-					</header>
+					</header> */}
 					<div className='App-body'>
 						<Switch>
-							<PrivateRoute path='/home/page/:pageNo' component={Home} />
-							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department}/>
-							<Route path='/login' component={Login} />
-							<Route path='/signup' component={SignUp} />
-							<Route path='/profile' component={userProfile} /> 
+							<PrivateRoute exact path='/home/page/:pageNo' component={Home} />
+							<PrivateRoute exact path='/dept/:deptName/page/:pageNo' component={Department}/>
+							<Route exact path='/login' component={Login} />
+							<Route exact path='/signup' component={SignUp} />
+							<PrivateRoute exact path='/profile' component={userProfile} /> 
 							<Route component={Error404}/>
 						</Switch>
 					</div>

@@ -1,7 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import PostsList from './posts';
-import { Button, Toast } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
+import { Button} from 'react-bootstrap';
 
 function SearchResults(props) {
 
@@ -35,7 +34,7 @@ function SearchResults(props) {
         <div className="searchResults">
             {(!props.currentResetState) && <div>
                 {props.postsFound && <PostsList allPosts={searchResults} results={props.postsFound} action={handleStatus} deletionAction={handlePostDeletion}/>}
-                {!(props.postsFound) && <p>No posts found! </p>}
+                {!(props.postsFound) && <p className="noPosts">No posts found! </p>}
                 <Button variant="outline-success" onClick={setStatus}>Reset</Button>
             </div>}
         </div>

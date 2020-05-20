@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Card, Modal, Button } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
+import { Modal, Button, ModalBody, ModalFooter, ModalTitle } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
 import axios from 'axios';
 import { doChangePassword } from '../firebase/FirebaseFunctions';
@@ -28,7 +27,6 @@ class userProfile extends Component {
     onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
             this.setState({ imageFile: event.target.files[0] })
-            console.log("this is on Image Chnage :" + this.state.imageFile);
         }
     }
 
@@ -54,7 +52,7 @@ class userProfile extends Component {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            if(uploadFile.data.Filename) {
+            if (uploadFile.data.Filename) {
                 await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
             }
             window.location.reload();
@@ -77,7 +75,6 @@ class userProfile extends Component {
                 data: postDetails
             });
             window.location.reload();
-
         } catch (error) {
             console.log(error);
         }
@@ -95,12 +92,17 @@ class userProfile extends Component {
         const oldpwd = event.target.oldpassword.value;
         const newpwd = event.target.newpassword.value;
         const email = this.state.userData.userEmail;
-        if (newpwd.length != 0 && oldpwd.length != 0) {
+        if (newpwd.length !== 0 && oldpwd.length !== 0) {
 
-            await doChangePassword(email, oldpwd, newpwd);
+            try {
+                await doChangePassword(email, oldpwd, newpwd);
+                alert("Password Successfully Changed!");
+            } catch (error) {
+                alert("Incorrect password");
+            }
         }
-        alert("Password Successfully Changed! Please Login back! ");
-        window.location.href = "/login";
+
+      //  window.location.href = "/login";
     }
 
     currentUser = () => {
@@ -123,7 +125,7 @@ class userProfile extends Component {
             divToOpen[i].style.display = "block";
         }
 
-        for (var i = 0; i < divToClose.length; i++) {
+        for (i = 0; i < divToClose.length; i++) {
             divToClose[i].style.display = "none";
         }
     }
@@ -138,7 +140,6 @@ class userProfile extends Component {
                 let imageDetails;
                 try {
                     imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-                    console.log(imageDetails);
                 } catch (error) {
                     imageDetails = undefined;
                 }
@@ -160,7 +161,7 @@ class userProfile extends Component {
                 window.location.href = "/login";
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -174,53 +175,57 @@ class userProfile extends Component {
 
     render() {
         let html_body = (
-            <div>
+            <div className="profileComponent">
+                <h1 className="myProfile">MY PROFILE</h1>
                 <br></br>
                 <br></br>
                 <div className="profile-img-div">
-                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="image not found" />
+                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="Not found!" />
                 </div>
                 <br></br>
                 <br></br>
-                <h5> Upload to change profile picture : </h5>
+                <h2 className="myProfile"> Want to edit your profile picture? Upload your image below: </h2>
                 <br></br>
-                <input type="file" variant="primary" accept="image/*" onChange={this.onhandleUpload} />
+                <input className="myProfile" type="file" variant="primary" accept="image/*" onChange={this.onhandleUpload} />
                 <br></br>
                 <br></br>
-                <Card style={{ margin: "0px auto", width: "500px" }}>
-
-                    <h1>{(this.state.userData && this.state.userData.userName) || " No Username available Here  "}</h1>
+                <Button id="goBackButton" href="/home/page/1">Go back to Home</Button>
+                <br></br>
+                <br></br>
+                <hr></hr>
+                <div className="myProfile">
+                    <h3><span>Name: </span>{(this.state.userData && this.state.userData.userName) || " NA  "}</h3>
                     <br></br>
-                    <h3> {(this.state.userData && this.state.userData.userEmail) || " No User email available Here  "}</h3>
-                </Card>
-
-                <div className="change-password-wrapper" style={{ margin: "0px auto", width: "250px" }}>
+                    <h3><span>Email: </span>{(this.state.userData && this.state.userData.userEmail) || " NA "}</h3>
+                </div>
+                <hr></hr>
+                <div className="myProfile change-password-wrapper" style={{ margin: "0px auto", width: "250px" }}>
 
                     <br></br>
                     <div>
-                        <h6>Change Password</h6>
+                        <h3>Change Password</h3>
                     </div>
-                    <hr></hr>
                     <br></br>
                     <form onSubmit={this.changePassword}>
                         <div className="form-group">
                             <div>
-                                <input type="password" className="form-control" name="oldpassword" placeholder="old password"></input>
+                                <input type="password" className="form-control" name="oldpassword" placeholder="Old password"></input>
                             </div>
                             <br></br>
                             <div>
-                                <input type="password" className="form-control" name="newpassword" placeholder="new password"></input>
+                                <input type="password" className="form-control" name="newpassword" placeholder="New password"></input>
                             </div>
                             <br></br>
                             <div>
-                                <Button type="submit" variant="primary"> Change Password </Button>
+                                <Button id="changePasswordButton" type="submit" variant="primary"> Change Password </Button>
                             </div>
+                            <br></br>
                         </div>
                     </form>
                 </div>
+                <hr></hr>
                 <div>
-                    <h4>Posts</h4>
-                    <hr></hr>
+                    <h3 className="myPosts">My Posts</h3>
                 </div>
                 <div className="post-wrapper row">
                     {this.state.posts && this.state.posts.map((post, index) => (
@@ -228,30 +233,33 @@ class userProfile extends Component {
                             <br></br>
                             <form onSubmit={this.handleSubmit}>
                                 <div className={index + "-edit edit-post-div"} style={{ display: "none" }}>
+                                    <h3 id="saveChangesButton">Edit your post here:</h3>
                                     <br></br>
-                                    <label>Post Title  :  </label>
-                                    <input type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
+                                    <br></br>
+                                    <label htmlFor="inputNewTitle">Post Title : </label>
+                                    <input id="inputNewTitle" type='text' placeholder='post-title' name='postTitle' defaultValue={post.title} onChange={this.handleInputChange} />
                                     <br></br>
                                     <input type='text' name='postID' hidden value={post._id} readOnly />
                                     <br></br>
-                                    <label>Post Body  : </label>
-                                    <input type='text' placeholder='post-body' name='postBody' defaultValue={post.body} onChange={this.handleInputChange} />
+                                    <label htmlFor="inputNewTitle">Post Title : </label>
+                                    <input id="inputNewTitle" type='text' placeholder='post-body' name='postBody' defaultValue={post.body} onChange={this.handleInputChange} />
                                     <br></br>
                                     <br></br>
-                                    <Modal.Footer>
-                                        <Button type="submit" variant="primary"> Save changes</Button>
-                                    </Modal.Footer>
+                                    <Button id="saveChangesButton" type="submit" variant="primary"> Save changes</Button>
                                 </div>
                                 <div className={index + "-show"}>
                                     <ModalHeader>
-                                        <div>Post Title : {post.title}</div>
+                                        <ModalTitle>Post Details:</ModalTitle>
                                     </ModalHeader>
-                                    <br></br>
-                                    <div>Post Body  : {post.body}</div>
-                                    <br></br>
-
-                                    <Button variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index + "-edit", index + "-show")} > Edit</Button>
-
+                                    <ModalBody>
+                                        <div><span className="postBold">Post Title :</span> {post.title}</div>
+                                        <br></br>
+                                        <div><span className="postBold">Post Body :</span>  {post.body}</div>
+                                        <br></br>
+                                    </ModalBody>
+                                    <ModalFooter className="myPosts">
+                                        <Button id="editButton" variant="secondary" showedit={index + "-edit"} onClick={() => this.openEditForm(index + "-edit", index + "-show")} > Edit</Button>
+                                    </ModalFooter>
                                 </div>
                             </form >
                             <br></br>
