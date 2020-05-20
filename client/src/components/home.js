@@ -124,16 +124,16 @@ function Home(props) {
     }
 
     //If no post listing or incorrect URL display 404\
-    if (postList && postList.length === 0) {
-        noPosts = <NoPosts />;
-    } else if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
+    if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
-    }
+    } else if (postList && postList.length === 0) {
+        noPosts = <NoPosts />;
+    } else
 
-    //Update component if page number changes and offset does not update (In case of browser back button)
-    if (currentPageNum !== parseInt(props.match.params.pageNo)) {
-        props.match.params.pageNo = currentPageNum;
-    }
+        //Update component if page number changes and offset does not update (In case of browser back button)
+        if (currentPageNum !== parseInt(props.match.params.pageNo)) {
+            props.match.params.pageNo = currentPageNum;
+        }
 
     //Increment page number
     const incrementPage = () => {

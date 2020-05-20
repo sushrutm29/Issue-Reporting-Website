@@ -104,32 +104,32 @@ const Department = (props) => {
     }
 
     //If no post listing or incorrect URL display 404
-    if (postList && postList.length === 0) {
-        noPosts = <NoPosts />;
-    } else if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
+    if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
-    }
+    } else if (postList && postList.length === 0) {
+        noPosts = <NoPosts />;
+    } 
 
     //Increment page number
     const incrementPage = () => {
-        setPage(currentPageNum + 1);
+        setPage(parseInt(currentPageNum) + 1);
         props.location.pathname = `/dept/${props.match.params.deptName}/page/${(parseInt(props.match.params.pageNo) + 1).toString()}`;
     }
 
     //Increment resolved page number
     const incrementResolvedPage = () => {
-        setResolvedPage(currentResolvedPageNum + 1);
+        setResolvedPage(parseInt(currentPageNum) + 1);
     }
 
     //Decrement page number
     const decrementPage = () => {
-        setPage(currentPageNum - 1);
+        setPage(parseInt(currentPageNum) - 1);
         props.location.pathname = `/dept/${props.match.params.deptName}/page/${(parseInt(props.match.params.pageNo) - 1).toString()}`;
     }
 
     //Decrement resolved page number
     const decrementResolvedPage = () => {
-        setResolvedPage(currentResolvedPageNum - 1);
+        setResolvedPage(parseInt(currentPageNum) - 1);
     }
 
     //Display previous button only if user is NOT on the first page
