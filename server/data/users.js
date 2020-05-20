@@ -107,7 +107,7 @@ async function createUser(userName, userEmail, admin, profilePic) {
     }
     const usersCollection = await users();
     //prevents duplicated post object to be inserted into the database
-    usersCollection.createIndex({ "userName": 1, "userEmail": 1 }, { unique: true });
+    usersCollection.createIndex({ "userEmail": 1 }, { unique: true });
     let newUser = {
         userName: userName,
         userEmail: userEmail.toLowerCase(),
