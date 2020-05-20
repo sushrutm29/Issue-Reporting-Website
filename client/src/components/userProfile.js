@@ -27,7 +27,6 @@ class userProfile extends Component {
     onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
             this.setState({ imageFile: event.target.files[0] })
-            console.log("this is on Image Chnage :" + this.state.imageFile);
         }
     }
 
@@ -69,7 +68,6 @@ class userProfile extends Component {
             title,
             body
         }
-        console.log(id);
         try {
             await axios({
                 method: 'patch',
@@ -77,7 +75,6 @@ class userProfile extends Component {
                 data: postDetails
             });
             window.location.reload();
-
         } catch (error) {
             console.log(error);
         }
@@ -95,12 +92,17 @@ class userProfile extends Component {
         const oldpwd = event.target.oldpassword.value;
         const newpwd = event.target.newpassword.value;
         const email = this.state.userData.userEmail;
-        if (newpwd.length != 0 && oldpwd.length != 0) {
+        if (newpwd.length !== 0 && oldpwd.length !== 0) {
 
-            await doChangePassword(email, oldpwd, newpwd);
+            try {
+                await doChangePassword(email, oldpwd, newpwd);
+                alert("Password Successfully Changed!");
+            } catch (error) {
+                alert("Incorrect password");
+            }
         }
-        alert("Password Successfully Changed! Please Login back! ");
-        window.location.href = "/login";
+
+      //  window.location.href = "/login";
     }
 
     currentUser = () => {
@@ -123,7 +125,7 @@ class userProfile extends Component {
             divToOpen[i].style.display = "block";
         }
 
-        for (var i = 0; i < divToClose.length; i++) {
+        for (i = 0; i < divToClose.length; i++) {
             divToClose[i].style.display = "none";
         }
     }
@@ -138,7 +140,6 @@ class userProfile extends Component {
                 let imageDetails;
                 try {
                     imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
-                    console.log(imageDetails);
                 } catch (error) {
                     imageDetails = undefined;
                 }
@@ -160,7 +161,7 @@ class userProfile extends Component {
                 window.location.href = "/login";
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -179,7 +180,7 @@ class userProfile extends Component {
                 <br></br>
                 <br></br>
                 <div className="profile-img-div">
-                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="image not found" />
+                    <img src={window.location.origin + '/uploads/' + this.state.imageName} alt="Not found!" />
                 </div>
                 <br></br>
                 <br></br>
@@ -251,9 +252,9 @@ class userProfile extends Component {
                                         <ModalTitle>Post Details:</ModalTitle>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <div><span class="postBold">Post Title :</span> {post.title}</div>
+                                        <div><span className="postBold">Post Title :</span> {post.title}</div>
                                         <br></br>
-                                        <div><span class="postBold">Post Body :</span>  {post.body}</div>
+                                        <div><span className="postBold">Post Body :</span>  {post.body}</div>
                                         <br></br>
                                     </ModalBody>
                                     <ModalFooter className="myPosts">

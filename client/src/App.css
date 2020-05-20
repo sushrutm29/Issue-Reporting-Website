@@ -111,7 +111,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
   text-align: center;
 }
 
-.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, #signoutButton, .submitForm, .submitCommentButton, .resolved, .unresolved, #sortButton {
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, #signoutButton, .submitForm, .submitCommentButton, .resolved, #sortButton {
   margin: 10px;
 }
 
@@ -126,8 +126,8 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
 }
 
 .postListing {
-  width: 75%;
-  float: left;
+  width: 60%;
+  float: right;
 }
 
 .next, .prev {
@@ -142,9 +142,10 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
   margin: 15px;
   padding: 8px;
   float: left;
-  color: #AACCFF;
+  color: black!important;
   font-family: Poiret;
   font-size: 25px;
+  background-color: #AACCFF!important;
 }
 
 .prevResolved, .nextResolvedNoPrev {
@@ -152,9 +153,10 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
   padding: 8px;
   float: left;
   clear: left;
-  color: #AACCFF;
+  color: black!important;
   font-family: Poiret;
   font-size: 25px;
+  background-color: #AACCFF!important;
 }
 
 .username, .resolvedUsername {

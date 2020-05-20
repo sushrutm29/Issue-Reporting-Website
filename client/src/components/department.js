@@ -108,7 +108,7 @@ const Department = (props) => {
         return <Error404 />;
     } else if (postList && postList.length === 0) {
         noPosts = <NoPosts />;
-    } 
+    }
 
     //Increment page number
     const incrementPage = () => {
@@ -167,15 +167,15 @@ const Department = (props) => {
             </Toast>
             <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults} setSortFilter={handleSortFilter} />
             <hr></hr>
-            {noPosts}
+            <div className="resolved">
+                {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+                {!receivedResults && prevResolvedLink}
+                {!receivedResults && nextResolvedLink}
+            </div>
             <div className="d-flex justify-content-center">
-                <div className="resolved">
-                    {!receivedResults && <DonePostsList donePosts={donePostList} action={handleStatus} />}
-                    {!receivedResults && prevResolvedLink}
-                    {!receivedResults && nextResolvedLink}
-                </div>
-                <div className="unresolved">>
-                {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
+                <div className="unresolved">
+                    {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
+                    {noPosts}
                     {prevLink}
                     {nextLink}
                 </div>

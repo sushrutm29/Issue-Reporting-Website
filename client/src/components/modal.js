@@ -60,7 +60,7 @@ function PostModal(props) {
     }
 
     let resolve_button = null;
-    if (adminStatus && props.post.resolvedStatus==false) {
+    if (adminStatus && props.post.resolvedStatus===false) {
         resolve_button = <div><Button variant="success" className="resolveButton" size="sm" onClick={handleResolve} > Resolve Post </Button></div>;
     }
 

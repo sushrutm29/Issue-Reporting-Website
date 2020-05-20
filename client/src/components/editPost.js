@@ -35,7 +35,7 @@ function EditPostModal(props) {
         if(postTitle.value === props.post.title && postBody.value === props.post.body){
             alert("Please enter a new title and body!");
         }else{
-            const res = await axios({
+            await axios({
                 method: 'patch',
                 url: `http://localhost:3001/data/post/update/${props.post._id}`,
                 data: {
@@ -43,7 +43,6 @@ function EditPostModal(props) {
                     "body": postBody.value
                 }
             });
-    
             handleClose();
             props.action();
         }   

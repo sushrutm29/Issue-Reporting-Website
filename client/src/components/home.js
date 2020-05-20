@@ -115,14 +115,6 @@ function Home(props) {
         setReceivedResults(status);
     }
 
-    //navigation component props
-    let navProps = {
-        creationAction: handlePostCreation,
-        getReceivedStatus: receivedSearchResults,
-        createDeptAction: handleDeptCreation,
-        deleteDeptAction: handleDeptDeletion
-    }
-
     //If no post listing or incorrect URL display 404\
     if (!Number.isInteger(parseInt(props.match.params.pageNo)) || parseInt(props.match.params.pageNo) <= 0) {
         return <Error404 />;
@@ -185,6 +177,16 @@ function Home(props) {
         }
     }
 
+    //navigation component props
+    let navProps = {
+        creationAction: handlePostCreation,
+        getReceivedStatus: receivedSearchResults,
+        createDeptAction: handleDeptCreation,
+        deleteDeptAction: handleDeptDeletion,
+        action: handleStatus,
+        deletionAction: handlePostDeletion
+    }
+
     return (
         <div className="homePage">
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
@@ -192,15 +194,15 @@ function Home(props) {
             </Toast>
             <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps} setSortFilter={handleSortFilter} />
             <hr></hr>
-            {noPosts}
-            <div className="d-flex justify-content-center">
-                <div className="resolved">
-                    {!(receivedResults && donePostList) && <DonePostsList donePosts={donePostList} action={handleStatus} />}
-                    {!receivedResults && prevResolvedLink}
-                    {!receivedResults && nextResolvedLink}
-                </div>
+            <div className="resolved">
+                {!(receivedResults && donePostList) && <DonePostsList donePosts={donePostList} action={handleStatus} />}
+                {!receivedResults && prevResolvedLink}
+                {!receivedResults && nextResolvedLink}
+            </div>
+            <div  className="d-flex justify-content-center">
                 <div className="unresolved">
                     {!receivedResults && <PostsList allPosts={postList} action={handleStatus} deletionAction={handlePostDeletion} />}
+                    {noPosts}
                     {prevLink}
                     {nextLink}
                 </div>

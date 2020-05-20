@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import PostsList from './posts';
-import { Button } from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 
 function SearchResults(props) {
 
@@ -16,6 +16,13 @@ function SearchResults(props) {
         setSearchResults(postsArray);
     }, [props.results])
 
+    function handlePostDeletion() {
+        window.location.href='/login';
+    }
+
+    function handleStatus() {
+        window.location.href='/login';
+    }
 
     function setStatus() {
         props.setPostFoundState(false);
@@ -26,7 +33,7 @@ function SearchResults(props) {
     return (
         <div className="searchResults">
             {(!props.currentResetState) && <div>
-                {props.postsFound && <PostsList allPosts={searchResults} results={props.postsFound} />}
+                {props.postsFound && <PostsList allPosts={searchResults} results={props.postsFound} action={handleStatus} deletionAction={handlePostDeletion}/>}
                 {!(props.postsFound) && <p className="noPosts">No posts found! </p>}
                 <Button variant="outline-success" onClick={setStatus}>Reset</Button>
             </div>}

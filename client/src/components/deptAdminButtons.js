@@ -57,7 +57,6 @@ const DeptAdminButtons = (props) => {
 
 
     const buildNavDropDownItem = (dept) => {
-        let url = "/dept/" + dept.deptName + "/page/1";
         let deptName = dept.deptName.charAt(0).toUpperCase() + dept.deptName.slice(1);
         return (
             <NavDropdown.Item key={dept._id} className="dropdownOptions" onClick={e => { deleteDept(deptName) } }>{deptName}</NavDropdown.Item>
@@ -79,7 +78,7 @@ const DeptAdminButtons = (props) => {
                 </label>
                 <FormControl type="text" id="createDeptForm" placeholder="Enter dept name" className="mr-sm-1" onChange={e => { setNewDeptName(e.target.value) }} />
                 <Button variant="primary" id="createDeptButton" onClick={createNewDept}>Create Dept</Button>
-                <NavDropdown title="Delete Dept" id="basic-nav-dropdown" id="deleteDept">
+                <NavDropdown title="Delete Dept" id="deleteDept">
                     {departmentDropdown}
                 </NavDropdown>
             </Form>

@@ -131,11 +131,11 @@ function NavigationBar(props) {
                                 <NavDropdown.Item onClick={sortOldest} className="dropdownOptions">Sort by Oldest</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
-                        {adminStatus && <DeptAdminButtons {...adminProps} />}
+                        {(adminStatus && !props.currentDept) && <DeptAdminButtons {...adminProps} />}
                         <Form inline>
                             <label htmlFor="searchForm" id="searchFormLabel">
                                 Search form!
-                        </label>
+                            </label>
                             <FormControl id="searchForm" type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
                             <Button id="searchButton" variant="primary" onClick={submitSearchQuery}>Search</Button>
                         </Form>
@@ -143,9 +143,8 @@ function NavigationBar(props) {
                     </Navbar.Collapse>
                 </Navbar>
             </div>
-            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} />}
-        </div>
-    )
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} deletionAction={props.deletionAction} action={props.action} />}
+        </div>)
 }
 
 export default NavigationBar;
