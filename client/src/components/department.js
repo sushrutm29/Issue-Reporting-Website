@@ -48,7 +48,7 @@ const Department = (props) => {
                 setPostList(data.data);
 
                 let nextPageNo = parseInt(currentPageNum) + 1;
-                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`,
+                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${nextPageNo}`,
                     {
                         params: {
                             sortOrder: sortFilter

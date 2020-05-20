@@ -68,6 +68,7 @@ router.post('/', async (req, res) => {
         throw "No request body was provided for createUser function!";
     }
     const userInfo = req.body;
+    console.log(userInfo);
     if (!userInfo) {
         return res.status(400).json({ error: "You must provide information to create a new user!" });
     }
@@ -129,6 +130,7 @@ router.patch('/addpost/:id', async (req, res) => {
         return res.status(200).json(updatedUser);
     } catch (error) {
         return res.status(400).json({ error: `Could not add post to user! ${error}` });
+        
     }
 });
 

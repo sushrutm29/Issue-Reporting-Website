@@ -66,7 +66,7 @@ function SignUp() {
   return (
     <div className="signupComponent d-flex justify-content-center align-items-center">
       <h1 className="signup">STEVENS ISSUE REPORTER<br></br><br></br>SIGNUP</h1>
-      <div class="verticalLineSignup"></div>
+      <div className="verticalLineSignup"></div>
       <div className="align-items-center">
         {pwMatch && <h4 className="error">{pwMatch}</h4>}
         <form onSubmit={handleSignUp}>

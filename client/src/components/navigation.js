@@ -114,33 +114,35 @@ function NavigationBar(props) {
     }
 
     return (
-        <div className="navbarComponent d-flex justify-align-between">
-            <Navbar expand="lg" className="navBar">
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Nav.Link className="navLinks" href="/home/page/1">Home</Nav.Link>
-                        <Nav.Link className="navLinks" href="/profile">Profile</Nav.Link>
-                        <NavDropdown title="Department" id="departmentDropdown">
-                            {departmentDropdown}
-                        </NavDropdown>
-                        {props.creationAction && <CreatePost action={props.creationAction} />}
-                        <NavDropdown title="Date Filter" id="sortFilterDropdown">
-                            <NavDropdown.Item  onClick={sortNewest} className="dropdownOptions">Sort by Newest</NavDropdown.Item>
-                            <NavDropdown.Item  onClick={sortOldest} className="dropdownOptions">Sort by Oldest</NavDropdown.Item>
-                        </NavDropdown>
-                    </Nav>
-                    {adminStatus && <DeptAdminButtons {...adminProps} />}
-                    <Form inline>
-                        <label htmlFor="searchForm" id="searchFormLabel">
-                            Search form!
+        <div>
+            <div className="navbarComponent d-flex justify-align-between">
+                <Navbar expand="lg" className="navBar">
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            <Nav.Link className="navLinks" href="/home/page/1">Home</Nav.Link>
+                            <Nav.Link className="navLinks" href="/profile">Profile</Nav.Link>
+                            <NavDropdown title="Department" id="departmentDropdown">
+                                {departmentDropdown}
+                            </NavDropdown>
+                            {props.creationAction && <CreatePost action={props.creationAction} />}
+                            <NavDropdown title="Date Filter" id="sortFilterDropdown">
+                                <NavDropdown.Item onClick={sortNewest} className="dropdownOptions">Sort by Newest</NavDropdown.Item>
+                                <NavDropdown.Item onClick={sortOldest} className="dropdownOptions">Sort by Oldest</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+                        {adminStatus && <DeptAdminButtons {...adminProps} />}
+                        <Form inline>
+                            <label htmlFor="searchForm" id="searchFormLabel">
+                                Search form!
                         </label>
-                        <FormControl id="searchForm" type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
-                        <Button id="searchButton" variant="primary" onClick={submitSearchQuery}>Search</Button>
-                    </Form>
-                    <Button id="signoutButton" variant="primary" onClick={doSignOut}>Signout</Button>
-                </Navbar.Collapse>
-            </Navbar>
+                            <FormControl id="searchForm" type="text" placeholder="Search" className="mr-sm-2" onChange={e => { setSearchQuery(e.target.value) }} />
+                            <Button id="searchButton" variant="primary" onClick={submitSearchQuery}>Search</Button>
+                        </Form>
+                        <Button id="signoutButton" variant="primary" onClick={doSignOut}>Signout</Button>
+                    </Navbar.Collapse>
+                </Navbar>
+            </div>
             {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} />}
         </div>
     )

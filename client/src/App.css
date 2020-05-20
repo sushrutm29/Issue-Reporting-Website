@@ -178,6 +178,20 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   text-align: left;
 }
 
+.profile-img-div {
+  width: 150px;
+  height: 150px;
+  margin: 0px auto;
+}
+
+.profile-img-div img {
+  max-width: 100%;
+  height: auto;
+}
+.deletePostButton{
+  margin: 10px;
+}
+
 .modal-body, .modal-footer {
   font-family: Lora;
 }

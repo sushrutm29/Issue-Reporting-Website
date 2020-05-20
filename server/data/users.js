@@ -8,7 +8,7 @@ const mongodb = require('mongodb');
 const assert = require('assert');
 
 /**
- * @author Sushrut Madhavi, Lun-Wei Chang
+ * @author Sushrut Madhavi, Lun-Wei Chang, Sri Vallabhaneni
  * @version 1.0
  * @date 04/08/2020
  */
@@ -187,7 +187,7 @@ async function updateUser(userID, userInfo) {
     const usersCollection = await users();
     const updatedUser = await usersCollection.updateOne({ _id: ObjectId(userID) }, {
         $set: {
-            "userName": userInfo.userName, "userEmail": userInfo.userEmail, 
+            "userName": userInfo.userName, "userEmail": userInfo.userEmail,
             "admin": userInfo.admin, "profilePic": userInfo.profilePic
         }
     });
@@ -254,12 +254,72 @@ async function removePostFromUser(userID, postID) {
     return newUser;
 }
 
-module.exports = { 
-    getUserById, 
-    createUser, 
-    updateUser, 
-    addPostToUser, 
+
+async function uploadProfilePicture(userID) {
+    try {
+        const insertedUser = await getUserById(userID + '');
+        const uploadPath = __dirname + '/../../client/public/uploads';
+        const connection = await mongoConnection();
+        let bucket = new mongodb.GridFSBucket(connection, {
+            bucketName: 'profilePics'
+        });
+        fs.readdir(uploadPath, (err, files) => {
+            if (err) {
+                console.log('Unable to scan directory: ' + err);
+            }
+    
+            im.convert([uploadPath + '/' + files[0], uploadPath + '/profilePic.png'], function (err, stdout) {
+                if (err)
+                    throw err;
+                fs.createReadStream(uploadPath + '/profilePic.png').
+                    pipe(bucket.openUploadStream(insertedUser._id.toString())).
+                    on('error', function (error) {
+                        assert.ifError(error);
+                    }).
+                    on('finish', function () {
+                        assert.ok("Done");
+                    });
+            });
+        });
+    } catch (error) {
+        console.log(error)
+    }
+    return "OK";
+}
+
+async function deleteProfliePicture(userID){
+    try {
+        const filename = userID;
+        const connection = await mongoConnection();
+        let bucket = new mongodb.GridFSBucket(connection, {
+            bucketName: 'profilePics'
+        });
+
+        if (!filename) {
+            throw new Error(errorMessages.userIDMissing);
+        } else if (!ObjectId.isValid) {
+            throw new Error(errorMessages.userIDInvalid);
+        }
+        const file = await bucket.find({ filename: filename }).toArray();
+        if (file.length != 0) {
+            bucket.delete(file[0]._id);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports = {
+    getUserById,
+    createUser,
+    updateUser,
+    addPostToUser,
     removePostFromUser,
     getUserByName,
+    uploadProfilePicture,
+    deleteProfliePicture,
     getUserByEmail
  };
+
+

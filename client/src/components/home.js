@@ -193,7 +193,7 @@ function Home(props) {
             <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps} setSortFilter={handleSortFilter} />
             <hr></hr>
             {noPosts}
-            <div>
+            <div className="d-flex justify-content-center">
                 <div className="resolved">
                     {!(receivedResults && donePostList) && <DonePostsList donePosts={donePostList} action={handleStatus} />}
                     {!receivedResults && prevResolvedLink}
