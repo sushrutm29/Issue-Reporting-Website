@@ -23,7 +23,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown, .error {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown, .error, .myPosts, .myProfile {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
@@ -59,13 +59,13 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-size: 18px;
 }
 
-.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton, #goBackButton {
+.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton, #goBackButton, #changePasswordButton, #saveChangesButton {
   color: black!important;
   font-family: Poiret;
   background-color: #AACCFF!important;
 }
 
-.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover, #goBackButton:hover {
+.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover, #goBackButton:hover, #changePasswordButton:hover {
   background-color: white!important;
 }
 
@@ -93,7 +93,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-weight: bold;
 }
 
-.loginComponent, .signupComponent, .homePage, .deptPostList, .errorPage {
+.loginComponent, .signupComponent, .homePage, .deptPostList, .errorPage, .profileComponent {
   background-color: #222233;
   height: 100vh;
 }
@@ -169,6 +169,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
   font-weight: bold;
   font-family: Lora;
   background-color: #AACCFF!important;
+  text-align: center;
 }
 
 .modal-title, .modal-body {
@@ -234,4 +235,8 @@ hr {
   position: absolute;
   top: 40%;
   bottom: 40%;
+}
+
+.postBold {
+  font-weight: bold;
 }
