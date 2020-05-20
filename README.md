@@ -31,7 +31,7 @@ Please check out the master branch of our repository.
 
 ### Project Description
 
-  The general idea of our issue reporting website is to allow users to report problems that they see around the Stevens community, and then the administrator can address the issues accordingly. The users must login with a registered account first before he/she can view, create, modify or delete an issue post. We will have separate issue boards in order to classify the same, such as: Housing, Maintenance, Tuition etc. <br />
+  The general idea of our issue reporting website is to allow users to report problems that they see around the Stevens community, and then the administrator can address the issues accordingly. The users must login with a registered account first before he or she can view, create, modify or delete an issue post. We will have separate issue boards in order to classify the same, such as: Housing, Maintenance, Tuition etc. <br />
   
   Registered users will not only be able to preview the posts’ details (description and comments) but also comment on the posts. Additionally, all the posts can be sorted by things such as date or type and users will be able to search for certain posts by providing the keyword. We would also utilize the foul language detection technology to try to screen out any harmful content that might have been posted (in the issue post’s details and comments). <br />
   
@@ -167,4 +167,3 @@ brew install imagemagick
 npm install imagemagick
 ```
 > [Imagemagick Official Guide](https://www.npmjs.com/package/imagemagick)
-
