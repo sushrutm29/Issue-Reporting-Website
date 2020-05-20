@@ -25,6 +25,7 @@ function Home(props) {
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [receivedResults, setReceivedResults] = useState(false);
+    const [sortFilter, setSortFilter] = useState("desc");
     let noPosts = null;
 
     useEffect(() => {
@@ -38,10 +39,22 @@ function Home(props) {
                 setDeptList(data.data);
 
                 setPage(props.match.params.pageNo);
-                data = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`);
+                data = await axios.get(`http://localhost:3001/data/post/page/${currentPageNum}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                );
                 setPostList(data.data);
                 let nextPageNo = parseInt(currentPageNum) + 1;
-                data = await axios.get(`http://localhost:3001/data/post/page/${nextPageNo}`); //Check if next page has any data
+                data = await axios.get(`http://localhost:3001/data/post/page/${nextPageNo}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                ); //Check if next page has any data
                 if (data.data.length === 0) {
                     setLastpage(true);
                 }
@@ -56,10 +69,14 @@ function Home(props) {
                 console.log(err);
             }
         }
-        fetchPostData()
-
-    }, [currentPageNum, props.match.params.pageNo, statusChanged, receivedResults, currentResolvedPageNum]
+        fetchPostData();
+    }, [currentPageNum, props.match.params.pageNo, statusChanged, receivedResults, currentResolvedPageNum, sortFilter]
     );
+
+    function handleSortFilter(status) {
+        console.log(status);
+        setSortFilter(status);
+    }
 
     function handleDeptCreation() {
         handleStatus();
@@ -173,7 +190,7 @@ function Home(props) {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps} />
+            <NavigationBar deptList={deptList} creationAction={handlePostCreation} getReceivedStatus={receivedSearchResults} {...navProps} setSortFilter={handleSortFilter} />
             <hr></hr>
             {noPosts}
             <div>

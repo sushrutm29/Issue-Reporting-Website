@@ -23,7 +23,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError  {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown  {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
@@ -33,7 +33,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-size: 25px;
 }
 
-.navLinks, #departmentDropdown, #deleteDept {
+.navLinks, #departmentDropdown, #deleteDept, #sortFilterDropdown {
   font-size: 20px;
   margin:5px;
 }
@@ -59,13 +59,13 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-size: 18px;
 }
 
-.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton{
+.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton{
   color: black!important;
   font-family: Poiret;
   background-color: #AACCFF!important;
 }
 
-.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover {
+.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover {
   background-color: white!important;
 }
 
@@ -111,7 +111,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   text-align: center;
 }
 
-.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, .createPostButton, #signoutButton, .submitForm, .submitCommentButton, .resolved, .unresolved {
+.postCard, .donePostCard, .createPostButton, .loginCard, .deleteButton, .google, .facebook, #signoutButton, .submitForm, .submitCommentButton, .resolved, .unresolved, #sortButton {
   margin: 10px;
 }
 

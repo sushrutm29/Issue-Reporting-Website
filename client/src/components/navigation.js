@@ -24,7 +24,7 @@ function NavigationBar(props) {
                 const deptListing = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(deptListing.data);
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus();
+                setAdminStatus(userData.data.admin);
             } catch (error) {
                 console.log(error);
             }
@@ -69,7 +69,6 @@ function NavigationBar(props) {
     }
 
     async function submitSearchQuery() {
-        console.log(searchQuery);
         setReset(false);
         let currentDepartmentID;
         if (props.currentDept !== undefined) {
@@ -97,6 +96,14 @@ function NavigationBar(props) {
         }
     }
 
+    async function sortNewest() {
+        props.setSortFilter("desc");
+    }
+
+    async function sortOldest() {
+        props.setSortFilter("asce");
+    }
+
     //props to be passed to deptAdminButtons component
     let adminProps = {
         deptList: deptList,
@@ -107,7 +114,7 @@ function NavigationBar(props) {
     }
 
     return (
-        <div className="navbarComponent">
+        <div className="navbarComponent d-flex justify-align-between">
             <Navbar expand="lg" className="navBar">
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
@@ -118,6 +125,10 @@ function NavigationBar(props) {
                             {departmentDropdown}
                         </NavDropdown>
                         {props.creationAction && <CreatePost action={props.creationAction} />}
+                        <NavDropdown title="Date Filter" id="sortFilterDropdown">
+                            <NavDropdown.Item  onClick={sortNewest} className="dropdownOptions">Sort by Newest</NavDropdown.Item>
+                            <NavDropdown.Item  onClick={sortOldest} className="dropdownOptions">Sort by Oldest</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
                     {adminStatus && <DeptAdminButtons {...adminProps} />}
                     <Form inline>

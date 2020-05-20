@@ -27,6 +27,7 @@ const Department = (props) => {
     const [showToast, setShowToast] = useState(false);
     const [deptList, setDeptList] = useState(undefined);
     const [receivedResults, setReceivedResults] = useState(false);
+    const [sortFilter, setSortFilter] = useState("desc");
 
     useEffect(() => {
         async function fetchPostData() {
@@ -37,11 +38,23 @@ const Department = (props) => {
                 let { data } = await axios.get(`http://localhost:3001/data/post/dept/resolved/${currentDeptID}/${currentResolvedPageNum}`);
                 setDonePostList(data);
 
-                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`);
+                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                );
                 setPostList(data.data);
 
                 let nextPageNo = parseInt(currentPageNum) + 1;
-                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${nextPageNo}`); //Check if next page has any data
+                data = await axios.get(`http://localhost:3001/data/post/dept/${currentDeptID}/${currentPageNum}`,
+                    {
+                        params: {
+                            sortOrder: sortFilter
+                        }
+                    }
+                ); //Check if next page has any data
 
                 if (data.data.length === 0) {
                     setLastpage(true);
@@ -57,11 +70,16 @@ const Department = (props) => {
                     setResolvedLastpage(false);
                 }
             } catch (err) {
-                console.log(err);
+                console.log(err.message);
             }
         }
         fetchPostData();
-    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults, currentResolvedPageNum]);
+    }, [statusChanged, props.match.params.deptName, currentPageNum, receivedResults, currentResolvedPageNum, sortFilter]);
+
+
+    function handleSortFilter(status) {
+        setSortFilter(status);
+    }
 
     function handlePostDeletion() {
         handleStatus();
@@ -147,7 +165,7 @@ const Department = (props) => {
             <Toast variant="success" onClose={hideToast} show={showToast} delay={3000} autohide={true} animation={false}>
                 <Toast.Header>{toastMessage}</Toast.Header>
             </Toast>
-            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults} />
+            <NavigationBar creationAction={false} deptListing={deptList} currentDept={props.match.params.deptName} getReceivedStatus={receivedSearchResults} setSortFilter={handleSortFilter} />
             <hr></hr>
             {noPosts}
             <div className="d-flex justify-content-center">
