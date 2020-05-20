@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { AuthProvider } from './firebase/Auth';
 import PrivateRoute from './components/privateRoute';
 import Login from './components/login';
-import SignUp from './components/signup'
+import SignUp from './components/signup';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
@@ -21,7 +21,7 @@ const App = () => {
 					<div className='App-body'>
 						<Switch>
 							<PrivateRoute path='/home/page/:pageNo' component={Home} />
-							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department} />
+							<PrivateRoute path='/dept/:deptName/page/:pageNo' component={Department}/>
 							<Route path='/login' component={Login} />
 							<Route path='/signup' component={SignUp} />
 							<Route component={Error404} />

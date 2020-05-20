@@ -97,9 +97,9 @@ router.delete('/:id', async (req, res) => {
         if (!commentInfo.userID || typeof commentInfo.userID != "string" || commentInfo.userID.length == 0) {
             return res.status(400).json({ error: "Invalid user id was provided for editComment function" });
         }
-        const removedPost = await commentData.deleteComment(commentID, commentInfo.userID);
+        const removedComment = await commentData.deleteComment(commentID, commentInfo.userID);
         await client.hdelAsync("comments", commentID);
-        return res.status(200).json(removedPost);
+        return res.status(200).json(removedComment);
     } catch (error) {
         return res.status(400).json({ error: `Could not delete comment! ${error}` });
     }

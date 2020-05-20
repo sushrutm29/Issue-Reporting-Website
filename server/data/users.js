@@ -53,7 +53,6 @@ async function getUserByName(userName) {
     if (!user) {
         throw `User not found with name ${userName}`;
     }
-    
     return user;
 }
 
