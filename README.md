@@ -16,7 +16,7 @@
   * [Google-Firebase](#google-firebase)
   * [Elasticsearch](#elasticsearch)
   * [Imagemagick](#imagemagick)
- - [Login Credentials](#credentials) 
+ - [Login Credentials](#login-credentials) 
 
 ## **Team**
 
@@ -169,7 +169,7 @@ npm install imagemagick
 ```
 > [Imagemagick Official Guide](https://www.npmjs.com/package/imagemagick)
 
-## **Credentials**
+## **Login Credentials**
 
 The default login credentials, which has admin privilages, is listed below:  <br />
 **Default Email ID**: phill@stevens.edu <br />
