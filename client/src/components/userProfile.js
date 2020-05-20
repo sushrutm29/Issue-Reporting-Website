@@ -184,7 +184,7 @@ class userProfile extends Component {
                 <br></br>
                 <h5> Upload to change profile picture : </h5>
                 <br></br>
-                <input type="file" variant="primary" onChange={this.onhandleUpload} />
+                <input type="file" variant="primary" accept="image/*" onChange={this.onhandleUpload} />
                 <br></br>
                 <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
