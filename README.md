@@ -62,7 +62,7 @@ mongod
 ### Install-Modules
 > Client & Server sides:
 
-Open a terminal and run the following command in both "~/client" ,and "~/server" directories
+Open a terminal and run the following command in both "~/client" and "~/server" directories
 ```
 npm install
 ```
