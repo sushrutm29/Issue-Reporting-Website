@@ -53,8 +53,7 @@ async function createPost(deptID, title, body, username, email) {
     + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
 
     const postsCollection = await posts();
-    //prevents duplicated post object to be inserted into the database
-    postsCollection.createIndex({ "title": 1, "username": 1 }, { unique: true });
+
     let newPost = {
         deptID: deptID,
         title: title,

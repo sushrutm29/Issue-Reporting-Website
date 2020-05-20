@@ -11,7 +11,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
 }
 
 .App-header {
-  background-color: #B90035 ;
+  background-color: #B90035;
   min-height: auto;
   display: flex;
   flex-direction: column;
@@ -23,7 +23,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-family: Lora;
 }
 
-.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown  {
+.login, .signup, .loginLabel, .signupLabel, .App-link, .navLinks, #departmentDropdown, #deleteDept, .resolvePost, .postsHeader, .noPosts, .noResolveError, #sortFilterDropdown, .error {
   font-family: Poiret;
   font-weight: bold;
   color: #AACCFF!important;
@@ -35,7 +35,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
 
 .navLinks, #departmentDropdown, #deleteDept, #sortFilterDropdown {
   font-size: 20px;
-  margin:5px;
+  margin: 5px;
 }
 
 .verticalLine {
@@ -59,31 +59,31 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-size: 18px;
 }
 
-.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton{
+.loginButton, .forgotPassword, .signupButton, #submitButton, .createPostButton, #createDeptButton, #searchButton, #signoutButton, #sortButton, #goBackButton {
   color: black!important;
   font-family: Poiret;
   background-color: #AACCFF!important;
 }
 
-.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover {
+.createPostButton:hover, #createDeptButton:hover, .deleteDept:hover, #searchButton:hover, #signoutButton:hover, #sortButton:hover, #goBackButton:hover {
   background-color: white!important;
 }
 
-.postDetailsButton , .editButtonModal{
+.postDetailsButton, .editButtonModal {
   color: black!important;
   font-family: Lora;
   background-color: #AACCFF!important;
-  margin:5px;
+  margin: 5px;
 }
 
 .resolveButton {
   color: black!important;
   font-family: Lora;
   background-color: #28a745!important;
-  margin:5px;
+  margin: 5px;
 }
 
-.deletePostButton{
+.deletePostButton {
   color: black!important;
   font-family: Lora;
 }
@@ -93,7 +93,7 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   font-weight: bold;
 }
 
-.loginComponent, .signupComponent, .homePage, .deptPostList {
+.loginComponent, .signupComponent, .homePage, .deptPostList, .errorPage {
   background-color: #222233;
   height: 100vh;
 }
@@ -102,11 +102,11 @@ html, body, #root, .App, .loginComponent, .signupComponent {
   background-color: #222233;
 }
 
-#createDeptForm::placeholder, .dropdownOptions, #searchForm::placeholder{
+#createDeptForm::placeholder, .dropdownOptions, #searchForm::placeholder {
   font-family: Poiret;
 }
 
-input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
+input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder {
   color: black!important;
   text-align: center;
 }
@@ -115,48 +115,49 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   margin: 10px;
 }
 
-.postCard{
-  margin: 10px 10px 10px 30px ;
+.postCard {
+  margin: 10px 10px 10px 30px;
   width: 16rem;
 }
 
-.donePostListing{
+.donePostListing {
   width: 20%;
   float: left;
 }
 
-.postListing{
+.postListing {
   width: 75%;
   float: left;
 }
+
 .next, .prev {
   margin: 15px;
   padding: 8px;
-  color:  #AACCFF;
+  color: #AACCFF;
   font-family: Poiret;
   font-size: 25px;
 }
 
-.nextResolved{
+.nextResolved {
   margin: 15px;
   padding: 8px;
   float: left;
-  color:  #AACCFF;
+  color: #AACCFF;
   font-family: Poiret;
   font-size: 25px;
 }
 
-.prevResolved, .nextResolvedNoPrev{
+.prevResolved, .nextResolvedNoPrev {
   margin: 15px;
   padding: 8px;
   float: left;
   clear: left;
-  color:  #AACCFF;
+  color: #AACCFF;
   font-family: Poiret;
   font-size: 25px;
 }
 
-.username, .resolvedUsername{
+.username, .resolvedUsername {
   font-size: 13px;
   font-weight: bold;
   font-family: Lora;
@@ -164,11 +165,11 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   color: #222233!important;
 }
 
-.cardTitle, .modal-header, .modal-footer{
+.cardTitle, .modal-header, .modal-footer {
   font-weight: bold;
   font-family: Lora;
-  background-color: #AACCFF!important; 
-} 
+  background-color: #AACCFF!important;
+}
 
 .modal-title, .modal-body {
   text-align: center;
@@ -188,7 +189,8 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   max-width: 100%;
   height: auto;
 }
-.deletePostButton{
+
+.deletePostButton {
   margin: 10px;
 }
 
@@ -199,7 +201,7 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
 .resolvedCards {
   font-family: Lora;
   font-weight: bold;
-  background-color: #28a745!important; 
+  background-color: #28a745!important;
 }
 
 .cardBody {
@@ -207,10 +209,9 @@ input::placeholder, #createDeptForm::placeholder, #searchForm::placeholder{
   color: #222233!important;
 }
 
-
-.deleteButton{
+.deleteButton {
   margin: 5px;
-} 
+}
 
 .adminDept {
   display: inline-block;
@@ -225,6 +226,12 @@ hr {
   background-color: white;
 }
 
+.errorPage {
+  position: relative;
+}
 
-
-
+.centerError {
+  position: absolute;
+  top: 40%;
+  bottom: 40%;
+}
