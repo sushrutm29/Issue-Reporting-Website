@@ -24,7 +24,7 @@ function NavigationBar(props) {
                 const deptListing = await axios.get(`http://localhost:3001/data/dept/`);
                 setDeptList(deptListing.data);
                 const userData = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
-                setAdminStatus(userData.data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }
@@ -127,7 +127,7 @@ function NavigationBar(props) {
                     <Button variant="outline-success" onClick={doSignOut}>Signout</Button>
                 </Navbar.Collapse>
             </Navbar>
-            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState}/>}
+            {searchResults && <SearchResults results={searchResults} deptName={props.currentDept} getReceivedStatus={props.getReceivedStatus} reset={setResetState} currentResetState={resetState} postsFound={postsFound} setPostFoundState={setPostFoundState} deletionAction={props.deletionAction} action={props.action}/>}
         </div>
     )
 }

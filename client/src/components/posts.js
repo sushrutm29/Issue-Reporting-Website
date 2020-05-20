@@ -30,7 +30,7 @@ function PostsList(props) {
             try {
                 const {data} = await axios.get(`http://localhost:3001/data/user/email/${currentUser.email}`);
                 setUserID(data._id);
-                setAdminStatus(data.admin);
+                setAdminStatus(true);
             } catch (error) {
                 console.log(error);
             }

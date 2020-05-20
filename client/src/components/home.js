@@ -162,7 +162,9 @@ function Home(props) {
         creationAction: handlePostCreation,
         getReceivedStatus: receivedSearchResults,
         createDeptAction: handleDeptCreation,
-        deleteDeptAction: handleDeptDeletion
+        deleteDeptAction: handleDeptDeletion,
+        action: handleStatus,
+        deletionAction: handlePostDeletion
     }
 
     return (
