@@ -62,11 +62,32 @@ Open a terminal and run the following command in both "~/cs554project/client" an
 npm install
 ```
 
-### Start the servers
-Open a terminal and go to 
-> Client side: "~/cs554project/client" directory
+### Populate the database, cache and elasticsearch service
+> Seed Command
+Open a new terminal and go into "~/cs554project/server" directory and run
+```
+npm run seed
+```
+> Seed File Bahaviors
+Every time you run the seed file that the data in both the Redis cache and Elasticsearch service will be cleared. Then the default data from JSON files will be inserted into mongoDB, Redis, and Elasticsearch service. Please remember to drop the mongoDB collection every time you run our seed file. 
 
-> Server side: "~/cs554project/server" directory
+### Start the servers
+> Open two terminals and go into the following directories 
+- Client side: "~/cs554project/client"
+- Server side: "~/cs554project/server"
+- Run the following commands in both terminals to start the servers
+```
+npm run start
+```
+
+> Default server IP and port
+Client side: http://localhost:3000/
+Server side: http://localhost:3001/
+
+### Website layouts
+- Home Page
+- Department Page
+- 
 
 ## **Technology**
 
@@ -103,12 +124,12 @@ HVALS hash_name
 ### React
 
 We will use React to create components in order to update the status of issues in real time on the dashboard.
-> [Official Guide](https://reactjs.org/)
+> [React Official Guide](https://reactjs.org/)
 
 ### Google-Firebase
 
 We will use Firebase to allow users to login with their choice of social media accounts like Facebook or Gmail.
-> [Official Guide](https://firebase.google.com/docs/guides)
+> [Firebase Official Guide](https://firebase.google.com/docs/guides)
 
 ### Elasticsearch
 
@@ -138,5 +159,5 @@ brew install imagemagick
 ```
 npm install imagemagick
 ```
-> [Official Guide](https://www.npmjs.com/package/imagemagick)
+> [Imagemagick Official Guide](https://www.npmjs.com/package/imagemagick)
 
