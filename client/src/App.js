@@ -1,30 +1,37 @@
 import React from 'react';
-import logo from './img/tvm-header-logo.png';
 import './App.css';
-// import ShowList from './components/ShowList';
-// import Show from './components/Show';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import Home from './components/home';
+import Department from './components/department';
+import Error404 from './components/Error404';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { AuthProvider } from './firebase/Auth';
+import PrivateRoute from './components/privateRoute';
+import Login from './components/login';
+import SignUp from './components/signup'
+import userProfile from './components/userProfile';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
 	return (
-		<Router>
-			<div className='App'>
-				<header className='App-header'>
-					<img src={logo} className='App-logo' alt='logo' />
-					<h1 className='App-title'>Welcome to issue reporting website</h1>
-					{/* <Link className='showlink' to='/shows'>
-						Shows
-					</Link> */}
-				</header>
-				<br />
-				<br />
-				<div className='App-body'>
-					<p>Welcome to the TV Maze API example</p>
-					{/* <Route path='/shows' exact component={ShowList} />
-					<Route path='/shows/:id' exact component={Show} /> */}
+		<AuthProvider>
+			<Router>
+				<div className='App'>
+					{/* <header className='App-header'>
+						<h1 className='App-title'>Stevens Issue Reporter</h1>
+					</header> */}
+					<div className='App-body'>
+						<Switch>
+							<PrivateRoute exact path='/home/page/:pageNo' component={Home} />
+							<PrivateRoute exact path='/dept/:deptName/page/:pageNo' component={Department}/>
+							<Route exact path='/login' component={Login} />
+							<Route exact path='/signup' component={SignUp} />
+							<PrivateRoute exact path='/profile' component={userProfile} /> 
+							<Route component={Error404}/>
+						</Switch>
+					</div>
 				</div>
-			</div>
-		</Router>
+			</Router>
+		</AuthProvider>
 	);
 };
 
