@@ -171,6 +171,6 @@ npm install imagemagick
 
 ## **Login Credentials**
 
-The default login credentials, which has admin privilages, is listed below:  <br />
+The default login credentials, which has admin privileges, is listed below:  <br />
 **Default Email ID**: phill@stevens.edu <br />
 **Default Password**: 123456
