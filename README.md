@@ -22,6 +22,8 @@
 ### GitHub Repository
 **Link**: https://github.com/sdeo73/cs554project
 
+Please check out the master branch of our repository.
+
 ### Project Description
 
   The general idea of our issue reporting website is to allow users to report problems that they see around the Stevens community, and then the administrator can address the issues accordingly. The users must login with a registered account first before he/she can view, create, modify or delete an issue post. We will have separate issue boards in order to classify the same, such as: Housing, Maintenance, Tuition etc. <br />
@@ -31,6 +33,40 @@
   Lastly, we would have an administrator panel that would have the clearance to delete or change the state of any issue post. The administrator can also create a new issue board or delete an existing one. 
 
 ## **Quick-Start**
+### Start the services
+> Elasticsearch
+
+Go into your "~/Downloads/elasticsearch-version/bin" directory and type the following command
+```
+./elasticsearch
+```
+> Redis
+
+Open a new terminal and start the server by running:
+```
+redis-server
+```
+> MongoDB
+
+- Installation: download and install from [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)
+- Start mongod processes by running this command:
+``` 
+mongod
+```
+
+### Install npm modules
+> Client & Server sides:
+
+Open a terminal and run the following command in both "~/cs554project/client" and "~/cs554project/server" directories
+```
+npm install
+```
+
+### Start the servers
+Open a terminal and go to 
+> Client side: "~/cs554project/client" directory
+
+> Server side: "~/cs554project/server" directory
 
 ## **Technology**
 
@@ -39,7 +75,7 @@
 We will use Redis mainly for caching search history with the goal of making result retrieval faster.
 > Installation:
 
-Download directly from [redis.io] (https://redis.io/download)
+Download directly from [redis.io](https://redis.io/download)
 > Start Redis server:
 
 Open a new terminal and type the following command
@@ -79,17 +115,17 @@ We will use Firebase to allow users to login with their choice of social media a
 Elasticsearch will be used for enabling users to search issues by keywords. This search engine will fetch issues with titles matching user entered keywords. It may be further extended to search for keyword matches in the issue body itself.
 > Installation
 
-Download the latest [elasticsearch] (https://www.elastic.co/downloads/elasticsearch)
+Download the latest [elasticsearch](https://www.elastic.co/downloads/elasticsearch)
 > Start elasticsearch service
 
 - Unzip the downloaded file
-- Go into your "~/elasticsearch-version/bin" directory and type the following command
+- Go into your "~/Downloads/elasticsearch-version/bin" directory and type the following command
 ```
 ./elasticsearch
 ```
 > Verify connection
 
-Go to http://localhost:9200/ and you should be able to see your elasticsearch service information
+Open an browser and go to http://localhost:9200/ and you should be able to see your elasticsearch service information
 ### Imagemagick
 Since our website is an interactive application, we would offer users the option to upload a profile picture of his/her choice. ImageMagick would be used as it has an extensive range of options for image processing. In the near future, we could also use the same once we add the functionality of attachments on issue posts.
 
@@ -103,3 +139,4 @@ brew install imagemagick
 npm install imagemagick
 ```
 > [Official Guide](https://www.npmjs.com/package/imagemagick)
+
