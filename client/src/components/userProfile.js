@@ -25,11 +25,6 @@ class userProfile extends Component {
         this.state = { idofuser: '' }
     }
 
-    // handleFile = (event) => {
-    //     this.setState({ imageFile: event.target.files[0] })
-    //     console.log("this is handleFIle:" + JSON.stringify(this.state.imageFile))
-    // }
-
     onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
             this.setState({ imageFile: event.target.files[0] })
@@ -38,7 +33,6 @@ class userProfile extends Component {
     }
 
     handleUpload = async () => {
-        // console.log("this is inside hanldeupload"+this.state.imageFile);
         if (this.state.imageFile !== '') {
             let formData = new FormData();
             formData.append('image', this.state.imageFile);
@@ -52,7 +46,6 @@ class userProfile extends Component {
     }
 
     onhandleUpload = async (event) => {
-        // alert("profile pic is being changed !");
         if (event.target.files[0] !== '') {
             let formData = new FormData();
             formData.append('image', event.target.files[0]);
@@ -142,7 +135,6 @@ class userProfile extends Component {
                 let { data } = await axios.get(`http://localhost:3001/data/user/name/${user}`);
                 const userId = data._id;
                 this.setState({ idofuser: userId })
-                console.log(this.state.idofuser);
                 let imageDetails;
                 try {
                     imageDetails = await axios.get(`http://localhost:3001/data/profilepic/${userId}`);
@@ -163,7 +155,6 @@ class userProfile extends Component {
                 else {
                     this.setState({ imageName: '../default.jpg' })
                 }
-                console.log(imageDetails);
             }
             else {
                 window.location.href = "/login";
