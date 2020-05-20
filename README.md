@@ -147,7 +147,7 @@ Download the latest [elasticsearch](https://www.elastic.co/downloads/elasticsear
 > Start elasticsearch service
 
 - Unzip the downloaded file
-- Go into your "~/Downloads/elasticsearch-version/bin" directory and type the following command
+- Go into your "../Downloads/elasticsearch-version/bin" directory and type the following command
 ```
 ./elasticsearch
 ```
