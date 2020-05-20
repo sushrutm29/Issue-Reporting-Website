@@ -5,6 +5,11 @@
 - [Team](#team)
 - [Project-Info](#project-info)
 - [Quick-Start](#quick-start)
+  * [Start-Services](#start-services)
+  * [Install-Modules](#install-Modules)
+  * [Populate-Default-Data](#populate-default-data)
+  * [Start-Servers](#start-servers)
+  * [Website-Layouts](#website-layouts)
 - [Technology](#technology)
   * [Redis-Cache](#redis-cache)
   * [React](#react)
@@ -33,7 +38,7 @@ Please check out the master branch of our repository.
   Lastly, we would have an administrator panel that would have the clearance to delete or change the state of any issue post. The administrator can also create a new issue board or delete an existing one. 
 
 ## **Quick-Start**
-### Start the services
+### Start-Services
 > Elasticsearch
 
 Go into your "~/Downloads/elasticsearch-version/bin" directory and type the following command
@@ -54,7 +59,7 @@ redis-server
 mongod
 ```
 
-### Install npm modules
+### Install-Modules
 > Client & Server sides:
 
 Open a terminal and run the following command in both "~/cs554project/client" and "~/cs554project/server" directories
@@ -62,7 +67,7 @@ Open a terminal and run the following command in both "~/cs554project/client" an
 npm install
 ```
 
-### Populate the database, cache and elasticsearch service
+### Populate-Default-Data
 > Seed Command
 Open a new terminal and go into "~/cs554project/server" directory and run
 ```
@@ -71,7 +76,7 @@ npm run seed
 > Seed File Bahaviors
 Every time you run the seed file that the data in both the Redis cache and Elasticsearch service will be cleared. Then the default data from JSON files will be inserted into mongoDB, Redis, and Elasticsearch service. Please remember to drop the mongoDB collection every time you run our seed file. 
 
-### Start the servers
+### Start-Servers
 > Open two terminals and go into the following directories 
 - Client side: "~/cs554project/client"
 - Server side: "~/cs554project/server"
@@ -84,10 +89,12 @@ npm run start
 Client side: http://localhost:3000/
 Server side: http://localhost:3001/
 
-### Website layouts
-- Home Page
-- Department Page
-- 
+### Website-Layouts
+- Login Page: http://localhost:3000/login
+- Signup Page: http://localhost:3000/signup
+- Home Page: http://localhost:3000/home/page/1 (default home page starts on page one)
+- Department Page: http://localhost:3000/dept/dept_name/page/1 (default department page starts on page one)
+- Profile Page: http://localhost:3000/profile
 
 ## **Technology**
 
