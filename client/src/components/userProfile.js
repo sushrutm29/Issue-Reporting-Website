@@ -23,7 +23,6 @@ class userProfile extends Component {
         this.state = { imageName: null }
         this.state = { imageFile: null }
         this.state = { idofuser: '' }
-        this.state = { imageFile: {} }
     }
 
     // handleFile = (event) => {
@@ -33,13 +32,17 @@ class userProfile extends Component {
 
     onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
-            this.setState({ imageFile : event.target.files[0] })
+            this.setState({ imageFile: event.target.files[0] })
             console.log("this is on Image Chnage :" + this.state.imageFile);
         }
     }
 
+    handleReload = async () => {
+        window.location.reload();
+    }
+
     handleUpload = async () => {
-        console.log("this is inside hanldeupload"+this.state.imageFile);
+        // console.log("this is inside hanldeupload"+this.state.imageFile);
         if (this.state.imageFile !== '') {
             let formData = new FormData();
             formData.append('image', this.state.imageFile);
@@ -53,16 +56,18 @@ class userProfile extends Component {
     }
 
     onhandleUpload = async (event) => {
-        console.log("this is inside hanldeupload"+event.target.files[0]);
+        // alert("profile pic is being changed !");
         if (event.target.files[0] !== '') {
             let formData = new FormData();
             formData.append('image', event.target.files[0]);
-            await axios.post('http://localhost:3001/data/profilepic', formData, {
+            let uploadFile = await axios.post('http://localhost:3001/data/profilepic', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+            if(uploadFile.data.Filename) {
+                await axios.post(`http://localhost:3001/data/profilepic/${this.state.idofuser}`);
+            }
             window.location.reload();
         }
     }
@@ -159,7 +164,7 @@ class userProfile extends Component {
                 if (imageDetails) {
                     this.setState({ imageName: imageDetails.data.path })
                 }
-                else{
+                else {
                     this.setState({ imageName: '../default.jpg' })
                 }
                 console.log(imageDetails);
@@ -190,13 +195,13 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                <form onSubmit={this.onhandleUpload}>
+                {/* <form onSubmit={this.onhandleUpload}>
                     <h6> Change Profile Picture : </h6>
                     <br></br>
-                    {/* <input type="file" variant="primary" onChange={(e) => { this.onhandleUpload(e) }} /> */}
-                    <input type="file" variant="primary" onChange={this.onhandleUpload} />
-                    {/* <Button type="submit" variant="primary" > Change Profile Picture </Button> */}
-                </form>
+                    <Button type="submit" variant="primary" onClick={this.handleReload}> Change Profile Picture </Button>
+                </form> */}
+                <input type="file" variant="primary" onChange={this.onhandleUpload} />
+                <br></br>
                 <br></br>
                 <Card style={{ margin: "0px auto", width: "500px" }}>
 

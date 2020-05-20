@@ -53,7 +53,29 @@ async function getUserByName(userName) {
     if (!user) {
         throw `User not found with name ${userName}`;
     }
+    return user;
+}
 
+/**
+ * Returns a user with matching user email as the provided one; throws error if wrong type/number of
+ * arguments were provided. 
+ * @param email the email of the user to be retrieved.
+ */
+async function getUserByEmail(email) {
+    //validates number of arguments
+    if (arguments.length != 1) {
+        throw new Error("Wrong number of arguments");
+    }
+    //validates arguments type
+    if (!email || typeof email != "string" || email.length == 0) {
+        throw "Invalid email is provided for getUserByName function";
+    }
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ userEmail: email });
+    if (!user) {
+        throw `User not found with email ${email}`;
+    }
+    
     return user;
 }
 
@@ -299,5 +321,8 @@ module.exports = {
     removePostFromUser,
     getUserByName,
     uploadProfilePicture,
-    deleteProfliePicture
-};
+    deleteProfliePicture,
+    getUserByEmail
+ };
+
+

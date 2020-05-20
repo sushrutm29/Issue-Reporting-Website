@@ -113,6 +113,7 @@ router.post('/:id', async (req, res) => {
         await userData.deleteProfliePicture(userID);
         console.log("deleted and now performing post")
         await userData.uploadProfilePicture(userID);
+        return res.status(200).json({"message": "success"});
     } catch (error) {
         console.log(error);
         return res.status(400).json({ error: error.message });
