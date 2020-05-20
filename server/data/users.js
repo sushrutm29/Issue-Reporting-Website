@@ -126,7 +126,6 @@ async function createUser(userName, userEmail, admin, profilePic) {
         return insertedUser;
     } else {
         const uploadPath = __dirname + '/../../client/public/uploads';
-        console.log(uploadPath);
         const connection = await mongoConnection();
         let bucket = new mongodb.GridFSBucket(connection, {
             bucketName: 'profilePics'
@@ -290,7 +289,6 @@ async function uploadProfilePicture(userID) {
 
 async function deleteProfliePicture(userID){
     try {
-        console.log("coming here")
         const filename = userID;
         const connection = await mongoConnection();
         let bucket = new mongodb.GridFSBucket(connection, {
@@ -306,7 +304,6 @@ async function deleteProfliePicture(userID){
         if (file.length != 0) {
             bucket.delete(file[0]._id);
         }
-        console.log("deleted from db")
     } catch (error) {
         console.log(error);
     }

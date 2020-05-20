@@ -37,10 +37,6 @@ class userProfile extends Component {
         }
     }
 
-    handleReload = async () => {
-        window.location.reload();
-    }
-
     handleUpload = async () => {
         // console.log("this is inside hanldeupload"+this.state.imageFile);
         if (this.state.imageFile !== '') {
@@ -195,11 +191,8 @@ class userProfile extends Component {
                 </div>
                 <br></br>
                 <br></br>
-                {/* <form onSubmit={this.onhandleUpload}>
-                    <h6> Change Profile Picture : </h6>
-                    <br></br>
-                    <Button type="submit" variant="primary" onClick={this.handleReload}> Change Profile Picture </Button>
-                </form> */}
+                <h6> Upload to change profile picture : </h6>
+                <br></br>
                 <input type="file" variant="primary" onChange={this.onhandleUpload} />
                 <br></br>
                 <br></br>
